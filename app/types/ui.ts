@@ -22,3 +22,4 @@ export type AppColor =
     | "violet"
     | "fuchsia"
     | "rose"
+    | "red"

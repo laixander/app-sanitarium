@@ -1,9 +1,6 @@
 <template>
     <div class="space-y-6">
-        <div>
-            <h2 class="text-xl font-bold">Custom UI Components</h2>
-            <p class="text-sm text-muted">Custom UI Components</p>
-        </div>
+        <UiFPageHeader title="Custom UI Components" description="A collection of custom UI components for the application." />
         <div class="flex flex-wrap gap-4">
 
             <UiFIcon icon="i-lucide-heart" color="green" />
@@ -88,7 +85,7 @@
 
         <UiFCard title="Card Title with Right Content"
             description="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod." icon="i-lucide-heart"
-            color="primary">
+            color="primary" as-table>
             <template #actions>
                 <UiFTag label="Badge" color="green" showChip />
             </template>
@@ -98,7 +95,7 @@
                 </template>
                 <template #actions-cell="{ row }">
                     <UDropdownMenu :items="getActionItems(row.original)" :content="{ align: 'end' }"
-                        :ui="{ content: 'w-48' }">
+                        :ui="{ content: 'w-auto' }">
                         <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" />
                     </UDropdownMenu>
                 </template>

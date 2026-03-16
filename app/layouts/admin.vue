@@ -1,6 +1,6 @@
 <template>
     <UDashboardGroup>
-        <UDashboardSidebar resizable collapsible :ui="{ root: 'w-auto divide-y divide-default' }">
+        <UDashboardSidebar resizable collapsible :ui="{ root: 'w-auto divide-y divide-default bg-elevated/25' }">
             <template #header="{ collapsed }">
                 <div v-if="!collapsed" class="px-2.5 flex items-center gap-2">
                     <UAvatar icon="i-lucide-heart" size="lg" class="bg-primary rounded-none squircle"

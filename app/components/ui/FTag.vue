@@ -1,7 +1,10 @@
 <template>
     <UBadge variant="subtle" :color="color" size="sm"
         class="rounded-full px-3 py-2 uppercase font-semibold leading-none w-fit">
-        <UChip v-if="showChip" standalone inset :color="color" size="xs" class="mr-0.5" />
+        <span v-if="showChip" class="inline-flex items-center justify-center mr-0.5">
+            <UChip v-if="ping" standalone inset :color="color" size="xs" :ui="{ base: 'ring-0' }" class="absolute animate-ping" />
+            <UChip standalone inset :color="color" size="xs" :ui="{ base: 'ring-0' }" />
+        </span>
         {{ label }}
     </UBadge>
 </template>
@@ -13,9 +16,8 @@ interface Props {
     label: string
     color: AppColor
     showChip?: boolean
+    ping?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
-    showChip: false
-})
+const props = defineProps<Props>()
 </script>

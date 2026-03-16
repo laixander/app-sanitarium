@@ -1,10 +1,13 @@
 <template>
-    <UCard>
-        <div class="flex justify-between">
-            <h3 class="text-sm uppercase font-bold">{{ title }}</h3>
+    <UCard variant="subtle">
+        <div class="flex justify-between" :class="[ counter ? 'gap-3' : '' ]">
+            <div :class="[ counter ? 'order-1 flex-1' : '' ]">
+                <h3 :class="[counter ? 'text-xs text-muted' : 'text-sm font-bold', 'uppercase']">{{ title }}</h3>
+                <p v-if="counter" class="text-3xl font-bold">{{ value }}</p>
+            </div>
             <UiFIcon v-if="icon" :icon="icon" :color="iconColor || 'primary'" />
         </div>
-        <div class="mt-6">
+        <div v-if="!counter" class="mt-6">
             <slot name="customValue">
                 <p class="text-4xl font-bold">{{ value }}</p>
                 <p v-if="description || trendValue !== undefined"
@@ -32,6 +35,7 @@ interface Props {
     icon: string
     iconColor?: AppColor
     trendValue?: string | number
+    counter?: boolean
 }
 const props = defineProps<Props>()
 
