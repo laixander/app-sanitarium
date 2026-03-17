@@ -4,35 +4,28 @@
             <UInput v-model="globalFilter" class="max-w-sm" placeholder="Filter..." />
             <div class="flex gap-2">
                 <AdminAddUser />
-                <UDropdownMenu
-                    :items="
-                    table?.tableApi
+                <UDropdownMenu :items="table?.tableApi
                         ?.getAllColumns()
                         .filter((column) => column.getCanHide())
                         .map((column) => ({
-                        label: upperFirst(column.id),
-                        type: 'checkbox' as const,
-                        checked: column.getIsVisible(),
-                        onUpdateChecked(checked: boolean) {
-                            table?.tableApi?.getColumn(column.id)?.toggleVisibility(!!checked)
-                        },
-                        onSelect(e: Event) {
-                            e.preventDefault()
-                        }
+                            label: upperFirst(column.id),
+                            type: 'checkbox' as const,
+                            checked: column.getIsVisible(),
+                            onUpdateChecked(checked: boolean) {
+                                table?.tableApi?.getColumn(column.id)?.toggleVisibility(!!checked)
+                            },
+                            onSelect(e: Event) {
+                                e.preventDefault()
+                            }
                         }))
-                    "
-                    :content="{ align: 'end' }"
-                >
-                    <UButton
-                        label="Display"
-                        color="neutral"
-                        variant="outline"
-                        trailing-icon="i-lucide-settings-2"
-                    />
+                    " :content="{ align: 'end' }">
+                    <UButton label="Display" color="neutral" variant="outline" trailing-icon="i-lucide-settings-2" />
                 </UDropdownMenu>
             </div>
         </div>
-        <UTable :data="users" :columns="columns" :ui="{ th: 'px-4 sm:px-6', td: 'px-4 sm:px-6' }" class="w-full" ref="table" v-model:global-filter="globalFilter" v-model:column-visibility="columnVisibility" @hover="" sticky>
+        <UTable :data="users" :columns="columns" :ui="{ th: 'px-4 sm:px-6', td: 'px-4 sm:px-6' }" class="w-full"
+            ref="table" v-model:global-filter="globalFilter" v-model:column-visibility="columnVisibility" @hover=""
+            sticky>
             <template #name-cell="{ row }">
                 <div class="flex items-center gap-3">
                     <UAvatar :alt="row.original.name" size="sm" class="bg-primary/10 text-primary font-bold"
@@ -58,7 +51,8 @@
             </template>
 
             <template #actions-cell="{ row }">
-                <UDropdownMenu :items="getActionItems(row.original)" :content="{ align: 'end' }" :ui="{ content: 'w-40' }">
+                <UDropdownMenu :items="getActionItems(row.original)" :content="{ align: 'end' }"
+                    :ui="{ content: 'w-40' }">
                     <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" size="sm" />
                 </UDropdownMenu>
             </template>
@@ -67,14 +61,9 @@
 
     <AdminUserFormModal v-model:open="isEditModalOpen" :user="selectedUser" @success="selectedUser = null" />
 
-    <UiFConfirmModal
-        v-model:open="isConfirmModalOpen"
-        :title="confirmModalConfig.title"
-        :description="confirmModalConfig.description"
-        :confirm-label="confirmModalConfig.confirmLabel"
-        :confirm-color="confirmModalConfig.confirmColor"
-        @confirm="confirmModalConfig.onConfirm"
-    />
+    <AdminConfirmModal v-model:open="isConfirmModalOpen" :title="confirmModalConfig.title"
+        :description="confirmModalConfig.description" :confirm-label="confirmModalConfig.confirmLabel"
+        :confirm-color="confirmModalConfig.confirmColor" @confirm="confirmModalConfig.onConfirm" />
 </template>
 
 <script setup lang="ts">
@@ -92,7 +81,7 @@ const globalFilter = ref('')
 const table = useTemplateRef('table')
 
 const columnVisibility = ref({
-  id: false
+    id: false
 })
 
 const { users, getRoleColor, deleteUser, updateUser } = useUsers()
@@ -111,7 +100,7 @@ const confirmModalConfig = ref({
     description: '',
     confirmLabel: 'Confirm',
     confirmColor: 'primary' as const,
-    onConfirm: () => {}
+    onConfirm: () => { }
 })
 
 function openConfirmModal(config: { title: string, description: string, confirmLabel?: string, confirmColor?: any, onConfirm: () => void }) {
