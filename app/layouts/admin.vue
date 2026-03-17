@@ -39,29 +39,34 @@ const items: NavigationMenuItem[][] = [
                 type: 'label'
             },
             {
-                label: 'Queuing Control',
-                icon: 'i-lucide-list-ordered',
-                to: '/admin/queuing'
-            },
-            {
-                label: 'Documents',
-                icon: 'i-lucide-folder-open',
-                to: '/admin/documents'
-            },
-            {
-                label: 'Asset Management',
-                icon: 'i-lucide-box',
-                to: '/admin/assets'
-            },
-            {
-                label: 'Human Resources',
+                label: 'Account Management',
                 icon: 'i-lucide-users',
-                to: '/admin/hr'
+                to: '/admin/account'
             },
             {
-                label: 'Waste Management',
-                icon: 'i-lucide-recycle',
-                to: '/admin/waste'
+                label: 'Authentication & Roles',
+                icon: 'i-lucide-shield',
+                to: '/admin/authentication'
+            },
+            {
+                label: 'Audit Logs',
+                icon: 'i-lucide-scroll-text',
+                to: '/admin/audit'
+            },
+            {
+                label: 'System Configuration',
+                icon: 'i-lucide-settings',
+                to: '/admin/configuration'
+            },
+            {
+                label: 'Branding',
+                icon: 'i-lucide-palette',
+                to: '/admin/branding'
+            },
+            {
+                label: 'SSO Integration',
+                icon: 'i-lucide-shield-check',
+                to: '/admin/sso'
             }
         ]
     ],
