@@ -41,14 +41,9 @@ const items = [
                     <span class="text-sm font-medium">{{ title }}</span>
                 </div>
                 <USeparator orientation="vertical" class="h-4" />
-                <div class="flex items-center gap-1">
-                    <!-- <UIcon :name="Number(userCount) > 0 ? 'i-lucide-users' : 'i-lucide-user'"
-                        class="shrink-0 text-primary" /> -->
-                    <!-- <UIcon name="i-lucide-user" class="shrink-0 text-primary" /> -->
-                    <span class="text-xs font-medium">{{ userCount }} {{ userCount === 1 ? 'User' : 'Users' }}</span>
-                </div>
+                <UBadge :label="userCount + ' ' + (userCount === 1 ? 'User' : 'Users')" variant="soft" />
             </div>
-            <UDropdownMenu :items="items" :content="{ align: 'end' }">
+            <UDropdownMenu :items="items" :content="{ align: 'end' }" size="sm">
                 <UButton color="neutral" variant="ghost" icon="i-lucide-ellipsis-vertical" size="sm" />
             </UDropdownMenu>
         </div>

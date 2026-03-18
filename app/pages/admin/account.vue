@@ -39,11 +39,14 @@
             </template>
 
             <template #role-cell="{ row }">
-                <UiFTag :label="row.original.role" :color="getRoleColor(row.original.role)" />
+                <UBadge :label="row.original.role" :color="getRoleColor(row.original.role)" variant="subtle" />
+                <!-- <UiFTag :label="row.original.role" :color="getRoleColor(row.original.role)" /> -->
             </template>
 
             <template #status-cell="{ row }">
-                <UiFTag :label="row.original.status" :color="row.original.status === 'Active' ? 'success' : 'error'" />
+                <UBadge :label="row.original.status" :color="row.original.status === 'Active' ? 'success' : 'error'"
+                    variant="subtle" />
+                <!-- <UiFTag :label="row.original.status" :color="row.original.status === 'Active' ? 'success' : 'error'" /> -->
             </template>
 
             <template #last_login-cell="{ row }">
@@ -52,7 +55,7 @@
 
             <template #actions-cell="{ row }">
                 <UDropdownMenu :items="getActionItems(row.original)" :content="{ align: 'end' }"
-                    :ui="{ content: 'w-40' }">
+                    :ui="{ content: 'w-auto' }" size="sm">
                     <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" size="sm" />
                 </UDropdownMenu>
             </template>
@@ -117,7 +120,6 @@ const getActionItems = (row: User) => [
         {
             label: 'Edit',
             icon: 'i-lucide-square-pen',
-            color: 'primary' as const,
             onSelect: () => onEdit(row)
         },
         row.status === 'Active' ? {

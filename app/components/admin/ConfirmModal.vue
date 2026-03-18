@@ -1,13 +1,20 @@
 <template>
-    <UModal v-model:open="isOpen" :title="title">
-        <template #body>
-            <div class="flex flex-col gap-6">
-                <p class="text-muted">{{ description }}</p>
-                <div class="flex justify-end gap-3">
-                    <UButton :label="cancelLabel" color="neutral" variant="ghost" @click="onCancel" />
-                    <UButton :label="confirmLabel" :color="confirmColor" @click="onConfirm" />
+    <UModal v-model:open="isOpen" :ui="{ content: 'w-full sm:max-w-sm' }">
+        <template #content="{ close }">
+            <div class="flex flex-col gap-8 p-4 sm:p-6">
+                <div class="flex flex-col items-center gap-4">
+                    <UIcon name="i-lucide-triangle-alert" class="text-error size-12" />
+                    <h3 class="text-lg font-semibold">{{ title }}</h3>
+                    <p class="text-muted text-sm text-center text-pretty">
+                        {{ description }}
+                    </p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <UButton block size="lg" :label="cancelLabel" color="neutral" variant="ghost" @click="onCancel" />
+                    <UButton block size="lg" :label="confirmLabel" :color="confirmColor" @click="onConfirm" />
                 </div>
             </div>
+            <UButton icon="i-lucide-x" color="neutral" variant="ghost" class="absolute top-2 right-2" @click="close" />
         </template>
     </UModal>
 </template>
