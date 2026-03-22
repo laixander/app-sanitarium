@@ -15,44 +15,22 @@ const items: NavigationMenuItem[][] = [
                 type: 'label'
             },
             {
-                label: 'Account Management',
-                icon: 'i-lucide-users',
-                to: '/admin/account'
+                label: 'Dashboard',
+                icon: 'i-lucide-bar-chart-3',
+                to: '/agent/dashboard'
             },
             {
-                label: 'Authentication & Roles',
-                icon: 'i-lucide-shield',
-                to: '/admin/authentication'
+                label: 'Agent Management',
+                icon: 'i-lucide-user',
+                to: '/agent/management'
             },
             {
-                label: 'Audit Logs',
-                icon: 'i-lucide-scroll-text',
-                to: '/admin/audit'
-            },
-            {
-                label: 'System Configuration',
-                icon: 'i-lucide-settings',
-                to: '/admin/configuration'
-            },
-            {
-                label: 'Branding',
-                icon: 'i-lucide-palette',
-                to: '/admin/branding'
-            },
-            {
-                label: 'SSO Integration',
-                icon: 'i-lucide-shield-check',
-                to: '/admin/sso'
+                label: 'Customer Feedback',
+                icon: 'i-lucide-message-square',
+                to: '/agent/feedback'
             }
         ]
     ],
-    // [
-    //     {
-    //         label: 'Kiosk View',
-    //         icon: 'i-lucide-monitor',
-    //         to: '/kiosk'
-    //     }
-    // ]
     [
         {
             label: 'UI Playground',
@@ -90,15 +68,6 @@ const items: NavigationMenuItem[][] = [
                     <UserMenu />
                 </template>
             </UDashboardNavbar>
-            <!-- <UDashboardToolbar>
-                <template v-if="route.meta.showUserToolbar">
-                    <div class="font-semibold">User Accounts</div>
-                    <div class="flex items-center gap-2">
-                        <UInput placeholder="Search users..." icon="i-lucide-search" />
-                        <AdminAddUser />
-                    </div>
-                </template>
-            </UDashboardToolbar> -->
         </template>
         <template #body>
             <NuxtPage />

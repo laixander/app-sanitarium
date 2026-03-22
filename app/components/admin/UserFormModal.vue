@@ -1,38 +1,5 @@
-<template>
-    <UModal v-model:open="isOpen" :title="user ? 'Edit User' : 'Add New User'"
-        :description="user ? 'Update user details below.' : 'Fill in the details below to create a new user account.'" :dismissible="false">
-        <template #body>
-            <UForm :state="state" @submit="onSubmit" class="space-y-4">
-                <UFormField label="Name" name="name" required>
-                    <UInput v-model="state.name" placeholder="Full Name" class="w-full" icon="i-lucide-user" size="lg" required />
-                </UFormField>
-
-                <UFormField label="Email" name="email" required>
-                    <UInput v-model="state.email" type="email" placeholder="email@ssgh.ph" class="w-full"
-                        icon="i-lucide-mail" size="lg" required />
-                </UFormField>
-
-                <UFormField label="Role" name="role" required>
-                    <USelect v-model="state.role" :items="roles" placeholder="Select a role" class="w-full"
-                        icon="i-lucide-shield" size="lg" required />
-                </UFormField>
-
-                <UFormField v-if="user" label="Status" name="status" required>
-                    <USelect v-model="state.status" :items="['Active', 'Suspended']" placeholder="Select status" class="w-full"
-                        icon="i-lucide-activity" size="lg" required />
-                </UFormField>
-
-                <div class="flex justify-end gap-3 pt-4">
-                    <UButton label="Cancel" color="neutral" variant="ghost" @click="isOpen = false" />
-                    <UButton type="submit" :label="user ? 'Update User' : 'Create User'" />
-                </div>
-            </UForm>
-        </template>
-    </UModal>
-</template>
-
 <script setup lang="ts">
-import type { User } from '~/composables/useUsers'
+import type { User } from '~/types/user'
 
 const props = defineProps<{
     user?: User | null
@@ -90,3 +57,37 @@ function onSubmit() {
     emit('success')
 }
 </script>
+<template>
+    <UModal v-model:open="isOpen" :title="user ? 'Edit User' : 'Add New User'"
+        :description="user ? 'Update user details below.' : 'Fill in the details below to create a new user account.'"
+        :dismissible="false">
+        <template #body>
+            <UForm :state="state" @submit="onSubmit" class="space-y-4">
+                <UFormField label="Name" name="name" required>
+                    <UInput v-model="state.name" placeholder="Full Name" class="w-full" icon="i-lucide-user" size="lg"
+                        required />
+                </UFormField>
+
+                <UFormField label="Email" name="email" required>
+                    <UInput v-model="state.email" type="email" placeholder="email@ssgh.ph" class="w-full"
+                        icon="i-lucide-mail" size="lg" required />
+                </UFormField>
+
+                <UFormField label="Role" name="role" required>
+                    <USelect v-model="state.role" :items="roles" placeholder="Select a role" class="w-full"
+                        icon="i-lucide-shield" size="lg" required />
+                </UFormField>
+
+                <UFormField v-if="user" label="Status" name="status" required>
+                    <USelect v-model="state.status" :items="['Active', 'Suspended']" placeholder="Select status"
+                        class="w-full" icon="i-lucide-activity" size="lg" required />
+                </UFormField>
+
+                <div class="flex justify-end gap-3 pt-4">
+                    <UButton label="Cancel" color="neutral" variant="ghost" @click="isOpen = false" />
+                    <UButton type="submit" :label="user ? 'Update User' : 'Create User'" />
+                </div>
+            </UForm>
+        </template>
+    </UModal>
+</template>

@@ -1,11 +1,4 @@
-export interface User {
-    id: number
-    name: string
-    email: string
-    role: string
-    status: 'Active' | 'Suspended'
-    last_login: string
-}
+import type { User } from '~/types/user'
 
 export default defineEventHandler((event) => {
     return [
@@ -15,7 +8,7 @@ export default defineEventHandler((event) => {
             email: 'admin@ssgh.ph',
             role: 'Administrator',
             status: 'Active',
-            last_login: 'Mar 16, 8:00 AM'
+            lastLogin: 'Mar 16, 2026, 08:00 AM'
         },
         {
             id: 2,
@@ -23,7 +16,7 @@ export default defineEventHandler((event) => {
             email: 'm.rivera@ssgh.ph',
             role: 'Supervisor',
             status: 'Active',
-            last_login: 'Mar 16, 7:30 AM'
+            lastLogin: 'Mar 16, 2026, 07:30 AM'
         },
         {
             id: 3,
@@ -31,7 +24,17 @@ export default defineEventHandler((event) => {
             email: 'a.bautista@ssgh.ph',
             role: 'Agent',
             status: 'Active',
-            last_login: 'Mar 16, 7:00 AM'
+            lastLogin: 'Mar 16, 2026, 07:00 AM',
+            code: 'AGT001',
+            department: 'Consultation',
+            agentStatus: 'Online',
+            counter: 'Counter 1',
+            ticket: 'A-101',
+            served: 12,
+            avgService: '5:30',
+            dateAssigned: 'Mar 16, 2026, 08:00 AM',
+            dateUpdated: 'Mar 16, 2026, 09:30 AM',
+            schedule: 'Morning (7:00 AM - 3:00 PM)'
         },
         {
             id: 4,
@@ -39,7 +42,17 @@ export default defineEventHandler((event) => {
             email: 'j.villanueva@ssgh.ph',
             role: 'Agent',
             status: 'Active',
-            last_login: 'Mar 16, 8:00 AM'
+            lastLogin: 'Mar 16, 2026, 08:00 AM',
+            code: 'AGT002',
+            department: 'Billing',
+            agentStatus: 'Serving',
+            counter: 'Counter 2',
+            ticket: 'B-205',
+            served: 8,
+            avgService: '7:15',
+            dateAssigned: 'Mar 16, 2026, 08:00 AM',
+            dateUpdated: 'Mar 16, 2026, 10:15 AM',
+            schedule: 'Afternoon (3:00 PM - 11:00 PM)'
         },
         {
             id: 5,
@@ -47,7 +60,17 @@ export default defineEventHandler((event) => {
             email: 'c.santiago@ssgh.ph',
             role: 'Agent',
             status: 'Active',
-            last_login: 'Mar 16, 7:00 AM'
+            lastLogin: 'Mar 16, 2026, 07:00 AM',
+            code: 'AGT003',
+            department: 'Admission',
+            agentStatus: 'On Break',
+            counter: 'Counter 3',
+            ticket: '-',
+            served: 15,
+            avgService: '4:45',
+            dateAssigned: 'Mar 15, 2026, 09:30 AM',
+            dateUpdated: 'Mar 21, 2026, 11:30 AM',
+            schedule: 'Morning (7:00 AM - 3:00 PM)'
         },
         {
             id: 6,
@@ -55,7 +78,16 @@ export default defineEventHandler((event) => {
             email: 'r.aquino@ssgh.ph',
             role: 'Agent',
             status: 'Suspended',
-            last_login: 'Mar 15, 4:00 PM'
+            lastLogin: 'Mar 15, 2026, 04:00 PM',
+            code: 'AGT004',
+            department: 'Outpatient',
+            agentStatus: 'Offline',
+            counter: '-',
+            ticket: '-',
+            served: 0,
+            avgService: '0:00',
+            dateAssigned: 'Mar 15, 2026, 11:00 AM',
+            dateUpdated: 'Mar 20, 2026, 05:30 PM'
         },
         {
             id: 7,
@@ -63,7 +95,7 @@ export default defineEventHandler((event) => {
             email: 'e.cruz@ssgh.ph',
             role: 'Supervisor',
             status: 'Active',
-            last_login: 'Mar 16, 9:00 AM'
+            lastLogin: 'Mar 16, 2026, 09:00 AM'
         },
         {
             id: 8,
@@ -71,7 +103,16 @@ export default defineEventHandler((event) => {
             email: 'r.gomez@ssgh.ph',
             role: 'Agent',
             status: 'Active',
-            last_login: 'Mar 16, 8:45 AM'
+            lastLogin: 'Mar 16, 2026, 08:45 AM',
+            code: 'AGT005',
+            department: 'Outpatient',
+            agentStatus: 'Online',
+            counter: 'Counter 4',
+            ticket: 'C-302',
+            served: 21,
+            avgService: '4:55',
+            dateAssigned: 'Mar 16, 2026, 08:15 AM',
+            dateUpdated: 'Mar 21, 2026, 11:30 AM'
         },
         {
             id: 9,
@@ -79,7 +120,7 @@ export default defineEventHandler((event) => {
             email: 'f.santos@ssgh.ph',
             role: 'Administrator',
             status: 'Active',
-            last_login: 'Mar 16, 10:00 AM'
+            lastLogin: 'Mar 16, 2026, 10:00 AM'
         },
         {
             id: 10,
@@ -87,7 +128,16 @@ export default defineEventHandler((event) => {
             email: 'l.reyes@ssgh.ph',
             role: 'Agent',
             status: 'Active',
-            last_login: 'Mar 16, 6:30 AM'
+            lastLogin: 'Mar 16, 2026, 06:30 AM',
+            code: 'AGT006',
+            department: 'Billing',
+            agentStatus: 'Serving',
+            counter: 'Counter 5',
+            ticket: 'D-404',
+            served: 19,
+            avgService: '5:45',
+            dateAssigned: 'Mar 16, 2026, 07:50 AM',
+            dateUpdated: 'Mar 21, 2026, 04:20 PM'
         },
         {
             id: 11,
@@ -95,7 +145,14 @@ export default defineEventHandler((event) => {
             email: 'a.luna@ssgh.ph',
             role: 'Agent',
             status: 'Active',
-            last_login: 'Mar 16, 11:00 AM'
+            lastLogin: 'Mar 16, 2026, 11:00 AM',
+            code: 'AGT007',
+            department: 'Consultation',
+            agentStatus: 'Online',
+            counter: 'Counter 6',
+            ticket: '-',
+            served: 5,
+            avgService: '6:30'
         },
         {
             id: 12,
@@ -103,7 +160,7 @@ export default defineEventHandler((event) => {
             email: 'p.lim@ssgh.ph',
             role: 'Supervisor',
             status: 'Active',
-            last_login: 'Mar 16, 8:15 AM'
+            lastLogin: 'Mar 16, 2026, 08:15 AM'
         },
         {
             id: 13,
@@ -111,7 +168,14 @@ export default defineEventHandler((event) => {
             email: 'm.ramos@ssgh.ph',
             role: 'Agent',
             status: 'Suspended',
-            last_login: 'Mar 14, 2:00 PM'
+            lastLogin: 'Mar 14, 2026, 02:00 PM',
+            code: 'AGT008',
+            department: 'Admission',
+            agentStatus: 'Offline',
+            counter: '-',
+            ticket: '-',
+            served: 0,
+            avgService: '0:00'
         },
         {
             id: 14,
@@ -119,7 +183,14 @@ export default defineEventHandler((event) => {
             email: 's.tan@ssgh.ph',
             role: 'Agent',
             status: 'Active',
-            last_login: 'Mar 16, 12:00 PM'
+            lastLogin: 'Mar 16, 2026, 12:00 PM',
+            code: 'AGT009',
+            department: 'Outpatient',
+            agentStatus: 'Online',
+            counter: 'Counter 7',
+            ticket: 'E-505',
+            served: 10,
+            avgService: '5:15'
         },
         {
             id: 15,
@@ -127,7 +198,9 @@ export default defineEventHandler((event) => {
             email: 'k.lee@ssgh.ph',
             role: 'Agent',
             status: 'Active',
-            last_login: 'Mar 16, 5:00 AM'
+            lastLogin: 'Mar 16, 2026, 05:00 AM',
+            code: 'AGT010',
+            department: 'Billing'
         },
         {
             id: 16,
@@ -135,7 +208,9 @@ export default defineEventHandler((event) => {
             email: 'j.diaz@ssgh.ph',
             role: 'Agent',
             status: 'Active',
-            last_login: 'Mar 16, 1:00 PM'
+            lastLogin: 'Mar 16, 2026, 01:00 PM',
+            code: 'AGT011',
+            department: 'Consultation'
         },
         {
             id: 17,
@@ -143,7 +218,9 @@ export default defineEventHandler((event) => {
             email: 'd.wilson@ssgh.ph',
             role: 'Agent',
             status: 'Active',
-            last_login: 'Mar 16, 2:30 PM'
+            lastLogin: 'Mar 16, 2026, 02:30 PM',
+            code: 'AGT012',
+            department: 'Admission'
         },
         {
             id: 18,
@@ -151,7 +228,7 @@ export default defineEventHandler((event) => {
             email: 'l.garcia@ssgh.ph',
             role: 'Supervisor',
             status: 'Active',
-            last_login: 'Mar 16, 3:45 PM'
+            lastLogin: 'Mar 16, 2026, 03:45 PM'
         },
         {
             id: 19,
@@ -159,7 +236,9 @@ export default defineEventHandler((event) => {
             email: 'p.parker@ssgh.ph',
             role: 'Agent',
             status: 'Active',
-            last_login: 'Mar 16, 4:00 PM'
+            lastLogin: 'Mar 16, 2026, 04:00 PM',
+            code: 'AGT013',
+            department: 'Billing'
         },
         {
             id: 20,
@@ -167,7 +246,9 @@ export default defineEventHandler((event) => {
             email: 'mj.watson@ssgh.ph',
             role: 'Agent',
             status: 'Active',
-            last_login: 'Mar 16, 4:15 PM'
+            lastLogin: 'Mar 16, 2026, 04:15 PM',
+            code: 'AGT014',
+            department: 'Outpatient'
         }
     ] as User[]
 })

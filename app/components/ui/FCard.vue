@@ -1,12 +1,14 @@
 <template>
-    <UCard variant="subtle" :ui="{ root: asList ? 'divide-y-0' : '', header: asTable || asList ? 'sm:px-4' : '', body: asTable || asList ? 'p-0 sm:p-0' : 'space-y-4' }">
+    <UCard variant="subtle"
+        :ui="{ root: asList ? 'divide-y-0' : '', body: asTable || asList ? 'p-0 sm:p-0' : 'space-y-4' }">
         <template #header>
             <div class="grid md:flex items-center justify-between gap-3">
                 <div class="grid md:flex items-center gap-3">
                     <UiFIcon v-if="icon" :icon="icon" :color="color || 'primary'" />
                     <div class="flex flex-col gap-2">
                         <slot v-if="$slots.title || title" name="title">
-                            <h3 :class="[asList ? 'text-sm font-semibold' : '', 'font-bold leading-none']">{{ title }}</h3>
+                            <h3 :class="[asList ? 'text-sm font-semibold' : '', 'font-bold leading-none']">{{ title }}
+                            </h3>
                         </slot>
                         <slot v-if="$slots.description || description" name="description">
                             <p class="text-sm text-muted leading-none">{{ description }}</p>

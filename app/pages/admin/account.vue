@@ -1,77 +1,7 @@
-<template>
-    <div class="flex flex-col flex-1 w-full">
-        <div class="flex justify-between px-4 sm:px-6 py-3.5 border-b border-accented">
-            <UInput v-model="globalFilter" class="max-w-sm" placeholder="Filter..." />
-            <div class="flex gap-2">
-                <AdminAddUser />
-                <UDropdownMenu :items="table?.tableApi
-                        ?.getAllColumns()
-                        .filter((column) => column.getCanHide())
-                        .map((column) => ({
-                            label: upperFirst(column.id),
-                            type: 'checkbox' as const,
-                            checked: column.getIsVisible(),
-                            onUpdateChecked(checked: boolean) {
-                                table?.tableApi?.getColumn(column.id)?.toggleVisibility(!!checked)
-                            },
-                            onSelect(e: Event) {
-                                e.preventDefault()
-                            }
-                        }))
-                    " :content="{ align: 'end' }">
-                    <UButton label="Display" color="neutral" variant="outline" trailing-icon="i-lucide-settings-2" />
-                </UDropdownMenu>
-            </div>
-        </div>
-        <UTable :data="users" :columns="columns" :ui="{ th: 'px-4 sm:px-6', td: 'px-4 sm:px-6' }" class="w-full"
-            ref="table" v-model:global-filter="globalFilter" v-model:column-visibility="columnVisibility" @hover=""
-            sticky>
-            <template #name-cell="{ row }">
-                <div class="flex items-center gap-3">
-                    <UAvatar :alt="row.original.name" size="sm" class="bg-primary/10 text-primary font-bold"
-                        :src="`https://i.pravatar.cc/128?u=${row.original.id}`" />
-                    <span class="font-medium text-gray-900 dark:text-white">{{ row.original.name }}</span>
-                </div>
-            </template>
-
-            <template #email-cell="{ row }">
-                <span class="text-gray-500">{{ row.original.email }}</span>
-            </template>
-
-            <template #role-cell="{ row }">
-                <UBadge :label="row.original.role" :color="getRoleColor(row.original.role)" variant="subtle" />
-                <!-- <UiFTag :label="row.original.role" :color="getRoleColor(row.original.role)" /> -->
-            </template>
-
-            <template #status-cell="{ row }">
-                <UBadge :label="row.original.status" :color="row.original.status === 'Active' ? 'success' : 'error'"
-                    variant="subtle" />
-                <!-- <UiFTag :label="row.original.status" :color="row.original.status === 'Active' ? 'success' : 'error'" /> -->
-            </template>
-
-            <template #last_login-cell="{ row }">
-                <span class="text-gray-500">{{ row.original.last_login }}</span>
-            </template>
-
-            <template #actions-cell="{ row }">
-                <UDropdownMenu :items="getActionItems(row.original)" :content="{ align: 'end' }"
-                    :ui="{ content: 'w-auto' }" size="sm">
-                    <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" size="sm" />
-                </UDropdownMenu>
-            </template>
-        </UTable>
-    </div>
-
-    <AdminUserFormModal v-model:open="isEditModalOpen" :user="selectedUser" @success="selectedUser = null" />
-
-    <AdminConfirmModal v-model:open="isConfirmModalOpen" :title="confirmModalConfig.title"
-        :description="confirmModalConfig.description" :confirm-label="confirmModalConfig.confirmLabel"
-        :confirm-color="confirmModalConfig.confirmColor" @confirm="confirmModalConfig.onConfirm" />
-</template>
-
 <script setup lang="ts">
-import type { User } from '~/composables/useUsers'
+import type { User } from '~/types/user'
 import { upperFirst } from 'scule'
+import FBadge from '~/components/ui/FBadge.vue'
 
 definePageMeta({
     title: 'Account Management',
@@ -87,7 +17,7 @@ const columnVisibility = ref({
     id: false
 })
 
-const { users, getRoleColor, deleteUser, updateUser } = useUsers()
+const { users, deleteUser, updateUser } = useUsers()
 
 const isEditModalOpen = ref(false)
 const selectedUser = ref<User | null>(null)
@@ -178,7 +108,8 @@ const columns = [
         header: 'Status'
     },
     {
-        accessorKey: 'last_login',
+        id: 'lastLogin',
+        accessorKey: 'lastLogin',
         header: 'Last Login'
     },
     {
@@ -191,3 +122,71 @@ const columns = [
     }
 ]
 </script>
+<template>
+    <div class="grid grid-cols-1 md:flex justify-between gap-2 px-4 sm:px-6 py-3.5 border-b border-default">
+        <UInput v-model="globalFilter" class="max-w-full md:max-w-sm" placeholder="Filter..." />
+        <div class="grid grid-cols-1 md:flex gap-2">
+            <AdminAddUser />
+            <UDropdownMenu :items="table?.tableApi
+                ?.getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => ({
+                    label: upperFirst(column.id),
+                    type: 'checkbox' as const,
+                    checked: column.getIsVisible(),
+                    onUpdateChecked(checked: boolean) {
+                        table?.tableApi?.getColumn(column.id)?.toggleVisibility(!!checked)
+                    },
+                    onSelect(e: Event) {
+                        e.preventDefault()
+                    }
+                }))
+                " :content="{ align: 'end' }">
+                <UButton label="Display" color="neutral" variant="outline" trailing-icon="i-lucide-settings-2" />
+            </UDropdownMenu>
+        </div>
+    </div>
+    <UTable :data="users" :columns="columns" :ui="{ th: 'px-4 sm:px-6', td: 'px-4 sm:px-6' }"
+        class="w-full -mt-4 sm:-mt-6" ref="table" v-model:global-filter="globalFilter"
+        v-model:column-visibility="columnVisibility" @hover="" sticky>
+        <template #name-cell="{ row }">
+            <div class="flex items-center gap-3">
+                <UAvatar :alt="row.original.name" size="sm" class="bg-primary/10 text-primary font-bold"
+                    :src="`https://i.pravatar.cc/128?u=${row.original.id}`" />
+                <span class="font-semibold text-default">{{ row.original.name }}</span>
+            </div>
+        </template>
+
+        <template #email-cell="{ row }">
+            <span>{{ row.original.email }}</span>
+        </template>
+
+        <template #role-cell="{ row }">
+            <FBadge type="role" :value="row.original.role" />
+        </template>
+
+        <template #status-cell="{ row }">
+            <FBadge type="status" :value="row.original.status" />
+        </template>
+
+        <template #lastLogin-cell="{ row }">
+            <span>{{ (row.original as any).lastLogin || (row.original as any).last_login || '-' }}</span>
+        </template>
+        <template #last-login-cell="{ row }">
+            <span>{{ (row.original as any).lastLogin || (row.original as any).last_login || '-' }}</span>
+        </template>
+
+        <template #actions-cell="{ row }">
+            <UDropdownMenu :items="getActionItems(row.original)" :content="{ align: 'end' }" :ui="{ content: 'w-auto' }"
+                size="sm">
+                <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" size="sm" />
+            </UDropdownMenu>
+        </template>
+    </UTable>
+
+    <AdminUserFormModal v-model:open="isEditModalOpen" :user="selectedUser" @success="selectedUser = null" />
+
+    <AdminConfirmModal v-model:open="isConfirmModalOpen" :title="confirmModalConfig.title"
+        :description="confirmModalConfig.description" :confirm-label="confirmModalConfig.confirmLabel"
+        :confirm-color="confirmModalConfig.confirmColor" @confirm="confirmModalConfig.onConfirm" />
+</template>

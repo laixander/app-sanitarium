@@ -1,14 +1,18 @@
 <script setup lang="ts">
+import type { AppColor } from '~/types/ui'
+
 interface Props {
     icon?: string
     title: string
     userCount?: number | string
     permissions: string[]
+    color?: AppColor
 }
 
 withDefaults(defineProps<Props>(), {
     icon: 'i-lucide-shield',
-    userCount: 0
+    userCount: 0,
+    color: 'primary'
 })
 
 const emit = defineEmits(['edit', 'delete'])
@@ -37,7 +41,7 @@ const items = [
         <div class="flex justify-between items-center gap-2">
             <div class="flex items-center gap-3">
                 <div class="flex items-center gap-2">
-                    <UIcon :name="icon" class="shrink-0 text-primary" />
+                    <UBadge icon="i-lucide-shield" :color="color" variant="soft" />
                     <span class="text-sm font-medium">{{ title }}</span>
                 </div>
                 <USeparator orientation="vertical" class="h-4" />

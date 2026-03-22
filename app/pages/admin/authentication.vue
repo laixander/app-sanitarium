@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Role } from '~/composables/useRoles'
+import type { Role } from '~/types/role'
 
 definePageMeta({
     title: 'Authentication & Roles'
@@ -93,7 +93,6 @@ async function onChange() {
     })
 }
 </script>
-
 <template>
     <div class="flex flex-col gap-4 sm:gap-6 lg:gap-12 w-full lg:max-w-2xl mx-auto">
 
@@ -104,8 +103,8 @@ async function onChange() {
             </UPageCard>
             <UCard variant="subtle" :ui="{ body: 'p-0 sm:p-0 divide-y divide-default' }">
                 <AdminRoleList v-for="role in roles" :key="role.title" :title="role.title"
-                    :user-count="getUserCount(role.title)" :permissions="role.permissions" @edit="onEdit(role)"
-                    @delete="onDelete(role)" />
+                    :user-count="getUserCount(role.title)" :permissions="role.permissions" :color="role.color"
+                    @edit="onEdit(role)" @delete="onDelete(role)" />
             </UCard>
         </div>
 

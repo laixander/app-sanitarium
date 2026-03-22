@@ -1,8 +1,14 @@
+<script setup lang="ts">
+import type { AuditLog } from '~/types/audit'
+
+defineProps<{
+    audit: AuditLog
+}>()
+</script>
 <template>
     <div class="flex items-start gap-4 p-4 sm:p-5 transition-colors">
         <div class="flex-shrink-0 mt-0.5">
-            <UBadge icon="i-lucide-clipboard-list" variant="soft" size="lg" class="rounded-none squircle w-fit p-3">
-            </UBadge>
+            <UBadge icon="i-lucide-clipboard-list" variant="soft" size="lg" class="rounded-none squircle w-fit p-3" />
         </div>
 
         <div class="flex-grow flex flex-col gap-1 min-w-0">
@@ -28,11 +34,3 @@
         </div>
     </div>
 </template>
-
-<script setup lang="ts">
-import type { AuditLog } from '~/composables/useAudits'
-
-defineProps<{
-    audit: AuditLog
-}>()
-</script>

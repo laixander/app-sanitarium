@@ -1,25 +1,3 @@
-export type AppColor =
-    | "primary"
-    | "secondary"
-    | "success"
-    | "info"
-    | "warning"
-    | "error"
-    | "neutral"
-    | "purple"
-    | "pink"
-    | "orange"
-    | "amber"
-    | "yellow"
-    | "lime"
-    | "green"
-    | "emerald"
-    | "teal"
-    | "cyan"
-    | "sky"
-    | "blue"
-    | "indigo"
-    | "violet"
-    | "fuchsia"
-    | "rose"
-    | "red"
+import { appColors } from '~/utils/colors'
+
+export type AppColor = typeof appColors[number]

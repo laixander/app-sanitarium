@@ -1,54 +1,109 @@
-import type { AppColor } from '~/types/ui'
-
-export interface User {
-    id: number
-    name: string
-    email: string
-    role: string
-    status: 'Active' | 'Suspended'
-    last_login: string
-}
+import type { User } from '~/types/user'
 
 export const useUsers = () => {
     const users = useState<User[]>('users', () => [])
 
     // Initialize users from API if empty
-    const { data } = useFetch<User[]>('/api/users')
-    
-    watch(data, (newData) => {
-        if (newData && users.value.length === 0) {
-            users.value = [...newData]
+    const { data: initialUsers } = useFetch<User[]>('/api/users', {
+        key: 'users-data-fetch',
+        immediate: users.value.length === 0
+    })
+
+    const reloadUsers = () => {
+        if (!import.meta.client) return
+
+        // Load from localStorage first
+        const saved = localStorage.getItem('sanitarium_users')
+        if (saved) {
+            const parsed = JSON.parse(saved)
+            // Migrate last_login to lastLogin if needed
+            users.value = parsed.map((u: any) => {
+                if ('last_login' in u && !('lastLogin' in u)) {
+                    const { last_login, ...rest } = u
+                    return { ...rest, lastLogin: last_login }
+                }
+                return u
+            })
         }
-    }, { immediate: true })
+    }
+
+    // Sync initial data and localStorage to state
+    onMounted(() => {
+        reloadUsers()
+
+        // Watch initial API users and merge if needed
+        watch(initialUsers, (newData) => {
+            if (newData) {
+                const existingIds = new Set(users.value.map(u => u.id))
+                const usersToAdd = newData.filter(u => !existingIds.has(u.id))
+                if (usersToAdd.length > 0) {
+                    users.value = [...users.value, ...usersToAdd]
+                    localStorage.setItem('sanitarium_users', JSON.stringify(users.value))
+                }
+            }
+        }, { immediate: true })
+    })
+
+    const saveToLocal = () => {
+        if (import.meta.client) {
+            localStorage.setItem('sanitarium_users', JSON.stringify(users.value))
+        }
+    }
 
     const addUser = (userData: Omit<User, 'id' | 'status' | 'last_login'>) => {
+        // Find highest existing ID to avoid collisions
+        const maxId = users.value.reduce((max, u) => Math.max(max, u.id), 0)
+        const id = maxId + 1
+
+        const isAgent = userData.role === 'Agent'
         const newUser: User = {
             ...userData,
-            id: users.value.length + 1,
+            id,
             status: 'Active',
-            last_login: 'Just Now'
+            lastLogin: 'Just Now',
+            ...(isAgent ? {
+                code: `AGT${String(id).padStart(3, '0')}`,
+                agentStatus: 'Offline',
+                served: 0,
+                avgService: '0:00'
+            } : {})
         }
-        users.value.unshift(newUser)
+        users.value = [newUser, ...users.value]
+        saveToLocal()
     }
 
     const deleteUser = (id: number) => {
         users.value = users.value.filter(u => u.id !== id)
+        saveToLocal()
     }
 
     const updateUser = (id: number, userData: Partial<Omit<User, 'id'>>) => {
         const index = users.value.findIndex(u => u.id === id)
         if (index !== -1) {
             const user = users.value[index]
-            users.value[index] = { ...user, ...userData } as User
+            if (!user) return
+            const hasAssignment = userData.department || userData.counter || userData.schedule
+            const isFirstAssignment = !user.dateAssigned || user.dateAssigned === '-'
+
+            users.value[index] = {
+                ...user,
+                ...userData,
+                ...(hasAssignment ? (isFirstAssignment ? { dateAssigned: 'Just Now' } : { dateUpdated: 'Just Now' }) : {})
+            } as User
+            saveToLocal()
         }
     }
 
-    const getRoleColor = (role: string): AppColor => {
-        switch (role) {
-            case 'Administrator': return 'violet'
-            case 'Supervisor': return 'blue'
-            default: return 'neutral'
-        }
+    const assignCounter = (id: number, counter: string) => {
+        updateUser(id, { counter, agentStatus: 'Online' })
+    }
+
+    const setOnBreak = (id: number) => {
+        updateUser(id, { agentStatus: 'On Break', ticket: '-' })
+    }
+
+    const forceLogout = (id: number) => {
+        updateUser(id, { agentStatus: 'Offline', counter: '-', ticket: '-' })
     }
 
     return {
@@ -56,6 +111,9 @@ export const useUsers = () => {
         addUser,
         deleteUser,
         updateUser,
-        getRoleColor
+        assignCounter,
+        setOnBreak,
+        forceLogout,
+        reloadUsers
     }
 }
