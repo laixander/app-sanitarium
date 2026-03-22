@@ -5,19 +5,19 @@ definePageMeta({
 </script>
 <template>
     <div>
-        <UPageHero title="Nuxt Starter Template"
-            description="A production-ready starter template powered by Nuxt UI. Build beautiful, accessible, and performant applications in minutes, not hours."
+        <UPageHero title="Smarter Queues. Happier Patients."
+            description="Eliminate wait-time frustration with an intelligent queue platform built for modern healthcare. Real-time tracking, smart routing, and actionable analytics — all in one place."
             :links="[{
-                label: 'Get started',
-                to: '/login',
+                label: 'Launch Patient Kiosk',
+                to: '/kiosk',
                 target: '_blank',
                 trailingIcon: 'i-lucide-arrow-right',
                 size: 'xl'
             }, {
-                label: 'Use this template',
-                to: '/admin',
+                label: 'Let\'s Get Started',
+                to: '/login',
                 target: '_blank',
-                icon: 'i-simple-icons-github',
+                trailingIcon: 'i-lucide-chevron-right',
                 size: 'xl',
                 color: 'neutral',
                 variant: 'subtle'
