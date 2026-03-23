@@ -39,7 +39,7 @@ const columns = [
     <div class="grid grid-cols-1 md:flex justify-between gap-2 px-4 sm:px-6 py-3.5 border-b border-default">
         <UInput v-model="globalFilter" class="max-w-full md:max-w-sm" placeholder="Filter..." />
         <div class="grid grid-cols-1 md:flex gap-2">
-            <AdminExport filename="Audit Logs" />
+            <Export filename="Audit Logs" />
             <UDropdownMenu :items="table?.tableApi
                 ?.getAllColumns()
                 .filter((column) => column.getCanHide())

@@ -25,6 +25,11 @@ const items: NavigationMenuItem[][] = [
                 to: '/agent/management'
             },
             {
+                label: 'Queue Management',
+                icon: 'i-lucide-list-ordered',
+                to: '/agent/queue'
+            },
+            {
                 label: 'Customer Feedback',
                 icon: 'i-lucide-message-square',
                 to: '/agent/feedback'

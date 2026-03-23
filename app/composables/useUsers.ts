@@ -16,14 +16,23 @@ export const useUsers = () => {
         const saved = localStorage.getItem('sanitarium_users')
         if (saved) {
             const parsed = JSON.parse(saved)
-            // Migrate last_login to lastLogin if needed
+            // Migrate last_login to lastLogin and department to transaction
             users.value = parsed.map((u: any) => {
-                if ('last_login' in u && !('lastLogin' in u)) {
-                    const { last_login, ...rest } = u
-                    return { ...rest, lastLogin: last_login }
+                const migrated = { ...u }
+                
+                if ('last_login' in migrated && !('lastLogin' in migrated)) {
+                    migrated.lastLogin = migrated.last_login
+                    delete migrated.last_login
                 }
-                return u
+                
+                if ('department' in migrated && !('transaction' in migrated)) {
+                    migrated.transaction = migrated.department
+                    delete migrated.department
+                }
+                
+                return migrated
             })
+
         }
     }
 
@@ -50,7 +59,7 @@ export const useUsers = () => {
         }
     }
 
-    const addUser = (userData: Omit<User, 'id' | 'status' | 'last_login'>) => {
+    const addUser = (userData: Omit<User, 'id' | 'status' | 'lastLogin'>) => {
         // Find highest existing ID to avoid collisions
         const maxId = users.value.reduce((max, u) => Math.max(max, u.id), 0)
         const id = maxId + 1
@@ -82,7 +91,7 @@ export const useUsers = () => {
         if (index !== -1) {
             const user = users.value[index]
             if (!user) return
-            const hasAssignment = userData.department || userData.counter || userData.schedule
+            const hasAssignment = userData.transaction || userData.counter || userData.schedule
             const isFirstAssignment = !user.dateAssigned || user.dateAssigned === '-'
 
             users.value[index] = {

@@ -102,7 +102,7 @@ const isUnchanged = computed(() => {
             <UPageCard title="Queue Configuration" description="Manage queue settings" variant="naked"
                 orientation="horizontal" />
             <UCard variant="subtle" :ui="{ body: 'p-0 sm:p-0 divide-y divide-default' }">
-                <AdminDynamicField v-for="field in queue" :key="field.name" :field="field"
+                <DynamicField v-for="field in queue" :key="field.name" :field="field"
                     v-model="state[field.name]" />
             </UCard>
         </div>
@@ -110,7 +110,7 @@ const isUnchanged = computed(() => {
         <div class="flex flex-col gap-4">
             <UPageCard title="Notification Settings" description="Manage notification settings" variant="naked" />
             <UCard variant="subtle" :ui="{ body: 'p-0 sm:p-0 divide-y divide-default' }">
-                <AdminDynamicField v-for="field in notifications" :key="field.name" :field="field"
+                <DynamicField v-for="field in notifications" :key="field.name" :field="field"
                     v-model="state[field.name]" />
             </UCard>
         </div>

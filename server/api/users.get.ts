@@ -26,7 +26,7 @@ export default defineEventHandler((event) => {
             status: 'Active',
             lastLogin: 'Mar 16, 2026, 07:00 AM',
             code: 'AGT001',
-            department: 'Consultation',
+            transaction: 'Consultation',
             agentStatus: 'Online',
             counter: 'Counter 1',
             ticket: 'A-101',
@@ -44,7 +44,7 @@ export default defineEventHandler((event) => {
             status: 'Active',
             lastLogin: 'Mar 16, 2026, 08:00 AM',
             code: 'AGT002',
-            department: 'Billing',
+            transaction: 'Billing',
             agentStatus: 'Serving',
             counter: 'Counter 2',
             ticket: 'B-205',
@@ -62,7 +62,7 @@ export default defineEventHandler((event) => {
             status: 'Active',
             lastLogin: 'Mar 16, 2026, 07:00 AM',
             code: 'AGT003',
-            department: 'Admission',
+            transaction: 'Admission',
             agentStatus: 'On Break',
             counter: 'Counter 3',
             ticket: '-',
@@ -80,7 +80,7 @@ export default defineEventHandler((event) => {
             status: 'Suspended',
             lastLogin: 'Mar 15, 2026, 04:00 PM',
             code: 'AGT004',
-            department: 'Outpatient',
+            transaction: 'Outpatient',
             agentStatus: 'Offline',
             counter: '-',
             ticket: '-',
@@ -105,7 +105,7 @@ export default defineEventHandler((event) => {
             status: 'Active',
             lastLogin: 'Mar 16, 2026, 08:45 AM',
             code: 'AGT005',
-            department: 'Outpatient',
+            transaction: 'Outpatient',
             agentStatus: 'Online',
             counter: 'Counter 4',
             ticket: 'C-302',
@@ -130,7 +130,7 @@ export default defineEventHandler((event) => {
             status: 'Active',
             lastLogin: 'Mar 16, 2026, 06:30 AM',
             code: 'AGT006',
-            department: 'Billing',
+            transaction: 'Billing',
             agentStatus: 'Serving',
             counter: 'Counter 5',
             ticket: 'D-404',
@@ -147,7 +147,7 @@ export default defineEventHandler((event) => {
             status: 'Active',
             lastLogin: 'Mar 16, 2026, 11:00 AM',
             code: 'AGT007',
-            department: 'Consultation',
+            transaction: 'Consultation',
             agentStatus: 'Online',
             counter: 'Counter 6',
             ticket: '-',
@@ -170,7 +170,7 @@ export default defineEventHandler((event) => {
             status: 'Suspended',
             lastLogin: 'Mar 14, 2026, 02:00 PM',
             code: 'AGT008',
-            department: 'Admission',
+            transaction: 'Admission',
             agentStatus: 'Offline',
             counter: '-',
             ticket: '-',
@@ -185,7 +185,7 @@ export default defineEventHandler((event) => {
             status: 'Active',
             lastLogin: 'Mar 16, 2026, 12:00 PM',
             code: 'AGT009',
-            department: 'Outpatient',
+            transaction: 'Outpatient',
             agentStatus: 'Online',
             counter: 'Counter 7',
             ticket: 'E-505',
@@ -200,7 +200,7 @@ export default defineEventHandler((event) => {
             status: 'Active',
             lastLogin: 'Mar 16, 2026, 05:00 AM',
             code: 'AGT010',
-            department: 'Billing'
+            transaction: 'Billing'
         },
         {
             id: 16,
@@ -210,7 +210,7 @@ export default defineEventHandler((event) => {
             status: 'Active',
             lastLogin: 'Mar 16, 2026, 01:00 PM',
             code: 'AGT011',
-            department: 'Consultation'
+            transaction: 'Consultation'
         },
         {
             id: 17,
@@ -220,7 +220,7 @@ export default defineEventHandler((event) => {
             status: 'Active',
             lastLogin: 'Mar 16, 2026, 02:30 PM',
             code: 'AGT012',
-            department: 'Admission'
+            transaction: 'Admission'
         },
         {
             id: 18,
@@ -238,7 +238,7 @@ export default defineEventHandler((event) => {
             status: 'Active',
             lastLogin: 'Mar 16, 2026, 04:00 PM',
             code: 'AGT013',
-            department: 'Billing'
+            transaction: 'Billing'
         },
         {
             id: 20,
@@ -248,7 +248,7 @@ export default defineEventHandler((event) => {
             status: 'Active',
             lastLogin: 'Mar 16, 2026, 04:15 PM',
             code: 'AGT014',
-            department: 'Outpatient'
+            transaction: 'Outpatient'
         }
     ] as User[]
 })

@@ -9,7 +9,7 @@ export interface User {
     code?: string
     agentStatus?: 'Online' | 'Serving' | 'On Break' | 'Offline'
     counter?: string
-    department?: string
+    transaction?: string
     ticket?: string
     served?: number
     avgService?: string

@@ -17,7 +17,7 @@ const form = ref({
     color: 'neutral' as any
 })
 
-import { appColors } from '~/utils/colors'
+import { appColors } from '~/constants/colors'
 
 const availableColors = appColors.map(color => ({
     label: color.charAt(0).toUpperCase() + color.slice(1),

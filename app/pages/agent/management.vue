@@ -19,47 +19,10 @@ const agents = computed(() => users.value.filter(u => u.role === 'Agent' && u.st
 // Assignment modal
 const isAssignmentModalOpen = ref(false)
 const selectedAgent = ref<User | null>(null)
-const selectedCounter = ref('')
-const selectedDepartment = ref('')
-const selectedSchedule = ref('')
-
-const availableCounters = [
-    'Counter 1', 'Counter 2', 'Counter 3', 'Counter 4', 'Counter 5',
-    'Counter 6', 'Counter 7', 'Counter 8'
-]
-
-const availableDepartments = [
-    'Consultation', 'Admission', 'Billing', 'Outpatient'
-]
-
-const availableSchedules = [
-    'Morning (7:00 AM - 3:00 PM)',
-    'Afternoon (3:00 PM - 11:00 PM)',
-    'Night (11:00 PM - 7:00 AM)'
-]
 
 function onAssignment(agent: User) {
     selectedAgent.value = agent
-    selectedCounter.value = agent.counter && agent.counter !== '-' ? agent.counter : ''
-    selectedDepartment.value = agent.department || ''
-    selectedSchedule.value = agent.schedule || ''
     isAssignmentModalOpen.value = true
-}
-
-function onAssignmentSubmit() {
-    if (selectedAgent.value) {
-        updateUser(selectedAgent.value.id, {
-            counter: selectedCounter.value || '-',
-            department: selectedDepartment.value,
-            schedule: selectedSchedule.value
-        })
-        toast.add({
-            title: 'Assignment Updated',
-            description: `${selectedAgent.value.name} assignment has been updated.`,
-            color: 'success'
-        })
-    }
-    isAssignmentModalOpen.value = false
 }
 
 const columns = [
@@ -68,8 +31,8 @@ const columns = [
         header: 'Name'
     },
     {
-        accessorKey: 'department',
-        header: 'Department'
+        accessorKey: 'transaction',
+        header: 'Transaction'
     },
     {
         accessorKey: 'counter',
@@ -98,15 +61,21 @@ const columns = [
 ]
 
 // Assignment action
-const getActionItems = (row: User) => [
-    [
-        {
-            label: 'Assignment',
-            icon: 'i-lucide-user-cog',
-            onSelect: () => onAssignment(row)
-        }
+const getActionItems = (row: User) => {
+    const hasAssignment = (row.transaction && row.transaction !== '-') ||
+        (row.counter && row.counter !== '-') ||
+        (row.schedule && row.schedule !== '-')
+
+    return [
+        [
+            {
+                label: hasAssignment ? 'Reassignment' : 'Assignment',
+                icon: 'i-lucide-user-cog',
+                onSelect: () => onAssignment(row)
+            }
+        ]
     ]
-]
+}
 
 function refresh() {
     reloadUsers()
@@ -154,9 +123,9 @@ function refresh() {
                 </div>
             </div>
         </template>
-        <template #department-cell="{ row }">
-            <FBadge v-if="row.original.department && row.original.department !== '-'" type="department"
-                :value="row.original.department" />
+        <template #transaction-cell="{ row }">
+            <FBadge v-if="row.original.transaction && row.original.transaction !== '-'" type="transaction"
+                :value="row.original.transaction" />
             <span v-else>-</span>
         </template>
         <template #counter-cell="{ row }">
@@ -186,28 +155,5 @@ function refresh() {
     </UTable>
 
     <!-- Assignment Modal -->
-    <UModal v-model:open="isAssignmentModalOpen" title="Agent Assignment"
-        :description="selectedAgent ? `Update assignment for ${selectedAgent.name}` : ''" :dismissible="false">
-        <template #body>
-            <UForm :state="{ counter: selectedCounter, department: selectedDepartment }" class="flex flex-col gap-4"
-                @submit="onAssignmentSubmit">
-                <UFormField label="Department" name="department" required>
-                    <USelect v-model="selectedDepartment" :items="availableDepartments"
-                        placeholder="Select a department" class="w-full" />
-                </UFormField>
-                <UFormField label="Counter" name="counter">
-                    <USelect v-model="selectedCounter" :items="availableCounters" placeholder="Select a counter"
-                        class="w-full" />
-                </UFormField>
-                <UFormField label="Schedule" name="schedule">
-                    <USelect v-model="selectedSchedule" :items="availableSchedules" placeholder="Select a schedule"
-                        class="w-full" />
-                </UFormField>
-                <div class="flex justify-end gap-2 mt-4">
-                    <UButton label="Cancel" variant="ghost" color="neutral" @click="isAssignmentModalOpen = false" />
-                    <UButton type="submit" label="Save Changes" color="primary" />
-                </div>
-            </UForm>
-        </template>
-    </UModal>
+    <AgentAssignmentFormModal v-model:open="isAssignmentModalOpen" :user="selectedAgent" @success="selectedAgent = null" />
 </template>

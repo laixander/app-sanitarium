@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { appColors } from '~/utils/colors'
+import { appColors } from '~/constants/colors'
 import type { ChipProps } from '@nuxt/ui'
 import { computed } from 'vue'
 

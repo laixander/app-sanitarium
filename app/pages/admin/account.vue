@@ -186,7 +186,7 @@ const columns = [
 
     <AdminUserFormModal v-model:open="isEditModalOpen" :user="selectedUser" @success="selectedUser = null" />
 
-    <AdminConfirmModal v-model:open="isConfirmModalOpen" :title="confirmModalConfig.title"
+    <ConfirmationModal v-model:open="isConfirmModalOpen" :title="confirmModalConfig.title"
         :description="confirmModalConfig.description" :confirm-label="confirmModalConfig.confirmLabel"
         :confirm-color="confirmModalConfig.confirmColor" @confirm="confirmModalConfig.onConfirm" />
 </template>

@@ -21,7 +21,7 @@ export default defineEventHandler((event) => {
         {
             id: '3',
             title: 'Counter Activated',
-            description: 'Counter 3 activated for Admission department',
+            description: 'Counter 3 activated for Admission transaction',
             category: 'System',
             actor: 'System',
             time: 'Mar 20, 2026, 08:05 AM'

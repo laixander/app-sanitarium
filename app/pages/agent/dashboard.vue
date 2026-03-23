@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { AppColor } from '~/types/ui'
 import type { User } from '~/types/user'
+import type { Ticket } from '~/types/queue'
 import FBadge from '~/components/ui/FBadge.vue'
 import { upperFirst } from 'scule'
 
@@ -27,7 +27,7 @@ const stats = computed(() => [
     { title: 'Currently Serving', value: String(agents.value.filter(a => a.agentStatus === 'Serving').length), icon: 'i-lucide-check-circle', iconColor: 'blue' },
     { title: 'On Break', value: String(agents.value.filter(a => a.agentStatus === 'On Break').length), icon: 'i-lucide-coffee', iconColor: 'amber' },
     { title: 'Offline', value: String(agents.value.filter(a => a.agentStatus === 'Offline').length), icon: 'i-lucide-unplug', iconColor: 'error' }
-])
+] as const)
 
 const filteredAgents = computed(() => {
     if (statusFilter.value === 'All') return agents.value
@@ -161,14 +161,28 @@ function refresh() {
         color: 'success'
     })
 }
+
+const { data: queueData } = await useFetch<Ticket[]>('/api/queue')
 </script>
 <template>
     <div class="flex flex-col gap-4 sm:gap-6">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <UiFStatCard v-for="stat in stats" :key="stat.title" :title="stat.title" :value="stat.value"
-                :icon="stat.icon" :icon-color="stat.iconColor as AppColor" counter />
+                :icon="stat.icon" :icon-color="stat.iconColor" counter />
         </div>
-        <UiFCard title="Agent Status Overview"
+
+        <div class="grid grid-cols-1">
+            <UiFCard title="Queue Overview"
+                description="Monitor and manage queue" as-table>
+                <template #actions>
+                    <UButton label="Refresh" icon="i-lucide-refresh-cw" color="neutral" variant="subtle"
+                        @click="refresh" />
+                </template>
+                <AgentQueueKanban :tickets="queueData || []" />
+            </UiFCard>
+        </div>
+
+        <UiFCard title="Counter Overview"
             description="Monitor and manage agent availability and counter assignments" as-table>
             <template #actions>
                 <div class="flex items-center gap-2">
@@ -267,7 +281,7 @@ function refresh() {
     </UModal>
 
     <!-- Confirm Modal (Set On Break / Force Logout) -->
-    <AdminConfirmModal v-model:open="isConfirmModalOpen" :title="confirmModalConfig.title"
+    <ConfirmationModal v-model:open="isConfirmModalOpen" :title="confirmModalConfig.title"
         :description="confirmModalConfig.description" :confirm-label="confirmModalConfig.confirmLabel"
         :confirm-color="confirmModalConfig.confirmColor" @confirm="confirmModalConfig.onConfirm" />
 </template>

@@ -96,7 +96,7 @@ const isUnchanged = computed(() => {
         <div class="flex flex-col gap-4">
             <UPageCard title="SAML Configuration" description="Configure SAML settings" variant="naked" />
             <UCard variant="subtle" :ui="{ body: 'p-0 sm:p-0 divide-y divide-default' }">
-                <AdminDynamicField v-for="field in samlFields" :key="field.name" :field="field"
+                <DynamicField v-for="field in samlFields" :key="field.name" :field="field"
                     v-model="state[field.name]" />
             </UCard>
         </div>
