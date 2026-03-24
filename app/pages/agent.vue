@@ -7,6 +7,8 @@ definePageMeta({
     layout: 'dashboard'
 })
 
+const open = ref(false)
+
 const items: NavigationMenuItem[][] = [
     [
         [
@@ -32,7 +34,26 @@ const items: NavigationMenuItem[][] = [
             {
                 label: 'Feedback',
                 icon: 'i-lucide-message-square-heart',
-                to: '/agent/feedback'
+                to: '/agent/feedback',
+                defaultOpen: true,
+                type: 'trigger',
+                children: [
+                    {
+                        label: 'Recent Feedback',
+                        to: '/agent/feedback',
+                        exact: true,
+                        onSelect: () => {
+                            open.value = false
+                        }
+                    },
+                    {
+                        label: 'Feedback Form',
+                        to: '/agent/feedback/form',
+                        onSelect: () => {
+                            open.value = false
+                        }
+                    }
+                ]
             }
         ]
     ],
@@ -43,6 +64,17 @@ const items: NavigationMenuItem[][] = [
             to: '/ui'
         }
     ]
+]
+
+const feedbackLinks: NavigationMenuItem[] = [
+    {
+        label: 'Recent Feedback',
+        to: '/agent/feedback'
+    },
+    {
+        label: 'Feedback Form',
+        to: '/agent/feedback/form'
+    }
 ]
 </script>
 <template>
@@ -73,6 +105,9 @@ const items: NavigationMenuItem[][] = [
                     <UserMenu />
                 </template>
             </UDashboardNavbar>
+            <UDashboardToolbar v-if="route.meta.showUserToolbar">
+                <UNavigationMenu :items="feedbackLinks" highlight class="-mx-1 flex-1" />
+            </UDashboardToolbar>
         </template>
         <template #body>
             <NuxtPage />

@@ -42,7 +42,7 @@ const brandingFields = [
     {
         name: 'appLogo',
         label: 'App Logo',
-        description: 'Upload your app\'s logo',
+        description: 'Logo must be at least 100x100 pixels',
         type: 'file'
     }
 ]

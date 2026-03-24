@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ChipProps } from '@nuxt/ui'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const props = defineProps<{
     field: {
@@ -39,9 +39,43 @@ const availableNeutrals = neutralsList.map(color => ({
 
 const fileValue = ref<any>(null)
 
+function dataURLtoFile(dataurl: string, filename: string) {
+    try {
+        const [header, base64Data] = dataurl.split(',')
+        if (!header || !base64Data) return null
+        const mimeMatch = header.match(/:(.*?);/)
+        const mime = mimeMatch ? mimeMatch[1] : 'image/png'
+        const bstr = atob(base64Data)
+        let n = bstr.length
+        const u8arr = new Uint8Array(n)
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n)
+        }
+        return new File([u8arr], filename, { type: mime })
+    } catch (e) {
+        return null
+    }
+}
+
+watch(() => props.modelValue, (newVal) => {
+    if (!import.meta.client) return
+    if (props.field.type === 'file') {
+        if (typeof newVal === 'string' && newVal.startsWith('data:')) {
+            const file = dataURLtoFile(newVal, 'logo.png')
+            fileValue.value = file ? [file] : null
+        } else {
+            fileValue.value = newVal
+        }
+    }
+}, { immediate: true })
+
 function onFileChange(files: any) {
     const file = Array.isArray(files) ? files?.[0] : files
-    if (!file || !(file instanceof File)) {
+    if (!file) {
+        value.value = null
+        return
+    }
+    if (!(file instanceof File)) {
         return
     }
     const reader = new FileReader()
@@ -79,7 +113,7 @@ function onFileChange(files: any) {
         </USelectMenu>
 
         <UFileUpload v-else-if="field.type === 'file'" v-model="fileValue" @update:model-value="onFileChange"
-            class="w-full sm:w-96 min-h-48" />
+            class="w-full sm:w-48 min-h-48" />
 
         <UTextarea v-else-if="field.type === 'textarea'" v-model="value" autoresize :rows="2" class="w-full sm:w-64" />
 

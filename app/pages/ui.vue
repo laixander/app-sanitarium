@@ -1,3 +1,10 @@
+<script setup lang="ts">
+const route = useRoute()
+
+definePageMeta({
+    layout: 'dashboard'
+})
+</script>
 <template>
     <UDashboardPanel>
         <template #header>
@@ -17,10 +24,3 @@
         </template>
     </UDashboardPanel>
 </template>
-<script setup lang="ts">
-const route = useRoute()
-
-definePageMeta({
-    layout: 'admin'
-})
-</script>

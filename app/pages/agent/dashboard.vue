@@ -101,14 +101,14 @@ function openConfirmModal(config: { title: string, description: string, confirmL
 }
 
 // Dropdown action items
-const getActionItems = (row: User) => [
+const getActionItems = (row: User) =>
     [
-        {
+        [{
             label: 'Reassign Counter',
             icon: 'i-lucide-monitor',
             onSelect: () => onAssignCounter(row)
-        },
-        {
+        }],
+        [{
             label: 'Set On Break',
             icon: 'i-lucide-coffee',
             color: 'warning' as const,
@@ -128,8 +128,8 @@ const getActionItems = (row: User) => [
                     }
                 })
             }
-        },
-        {
+        }],
+        [{
             label: 'Force Logout',
             icon: 'i-lucide-user-x',
             color: 'error' as const,
@@ -149,9 +149,9 @@ const getActionItems = (row: User) => [
                     }
                 })
             }
-        }
+        }]
     ]
-]
+
 
 function refresh() {
     // toast success
@@ -182,8 +182,8 @@ const { data: queueData } = await useFetch<Ticket[]>('/api/queue')
                 :icon="stat.icon" :icon-color="stat.iconColor" counter />
         </div>
 
-        <UiFCard title="Counter Overview"
-            description="Monitor and manage agent availability and counter assignments" as-table>
+        <UiFCard title="Counter Overview" description="Monitor and manage agent availability and counter assignments"
+            as-table>
             <template #actions>
                 <div class="flex items-center gap-2">
                     <UButton label="Refresh" icon="i-lucide-refresh-cw" color="neutral" variant="subtle"

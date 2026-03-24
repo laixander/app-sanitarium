@@ -14,10 +14,6 @@ const columnVisibility = ref({})
 
 const columns = [
     {
-        accessorKey: 'time',
-        header: 'Time'
-    },
-    {
         accessorKey: 'title',
         header: 'Activity'
     },
@@ -32,6 +28,10 @@ const columns = [
     {
         accessorKey: 'actor',
         header: 'Actor'
+    },
+    {
+        accessorKey: 'time',
+        header: 'Time'
     }
 ]
 </script>
@@ -63,10 +63,6 @@ const columns = [
         class="w-full -mt-4 sm:-mt-6" ref="table" v-model:global-filter="globalFilter"
         v-model:column-visibility="columnVisibility" sticky>
 
-        <template #time-cell="{ row }">
-            <span class="whitespace-nowrap">{{ row.original.time }}</span>
-        </template>
-
         <template #title-cell="{ row }">
             <span class="font-semibold text-default">{{ row.original.title }}</span>
         </template>
@@ -81,6 +77,10 @@ const columns = [
 
         <template #actor-cell="{ row }">
             <span>{{ row.original.actor }}</span>
+        </template>
+
+        <template #time-cell="{ row }">
+            <span class="whitespace-nowrap">{{ row.original.time }}</span>
         </template>
     </UTable>
 </template>

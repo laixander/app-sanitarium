@@ -2,7 +2,8 @@
 import { useFeedbackSettings } from '~/composables/useFeedbackSettings'
 
 definePageMeta({
-    title: 'Feedback Management'
+    title: 'Feedback Management',
+    showUserToolbar: true
 })
 
 const { settings, defaultSettings, saveSettings, resetSettings } = useFeedbackSettings()
@@ -157,21 +158,26 @@ const isDefault = computed(() => {
                 <UPageCard title="Comment Section" description="Customize how comments are displayed" variant="naked" />
                 <UCard variant="subtle" :ui="{ body: 'p-0 sm:p-0 divide-y divide-default' }">
                     <DynamicField :field="commentFields[0]!" v-model="state.showComment" />
-                    
-                        <template v-if="state.showComment">
+
+                    <template v-if="state.showComment">
                         <DynamicField v-for="field in commentFields.slice(2)" :key="field.name" :field="field"
                             v-model="state[field.name as keyof typeof state]" />
 
                         <DynamicField :field="commentFields[1]!" v-model="state.showCommentPresets" />
 
                         <div v-if="state.showCommentPresets" class="p-4 sm:p-6">
-                            <UFormField label="Comment Presets" description="Common phrases customers can click to quickly fill the form.">
+                            <UFormField label="Comment Presets"
+                                description="Common phrases customers can click to quickly fill the form.">
                                 <div class="flex gap-2 pt-4">
-                                    <UInput v-model="newPreset" placeholder="Add new preset..." class="flex-1" @keyup.enter="addPreset" />
+                                    <UInput v-model="newPreset" placeholder="Add new preset..." class="flex-1"
+                                        @keyup.enter="addPreset" />
                                     <UButton icon="i-lucide-plus" @click="addPreset" />
                                 </div>
                                 <div class="flex flex-wrap gap-2 pt-4">
-                                    <UButton v-for="(preset, index) in state.commentPresets" :label="preset" :key="index" variant="subtle" color="neutral" @click="removePreset(index as number)" trailing-icon="i-lucide-x" size="sm" :ui="{ trailingIcon: 'size-3' }" />
+                                    <UButton v-for="(preset, index) in state.commentPresets" :label="preset"
+                                        :key="index" variant="subtle" color="neutral"
+                                        @click="removePreset(index as number)" trailing-icon="i-lucide-x" size="sm"
+                                        :ui="{ trailingIcon: 'size-3' }" />
                                 </div>
                             </UFormField>
                         </div>
@@ -180,7 +186,8 @@ const isDefault = computed(() => {
             </div>
 
             <div class="flex justify-end gap-2">
-                <UButton :disabled="isDefault" label="Reset to Default" variant="outline" @click="isResetModalOpen = true" />
+                <UButton :disabled="isDefault" label="Reset to Default" variant="outline"
+                    @click="isResetModalOpen = true" />
                 <UButton :disabled="isUnchanged" label="Save Changes" @click="onSave" />
             </div>
         </div>
@@ -191,21 +198,13 @@ const isDefault = computed(() => {
                 <h3 class="text-sm font-semibold uppercase tracking-wider text-dimmed px-1">Live Preview</h3>
                 <p class="text-xs text-dimmed px-1">This is how your feedback form will look to customers.</p>
             </div>
-            
-            <AgentFeedbackForm 
-                :settings="(state as any)" 
-                :agent="({ name: 'Sample Agent', id: 0 } as any)" 
-                is-preview 
-            />
+
+            <AgentFeedbackForm :settings="(state as any)" :agent="({ name: 'Sample Agent', id: 0 } as any)"
+                is-preview />
         </div>
 
-        <ConfirmationModal 
-            v-model:open="isResetModalOpen"
-            title="Reset Settings?"
+        <ConfirmationModal v-model:open="isResetModalOpen" title="Reset Settings?"
             description="This will revert all feedback form content to their default values. This action cannot be undone."
-            confirm-label="Reset to Default"
-            confirm-color="error"
-            @confirm="onReset"
-        />
+            confirm-label="Reset to Default" confirm-color="error" @confirm="onReset" />
     </div>
 </template>

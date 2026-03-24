@@ -14,21 +14,21 @@ withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['edit', 'delete'])
 
 const items = [
-    {
+    [{
         label: 'Edit',
         icon: 'i-lucide-pencil',
         onSelect: () => {
             emit('edit')
         }
-    },
-    {
+    }],
+    [{
         label: 'Delete',
         icon: 'i-lucide-trash',
         color: 'error' as const,
         onSelect: () => {
             emit('delete')
         }
-    }
+    }]
 ]
 </script>
 
@@ -42,7 +42,7 @@ const items = [
                 </div>
                 <div v-if="description" class="text-sm text-dimmed">{{ description }}</div>
             </div>
-            
+
             <UDropdownMenu :items="items" :content="{ align: 'end' }" size="sm">
                 <UButton color="neutral" variant="ghost" icon="i-lucide-ellipsis-vertical" size="sm" />
             </UDropdownMenu>

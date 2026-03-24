@@ -26,6 +26,15 @@ function onAssignment(agent: User) {
     isAssignmentModalOpen.value = true
 }
 
+// QR Code modal
+const isQRCodeModalOpen = ref(false)
+const selectedQRCodeAgent = ref<User | null>(null)
+
+function onShowQRCode(agent: User) {
+    selectedQRCodeAgent.value = agent
+    isQRCodeModalOpen.value = true
+}
+
 function formatTime(timeStr?: string) {
     if (!timeStr) return '';
     const parts = timeStr.split(':');
@@ -91,6 +100,13 @@ const getActionItems = (row: User) => {
                 label: hasAssignment ? 'Reassignment' : 'Assignment',
                 icon: 'i-lucide-user-cog',
                 onSelect: () => onAssignment(row)
+            }
+        ],
+        [
+            {
+                label: 'QR Code',
+                icon: 'i-lucide-qr-code',
+                onSelect: () => onShowQRCode(row)
             }
         ]
     ]
@@ -175,4 +191,7 @@ function refresh() {
 
     <!-- Assignment Modal -->
     <AgentAssignmentFormModal v-model:open="isAssignmentModalOpen" :user="selectedAgent" @success="selectedAgent = null" />
+
+    <!-- QR Code Modal -->
+    <AgentQRCodeModal v-model:open="isQRCodeModalOpen" :user="selectedQRCodeAgent" />
 </template>
