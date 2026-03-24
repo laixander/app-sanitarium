@@ -47,7 +47,7 @@ const items: NavigationMenuItem[][] = [
                         }
                     },
                     {
-                        label: 'Feedback Form',
+                        label: 'Form Settings',
                         to: '/agent/feedback/form',
                         onSelect: () => {
                             open.value = false
@@ -72,7 +72,7 @@ const feedbackLinks: NavigationMenuItem[] = [
         to: '/agent/feedback'
     },
     {
-        label: 'Feedback Form',
+        label: 'Form Settings',
         to: '/agent/feedback/form'
     }
 ]

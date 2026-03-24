@@ -2,7 +2,7 @@
 import { useFeedbackSettings } from '~/composables/useFeedbackSettings'
 
 definePageMeta({
-    title: 'Feedback Management',
+    title: 'Feedback',
     showUserToolbar: true
 })
 
