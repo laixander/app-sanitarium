@@ -3,8 +3,10 @@ export interface User {
     name: string
     email: string
     role: string
-    status: 'Active' | 'Suspended'
-    lastLogin: string
+    createdAt: string
+    updatedAt: string
+    createdBy: string
+    updatedBy: string
     // Agent specific fields (optional)
     code?: string
     agentStatus?: 'Online' | 'Serving' | 'On Break' | 'Offline'

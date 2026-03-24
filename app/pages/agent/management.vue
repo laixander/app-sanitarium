@@ -10,11 +10,12 @@ definePageMeta({
 
 const toast = useToast()
 const { users, updateUser, reloadUsers } = useUsers()
+const { schedules } = useSchedules()
 
 const globalFilter = ref('')
 const table = useTemplateRef('table')
 
-const agents = computed(() => users.value.filter(u => u.role === 'Agent' && u.status === 'Active'))
+const agents = computed(() => users.value.filter(u => u.role === 'Agent'))
 
 // Assignment modal
 const isAssignmentModalOpen = ref(false)
@@ -23,6 +24,24 @@ const selectedAgent = ref<User | null>(null)
 function onAssignment(agent: User) {
     selectedAgent.value = agent
     isAssignmentModalOpen.value = true
+}
+
+function formatTime(timeStr?: string) {
+    if (!timeStr) return '';
+    const parts = timeStr.split(':');
+    const hours = parts[0] || '0';
+    const minutes = parts[1] || '00';
+    let h = parseInt(hours, 10);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return `${h}:${minutes} ${ampm}`;
+}
+
+function getScheduleDisplay(scheduleName?: string) {
+    if (!scheduleName || scheduleName === '-') return '-'
+    const schedule = schedules.value.find(s => s.name === scheduleName)
+    if (!schedule) return scheduleName
+    return `${schedule.name} (${formatTime(schedule.startTime)} - ${formatTime(schedule.endTime)})`
 }
 
 const columns = [
@@ -138,7 +157,7 @@ function refresh() {
             <span v-else>-</span>
         </template>
         <template #schedule-cell="{ row }">
-            <span>{{ row.original.schedule || '-' }}</span>
+            <span>{{ getScheduleDisplay(row.original.schedule) }}</span>
         </template>
         <template #dateAssigned-cell="{ row }">
             <span>{{ row.original.dateAssigned || '-' }}</span>

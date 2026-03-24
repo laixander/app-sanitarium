@@ -20,7 +20,7 @@ const columnVisibility = ref({
 const toast = useToast()
 const { users, assignCounter, setOnBreak, forceLogout } = useUsers()
 
-const agents = computed(() => users.value.filter(u => u.role === 'Agent' && u.status === 'Active' && u.counter && u.counter !== '-'))
+const agents = computed(() => users.value.filter(u => u.role === 'Agent' && u.counter && u.counter !== '-'))
 
 const stats = computed(() => [
     { title: 'Online Agents', value: String(agents.value.filter(a => a.agentStatus === 'Online').length), icon: 'i-lucide-users', iconColor: 'primary' },
@@ -42,7 +42,7 @@ const columns = [
     { accessorKey: 'ticket', header: 'Current Ticket' },
     { accessorKey: 'served', header: 'Served Today' },
     { accessorKey: 'avgService', header: 'Avg. Service' },
-    { accessorKey: 'lastLogin', header: 'Login Time' },
+    { accessorKey: 'updatedAt', header: 'Last Update' },
     {
         id: 'actions',
         meta: {
@@ -166,20 +166,20 @@ const { data: queueData } = await useFetch<Ticket[]>('/api/queue')
 </script>
 <template>
     <div class="flex flex-col gap-4 sm:gap-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            <UiFStatCard v-for="stat in stats" :key="stat.title" :title="stat.title" :value="stat.value"
-                :icon="stat.icon" :icon-color="stat.iconColor" counter />
-        </div>
 
         <div class="grid grid-cols-1">
-            <UiFCard title="Queue Overview"
-                description="Monitor and manage queue" as-table>
+            <UiFCard title="Queue Overview" description="Monitor and manage queue" as-table>
                 <template #actions>
                     <UButton label="Refresh" icon="i-lucide-refresh-cw" color="neutral" variant="subtle"
                         @click="refresh" />
                 </template>
                 <AgentQueueKanban :tickets="queueData || []" />
             </UiFCard>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <UiFStatCard v-for="stat in stats" :key="stat.title" :title="stat.title" :value="stat.value"
+                :icon="stat.icon" :icon-color="stat.iconColor" counter />
         </div>
 
         <UiFCard title="Counter Overview"
@@ -244,14 +244,8 @@ const { data: queueData } = await useFetch<Ticket[]>('/api/queue')
                 <template #avgService-cell="{ row }">
                     <span>{{ row.original.avgService || '0:00' }}</span>
                 </template>
-                <template #lastLogin-cell="{ row }">
-                    <span>{{ row.original.lastLogin || (row.original as any).last_login || '-' }}</span>
-                </template>
-                <template #last-login-cell="{ row }">
-                    <span>{{ row.original.lastLogin || (row.original as any).last_login || '-' }}</span>
-                </template>
-                <template #last_login-cell="{ row }">
-                    <span>{{ row.original.lastLogin || (row.original as any).last_login || '-' }}</span>
+                <template #updatedAt-cell="{ row }">
+                    <span>{{ row.original.updatedAt || '-' }}</span>
                 </template>
                 <template #actions-cell="{ row }">
                     <UDropdownMenu :items="getActionItems(row.original)" :content="{ align: 'end' }"

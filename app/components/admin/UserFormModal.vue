@@ -16,8 +16,7 @@ const roles = computed(() => roleList.value.map(r => r.title))
 const state = reactive({
     name: '',
     email: '',
-    role: 'Agent',
-    status: 'Active' as 'Active' | 'Suspended'
+    role: 'Agent'
 })
 
 // Sync state when user prop changes or modal opens
@@ -27,12 +26,10 @@ watch([() => props.user, isOpen], ([newUser, open]) => {
             state.name = newUser.name
             state.email = newUser.email
             state.role = newUser.role
-            state.status = newUser.status
         } else {
             state.name = ''
             state.email = ''
             state.role = 'Agent'
-            state.status = 'Active'
         }
     }
 }, { immediate: true })
@@ -42,8 +39,7 @@ function onSubmit() {
         updateUser(props.user.id, {
             name: state.name,
             email: state.email,
-            role: state.role,
-            status: state.status
+            role: state.role
         })
     } else {
         addUser({
@@ -76,11 +72,6 @@ function onSubmit() {
                 <UFormField label="Role" name="role" required>
                     <USelect v-model="state.role" :items="roles" placeholder="Select a role" class="w-full"
                         icon="i-lucide-shield" size="lg" required />
-                </UFormField>
-
-                <UFormField v-if="user" label="Status" name="status" required>
-                    <USelect v-model="state.status" :items="['Active', 'Suspended']" placeholder="Select status"
-                        class="w-full" icon="i-lucide-activity" size="lg" required />
                 </UFormField>
 
                 <div class="flex justify-end gap-3 pt-4">

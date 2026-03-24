@@ -6,8 +6,11 @@ export const appColors = [
     "warning",
     "error",
     "neutral",
-    "purple",
-    "pink",
+    "slate",
+    "gray",
+    "zinc",
+    "stone",
+    "red",
     "orange",
     "amber",
     "yellow",
@@ -20,7 +23,8 @@ export const appColors = [
     "blue",
     "indigo",
     "violet",
+    "purple",
     "fuchsia",
-    "rose",
-    "red"
+    "pink",
+    "rose"
 ] as const;

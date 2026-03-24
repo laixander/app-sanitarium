@@ -2,5 +2,5 @@
     <div />
 </template>
 <script setup lang="ts">
-navigateTo('/admin/account', { replace: true })
+navigateTo('/admin/user', { replace: true })
 </script>

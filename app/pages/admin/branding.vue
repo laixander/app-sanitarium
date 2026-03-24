@@ -3,60 +3,54 @@ definePageMeta({
     title: 'Branding'
 })
 
-const defaultState = {
-    hospitalName: 'App Sanitarium',
-    abbreviation: 'AS',
-    primaryColor: 'blue',
-    secondaryColor: 'neutral',
-    hospitalLogo: null,
-    kioskWelcomeMessage: 'Welcome to App Sanitarium! Please take a queue number.'
-}
+const { branding, updateBranding, resetBranding } = useBranding()
 
-const state = ref<{ [key: string]: any }>({ ...defaultState })
-const initialState = ref<{ [key: string]: any }>({ ...defaultState })
+const state = ref({ ...branding.value })
+const initialState = ref({ ...branding.value })
+
+// Sync local state with global branding if it changes elsewhere
+watch(branding, (newBranding) => {
+    state.value = { ...newBranding }
+    initialState.value = { ...newBranding }
+}, { deep: true })
 
 const brandingFields = [
     {
-        name: 'hospitalName',
-        label: 'Hospital Name',
-        description: 'The official name of the hospital',
+        name: 'appName',
+        label: 'App Name',
+        description: 'The official name of the app',
         type: 'text'
     },
     {
-        name: 'abbreviation',
-        label: 'Abbreviation',
-        description: 'Short name or acronym',
+        name: 'appTagline',
+        label: 'App Tagline',
+        description: 'The tagline of the app',
         type: 'text'
     },
     {
         name: 'primaryColor',
         label: 'Primary Color',
         description: 'Main brand color used throughout the app',
-        type: 'color'
+        type: 'colors'
     },
     {
-        name: 'secondaryColor',
-        label: 'Secondary Color',
-        description: 'Accent color used for highlights',
-        type: 'color'
+        name: 'neutralColor',
+        label: 'Neutral Color',
+        description: 'Neutral color used for backgrounds and text',
+        type: 'neutrals'
     },
     {
-        name: 'hospitalLogo',
-        label: 'Hospital Logo',
-        description: 'Upload your hospital\'s logo',
+        name: 'appLogo',
+        label: 'App Logo',
+        description: 'Upload your app\'s logo',
         type: 'file'
-    },
-    {
-        name: 'kioskWelcomeMessage',
-        label: 'Kiosk Welcome Message',
-        description: 'Message displayed on the kiosk welcome screen',
-        type: 'textarea'
     }
 ]
 
 const toast = useToast()
 
-async function onChange() {
+function onSave() {
+    updateBranding(state.value)
     initialState.value = { ...state.value }
     toast.add({
         title: 'Branding Updated',
@@ -65,8 +59,15 @@ async function onChange() {
     })
 }
 
-function resetToDefault() {
-    state.value = { ...defaultState }
+function onReset() {
+    resetBranding()
+    state.value = { ...branding.value }
+    initialState.value = { ...branding.value }
+    toast.add({
+        title: 'Branding Reset',
+        description: 'Branding settings have been reset to default.',
+        color: 'info'
+    })
 }
 
 const isUnchanged = computed(() => {
@@ -79,13 +80,13 @@ const isUnchanged = computed(() => {
             <UPageCard title="Branding" description="Manage branding settings" variant="naked" />
             <UCard variant="subtle" :ui="{ body: 'p-0 sm:p-0 divide-y divide-default' }">
                 <DynamicField v-for="field in brandingFields" :key="field.name" :field="field"
-                    v-model="state[field.name]" />
+                    v-model="(state as any)[field.name]" />
             </UCard>
         </div>
 
         <div class="flex justify-end gap-2">
-            <UButton label="Reset to Default" variant="outline" @click="resetToDefault" />
-            <UButton :disabled="isUnchanged" label="Save Branding" @click="onChange" />
+            <UButton label="Reset to Default" variant="outline" @click="onReset" />
+            <UButton :disabled="isUnchanged" label="Save Branding" @click="onSave" />
         </div>
     </div>
 </template>

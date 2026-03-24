@@ -53,6 +53,21 @@ const description = computed(() => {
             return 'Ticket details'
     }
 })
+
+const mockFeedback = [
+    {
+        ticket: props.queue.ticket === 'B-127',
+        rating: 4,
+        comment: "The agent was very helpful with my concerns and processed everything quickly. Highly recommended!"
+    },
+    {
+        ticket: props.queue.ticket === 'P-125',
+        rating: 5,
+        comment: "The agent was very accommodating and friendly."
+    }
+]
+
+const feedback = computed(() => mockFeedback.find(f => f.ticket))
 </script>
 
 <template>
@@ -94,36 +109,34 @@ const description = computed(() => {
                     </div>
                 </div>
 
-                <USeparator />
+                <template v-if="!['waiting', 'missed'].includes(queue.status)">
+                    <USeparator />
 
-                <div class="flex flex-col gap-2">
-                    <span class="text-xs font-medium text-dimmed uppercase tracking-wider">Customer Feedback</span>
-                    <!-- Placeholder UI -->
-                    <UCard :ui="{ body: 'sm:p-4' }">
-                        <div class="flex flex-col gap-4">
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm font-semibold">Service Rating</span>
-                                <div class="flex items-center text-amber-500 gap-0.5">
-                                    <UIcon name="i-heroicons-star-solid" class="size-4" />
-                                    <UIcon name="i-heroicons-star-solid" class="size-4" />
-                                    <UIcon name="i-heroicons-star-solid" class="size-4" />
-                                    <UIcon name="i-heroicons-star-solid" class="size-4" />
-                                    <UIcon name="i-heroicons-star" class="size-4 text-dimmed" />
+                    <div class="flex flex-col gap-2">
+                        <span class="text-xs font-medium text-dimmed uppercase tracking-wider">Customer Feedback</span>
+                        <!-- Customer Feedback UI Placeholder -->
+                        <UCard v-if="feedback" :ui="{ body: 'sm:p-4' }">
+                            <div class="flex flex-col gap-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-semibold">Service Rating</span>
+                                    <div class="flex items-center text-amber-500 gap-0.5">
+                                        <UIcon v-for="star in 5" :key="star"
+                                            :name="feedback.rating >= star ? 'i-heroicons-star-solid' : 'i-heroicons-star'"
+                                            class="size-4" :class="feedback.rating < star ? 'text-dimmed' : ''" />
+                                    </div>
+                                </div>
+                                
+                                <div v-if="feedback.comment" class="p-4 bg-muted rounded-lg">
+                                    <p class="text-sm text-dimmed italic">"{{ feedback.comment }}"</p>
                                 </div>
                             </div>
-                            
-                            <div class="p-4 bg-muted rounded-lg">
-                                <p class="text-sm text-dimmed italic">"The agent was very helpful with my concerns and processed everything quickly. Highly recommended!"</p>
-                            </div>
-                            
-                            <div class="flex flex-wrap gap-2">
-                                <UBadge color="success" variant="subtle" label="Fast Service" />
-                                <UBadge color="success" variant="subtle" label="Very Polite" />
-                                <UBadge color="neutral" variant="outline" label="Clear Instructions" />
-                            </div>
+                        </UCard>
+                        <div v-else class="text-center p-8 bg-default/5 rounded-lg border border-dashed border-default">
+                            <UIcon name="i-lucide-message-square-off" class="size-8 mx-auto text-dimmed mb-2" />
+                            <p class="text-sm text-dimmed">No feedback provided for this ticket yet.</p>
                         </div>
-                    </UCard>
-                </div>
+                    </div>
+                </template>
             </div>
         </template>
 

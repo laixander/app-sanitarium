@@ -4,7 +4,7 @@ import type { Counter } from '~/types/counter'
 import type { Schedule } from '~/types/schedule'
 
 definePageMeta({
-    title: 'Queue Settings'
+    title: 'Assignment Items'
 })
 
 const { transactions, deleteTransaction } = useTransactions()
@@ -128,4 +128,4 @@ function onDeleteSchedule(schedule: Schedule) {
     <ConfirmationModal v-model:open="isConfirmModalOpen" :title="confirmModalConfig.title"
         :description="confirmModalConfig.description" :confirm-label="confirmModalConfig.confirmLabel"
         :confirm-color="confirmModalConfig.confirmColor" @confirm="confirmModalConfig.onConfirm" />
-</template>
+</template>

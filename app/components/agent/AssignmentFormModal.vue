@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { User } from '~/types/user'
 import { useTransactions } from '~/composables/useTransactions'
+import { useCounters } from '~/composables/useCounters'
+import { useSchedules } from '~/composables/useSchedules'
 import { useUsers } from '~/composables/useUsers'
 
 const props = defineProps<{
@@ -11,6 +13,8 @@ const isOpen = defineModel<boolean>('open', { default: false })
 const emit = defineEmits(['success'])
 
 const { transactions } = useTransactions()
+const { counters } = useCounters()
+const { schedules } = useSchedules()
 const { updateUser } = useUsers()
 const toast = useToast()
 
@@ -18,16 +22,9 @@ const selectedCounter = ref('')
 const selectedTransaction = ref('')
 const selectedSchedule = ref('')
 
-const availableCounters = [
-    'Counter 1', 'Counter 2', 'Counter 3', 'Counter 4', 'Counter 5',
-    'Counter 6', 'Counter 7', 'Counter 8'
-]
+const availableCounters = computed(() => counters.value.map(c => c.name))
 const availableTransactions = computed(() => transactions.value.map(t => t.name))
-const availableSchedules = [
-    'Morning (7:00 AM - 3:00 PM)',
-    'Afternoon (3:00 PM - 11:00 PM)',
-    'Night (11:00 PM - 7:00 AM)'
-]
+const availableSchedules = computed(() => schedules.value.map(s => s.name))
 
 watch([() => props.user, isOpen], ([newUser, open]) => {
     if (open && newUser) {

@@ -4,7 +4,7 @@ import { upperFirst } from 'scule'
 import FBadge from '~/components/ui/FBadge.vue'
 
 definePageMeta({
-    title: 'Account Management',
+    title: 'User Management',
     fullWidth: true,
     // showUserToolbar: true
 })
@@ -20,6 +20,7 @@ const columnVisibility = ref({
 const { users, deleteUser, updateUser } = useUsers()
 
 const isEditModalOpen = ref(false)
+const isViewDrawerOpen = ref(false)
 const selectedUser = ref<User | null>(null)
 
 function onEdit(user: User) {
@@ -48,30 +49,17 @@ function openConfirmModal(config: { title: string, description: string, confirmL
 const getActionItems = (row: User) => [
     [
         {
+            label: 'View Details',
+            icon: 'i-lucide-eye',
+            onSelect: () => {
+                selectedUser.value = row
+                isViewDrawerOpen.value = true
+            }
+        },
+        {
             label: 'Edit',
             icon: 'i-lucide-square-pen',
             onSelect: () => onEdit(row)
-        },
-        row.status === 'Active' ? {
-            label: 'Suspend Account',
-            icon: 'i-lucide-user-minus',
-            color: 'error' as const,
-            onSelect: () => {
-                openConfirmModal({
-                    title: 'Suspend Account',
-                    description: `Are you sure you want to suspend ${row.name}'s account?`,
-                    confirmLabel: 'Suspend',
-                    confirmColor: 'error',
-                    onConfirm: () => updateUser(row.id, { status: 'Suspended' })
-                })
-            }
-        } : {
-            label: 'Activate Account',
-            icon: 'i-lucide-user-plus',
-            color: 'success' as const,
-            onSelect: () => {
-                updateUser(row.id, { status: 'Active' })
-            }
         },
         {
             label: 'Delete',
@@ -104,13 +92,20 @@ const columns = [
         header: 'Role'
     },
     {
-        accessorKey: 'status',
-        header: 'Status'
+        accessorKey: 'createdAt',
+        header: 'Created At'
     },
     {
-        id: 'lastLogin',
-        accessorKey: 'lastLogin',
-        header: 'Last Login'
+        accessorKey: 'updatedAt',
+        header: 'Updated At'
+    },
+    {
+        accessorKey: 'createdBy',
+        header: 'Created By'
+    },
+    {
+        accessorKey: 'updatedBy',
+        header: 'Updated By'
     },
     {
         id: 'actions',
@@ -165,16 +160,7 @@ const columns = [
             <FBadge type="role" :value="row.original.role" />
         </template>
 
-        <template #status-cell="{ row }">
-            <FBadge type="status" :value="row.original.status" />
-        </template>
 
-        <template #lastLogin-cell="{ row }">
-            <span>{{ (row.original as any).lastLogin || (row.original as any).last_login || '-' }}</span>
-        </template>
-        <template #last-login-cell="{ row }">
-            <span>{{ (row.original as any).lastLogin || (row.original as any).last_login || '-' }}</span>
-        </template>
 
         <template #actions-cell="{ row }">
             <UDropdownMenu :items="getActionItems(row.original)" :content="{ align: 'end' }" :ui="{ content: 'w-auto' }"
@@ -185,6 +171,7 @@ const columns = [
     </UTable>
 
     <AdminUserFormModal v-model:open="isEditModalOpen" :user="selectedUser" @success="selectedUser = null" />
+    <AdminUserDetails v-model:open="isViewDrawerOpen" :user="selectedUser" @success="selectedUser = null" />
 
     <ConfirmationModal v-model:open="isConfirmModalOpen" :title="confirmModalConfig.title"
         :description="confirmModalConfig.description" :confirm-label="confirmModalConfig.confirmLabel"

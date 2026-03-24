@@ -15,9 +15,9 @@ const items: NavigationMenuItem[][] = [
                 type: 'label'
             },
             {
-                label: 'Account Management',
-                icon: 'i-lucide-users',
-                to: '/admin/account'
+                label: 'User Management',
+                icon: 'i-lucide-user',
+                to: '/admin/user'
             },
             {
                 label: 'Authentication & Roles',

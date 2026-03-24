@@ -16,14 +16,9 @@ export const useUsers = () => {
         const saved = localStorage.getItem('sanitarium_users')
         if (saved) {
             const parsed = JSON.parse(saved)
-            // Migrate last_login to lastLogin and department to transaction
+            // Migrate department to transaction
             users.value = parsed.map((u: any) => {
                 const migrated = { ...u }
-                
-                if ('last_login' in migrated && !('lastLogin' in migrated)) {
-                    migrated.lastLogin = migrated.last_login
-                    delete migrated.last_login
-                }
                 
                 if ('department' in migrated && !('transaction' in migrated)) {
                     migrated.transaction = migrated.department
@@ -59,17 +54,28 @@ export const useUsers = () => {
         }
     }
 
-    const addUser = (userData: Omit<User, 'id' | 'status' | 'lastLogin'>) => {
+    const addUser = (userData: Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'createdBy' | 'updatedBy'>) => {
         // Find highest existing ID to avoid collisions
         const maxId = users.value.reduce((max, u) => Math.max(max, u.id), 0)
         const id = maxId + 1
+
+        const now = new Date().toLocaleString('en-US', { 
+            month: 'short', 
+            day: '2-digit', 
+            year: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            hour12: true 
+        })
 
         const isAgent = userData.role === 'Agent'
         const newUser: User = {
             ...userData,
             id,
-            status: 'Active',
-            lastLogin: 'Just Now',
+            createdAt: now,
+            updatedAt: now,
+            createdBy: 'Admin', // Default for now
+            updatedBy: 'Admin',
             ...(isAgent ? {
                 code: `AGT${String(id).padStart(3, '0')}`,
                 agentStatus: 'Offline',
@@ -91,13 +97,25 @@ export const useUsers = () => {
         if (index !== -1) {
             const user = users.value[index]
             if (!user) return
+
+            const now = new Date().toLocaleString('en-US', { 
+                month: 'short', 
+                day: '2-digit', 
+                year: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                hour12: true 
+            })
+
             const hasAssignment = userData.transaction || userData.counter || userData.schedule
             const isFirstAssignment = !user.dateAssigned || user.dateAssigned === '-'
 
             users.value[index] = {
                 ...user,
                 ...userData,
-                ...(hasAssignment ? (isFirstAssignment ? { dateAssigned: 'Just Now' } : { dateUpdated: 'Just Now' }) : {})
+                updatedAt: now,
+                updatedBy: 'Admin',
+                ...(hasAssignment ? (isFirstAssignment ? { dateAssigned: now } : { dateUpdated: now }) : {})
             } as User
             saveToLocal()
         }
