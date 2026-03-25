@@ -35,6 +35,15 @@ export const useUsers = () => {
     onMounted(() => {
         reloadUsers()
 
+        // Real-time sync across tabs
+        const onStorage = (e: StorageEvent) => {
+            if (e.key === 'sanitarium_users') {
+                reloadUsers()
+            }
+        }
+        window.addEventListener('storage', onStorage)
+        onUnmounted(() => window.removeEventListener('storage', onStorage))
+
         // Watch initial API users and merge if needed
         watch(initialUsers, (newData) => {
             if (newData) {

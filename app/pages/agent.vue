@@ -29,7 +29,35 @@ const items: NavigationMenuItem[][] = [
             {
                 label: 'Assignment Items',
                 icon: 'i-lucide-clipboard-check',
-                to: '/agent/assignment'
+                to: '/agent/assignment',
+                defaultOpen: true,
+                type: 'trigger',
+                children: [
+                    {
+                        label: 'Transaction Categories',
+                        to: '/agent/assignment',
+                        exact: true,
+                        onSelect: () => {
+                            open.value = false
+                        }
+                    },
+                    {
+                        label: 'Counters',
+                        to: '/agent/assignment/counters',
+                        exact: true,
+                        onSelect: () => {
+                            open.value = false
+                        }
+                    },
+                    {
+                        label: 'Schedules',
+                        to: '/agent/assignment/schedules',
+                        exact: true,
+                        onSelect: () => {
+                            open.value = false
+                        }
+                    }
+                ]
             },
             {
                 label: 'Feedback',
@@ -41,6 +69,14 @@ const items: NavigationMenuItem[][] = [
                     {
                         label: 'Recent Feedback',
                         to: '/agent/feedback',
+                        exact: true,
+                        onSelect: () => {
+                            open.value = false
+                        }
+                    },
+                    {
+                        label: 'Kiosk Feedback',
+                        to: '/agent/feedback/kiosk',
                         exact: true,
                         onSelect: () => {
                             open.value = false
@@ -72,10 +108,35 @@ const feedbackLinks: NavigationMenuItem[] = [
         to: '/agent/feedback'
     },
     {
+        label: 'Kiosk Feedback',
+        to: '/agent/feedback/kiosk'
+    },
+    {
         label: 'Form Settings',
         to: '/agent/feedback/form'
     }
 ]
+
+const assignmentLinks: NavigationMenuItem[] = [
+    {
+        label: 'Transaction Categories',
+        to: '/agent/assignment'
+    },
+    {
+        label: 'Counters',
+        to: '/agent/assignment/counters'
+    },
+    {
+        label: 'Schedules',
+        to: '/agent/assignment/schedules'
+    }
+]
+
+const toolbarLinks = computed(() => {
+    if (route.path.startsWith('/agent/feedback')) return feedbackLinks
+    if (route.path.startsWith('/agent/assignment')) return assignmentLinks
+    return []
+})
 </script>
 <template>
     <UDashboardSidebar resizable collapsible :ui="{ root: 'w-auto divide-y divide-default bg-elevated/25' }">
@@ -105,8 +166,8 @@ const feedbackLinks: NavigationMenuItem[] = [
                     <UserMenu />
                 </template>
             </UDashboardNavbar>
-            <UDashboardToolbar v-if="route.meta.showUserToolbar">
-                <UNavigationMenu :items="feedbackLinks" highlight class="-mx-1 flex-1" />
+            <UDashboardToolbar v-if="route.meta.showUserToolbar && toolbarLinks.length > 0">
+                <UNavigationMenu :items="toolbarLinks" highlight class="-mx-1 flex-1" />
             </UDashboardToolbar>
         </template>
         <template #body>

@@ -9,6 +9,6 @@ export const statusColors: Record<TicketStatus, AppColor> = {
 }
 
 export const tagColors: Record<string, AppColor> = {
-    'HMO': 'pink',
-    'Priority': 'purple'
+    'HMO': 'purple',
+    'Priority': 'rose'
 }

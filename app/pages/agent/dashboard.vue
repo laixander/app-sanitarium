@@ -18,7 +18,9 @@ const columnVisibility = ref({
 })
 
 const toast = useToast()
-const { users, assignCounter, setOnBreak, forceLogout } = useUsers()
+const { users, assignCounter, setOnBreak, forceLogout, reloadUsers } = useUsers()
+const { tickets, reloadTickets } = useTickets()
+const queueData = tickets
 
 const agents = computed(() => users.value.filter(u => u.role === 'Agent' && u.counter && u.counter !== '-'))
 
@@ -152,17 +154,17 @@ const getActionItems = (row: User) =>
         }]
     ]
 
-
 function refresh() {
-    // toast success
+    reloadUsers()
+    reloadTickets()
+    
     toast.add({
         title: 'Refreshed',
-        description: 'Agents data has been refreshed.',
+        description: 'Dashboard data has been synchronized.',
         color: 'success'
     })
 }
 
-const { data: queueData } = await useFetch<Ticket[]>('/api/queue')
 </script>
 <template>
     <div class="flex flex-col gap-4 sm:gap-6">
