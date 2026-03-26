@@ -5,4 +5,6 @@ export interface Counter {
     name: string
     description?: string
     color: AppColor
+    transactions?: string[]
+    agent?: string
 }

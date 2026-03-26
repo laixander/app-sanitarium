@@ -5,6 +5,7 @@ export type TicketStatus = 'waiting' | 'serving' | 'missed' | 'completed'
 export interface Ticket {
     id: string
     ticket: string
+    transactionType?: string
     tags?: string[]
     isHmo?: boolean
     isPriority?: boolean

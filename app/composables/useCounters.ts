@@ -12,8 +12,9 @@ export const useCounters = () => {
         } else {
             // Default ones
             counters.value = [
-                { id: '1', name: 'Counter 1', description: 'Main reception counter', color: 'blue' },
-                { id: '2', name: 'Counter 2', description: 'Secondary reception counter', color: 'indigo' }
+                { id: '1', name: 'Counter 1', description: 'Main reception counter', color: 'blue', agent: 'Maria Santos', transactions: ['Consultation', 'Admission'] },
+                { id: '2', name: 'Counter 2', description: 'Secondary reception counter', color: 'indigo', agent: 'Juan Cruz', transactions: ['Consultation', 'Outpatient'] },
+                { id: '3', name: 'Counter 3', description: 'Billing and outpatient services', color: 'teal', agent: 'Ana Reyes', transactions: ['Billing', 'Outpatient'] },
             ]
             saveToLocal()
         }

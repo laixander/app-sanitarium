@@ -64,6 +64,7 @@ export const useTickets = () => {
         const newTicket: Ticket = {
             id,
             ticket: data.ticket,
+            transactionType: data.transactionType,
             tags,
             isHmo: data.paymentMethod === 'HMO/Insurance',
             isPriority: data.isPriority,

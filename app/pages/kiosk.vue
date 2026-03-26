@@ -32,8 +32,8 @@ const handlePrioritySelect = (isPriority: boolean) => {
 const { createTicket: createQueueTicket } = useTickets();
 
 const handleConfirm = () => {
-    // Generate a mock queue number based on transaction
-    const prefix = kioskData.transactionType.charAt(0).toUpperCase();
+    const prefixMap: Record<string, string> = { Consultation: 'C', Admission: 'A', Billing: 'B', Outpatient: 'P' };
+    const prefix = prefixMap[kioskData.transactionType] || kioskData.transactionType.charAt(0).toUpperCase();
     const num = Math.floor(Math.random() * 100).toString().padStart(3, '0');
     kioskData.queueNumber = `${prefix}-${num}`;
     
