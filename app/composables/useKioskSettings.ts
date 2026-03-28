@@ -9,6 +9,8 @@ export interface KioskSettings {
     idleEnabled: boolean
     idleTimeout: number
     idleMedia: string
+    idleImageUrl: string
+    idleVideoUrl: string
     showQR: boolean
     showLanguageToggle: boolean
 }
@@ -31,6 +33,8 @@ export const useKioskSettings = () => {
         idleEnabled: false,
         idleTimeout: 30,
         idleMedia: '',
+        idleImageUrl: '',
+        idleVideoUrl: '',
         showQR: true,
         showLanguageToggle: true
     }
@@ -115,6 +119,12 @@ export const useKioskSettings = () => {
 
         if (savedActiveId) {
             activeFlowId.value = savedActiveId
+        } else {
+            activeFlowId.value = null
+        }
+        
+        if (!savedFlows) {
+            flows.value = []
         }
     }
 

@@ -1,12 +1,12 @@
 <template>
   <div class="fixed inset-0 flex justify-center items-center bg-elevated/50">
     <UPageCard class="w-full max-w-sm shadow-sm">
-      <UAuthForm :key="formKey" title="Login" description="Enter your credentials to access your account." :fields="fields"
-        :state="state" @submit="onSubmit" :submit="{
+      <UAuthForm :key="formKey" title="Login" description="Enter your credentials to access your account."
+        :fields="fields" :state="state" @submit="onSubmit" :submit="{
           size: 'lg'
         }" :ui="{
-                  description: 'text-sm'
-                }">
+          description: 'text-sm'
+        }">
         <template #leading>
           <UButton icon="i-lucide-hospital" color="primary" variant="soft" :ui="ui" square disabled
             class="rounded-none squircle w-fit" />
@@ -25,8 +25,9 @@
             :color="item.color" variant="soft" class="shadow-lg" @click="mockLogin(item)" />
         </div>
       </Transition>
-      <UButton icon="i-lucide-flask-conical" size="xl" color="primary" class="rounded-full shadow-lg"
-        :class="{ 'rotate-45': fabOpen }" style="transition: transform 0.2s ease" @click="fabOpen = !fabOpen" />
+      <UButton icon="i-lucide-flask-conical" size="xl" color="primary"
+        class="rounded-full shadow-lg transition-transform duration-300 ease-in-out hover:scale-110 active:scale-95 ring-4 ring-primary-500/20"
+        :class="{ 'rotate-45': fabOpen }" @click="fabOpen = !fabOpen" />
     </div>
   </div>
 </template>
@@ -100,13 +101,13 @@ const mockRoles: MockRole[] = [
 
 function mockLogin(item: MockRole) {
   fabOpen.value = false
-  
+
   const email = `${item.role}@sanitarium.com`
   const password = 'password123'
-  
+
   state.email = email
   state.password = password
-  
+
   // Attempt prefill by setting field values internally depending on UAuthForm implementation
   const emailField = fields.value[0] as any
   const passwordField = fields.value[1] as any

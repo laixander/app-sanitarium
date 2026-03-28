@@ -23,8 +23,40 @@ const servingBadgeColor = computed<AppColor>(() => {
 })
 
 const servingShadowClass = computed(() => {
-    // using generic shadow instead to avoid tailwind purge issues if dynamic class is needed, or just let it generate dynamically since badge color is used
     return `shadow-${servingBadgeColor.value}/20`
+})
+
+// Live elapsed timer — starts from servedAt
+const elapsedSeconds = ref(0)
+
+function formatElapsed(totalSeconds: number): string {
+    const hrs = Math.floor(totalSeconds / 3600)
+    const mins = Math.floor((totalSeconds % 3600) / 60)
+    const secs = totalSeconds % 60
+    const mm = String(mins).padStart(2, '0')
+    const ss = String(secs).padStart(2, '0')
+    return hrs > 0 ? `${hrs}:${mm}:${ss}` : `${mm}:${ss}`
+}
+
+const elapsedDisplay = computed(() => formatElapsed(elapsedSeconds.value))
+
+watchEffect((onCleanup) => {
+    const servedAt = props.servingTicket?.servedAt
+    if (!servedAt) {
+        elapsedSeconds.value = 0
+        return
+    }
+
+    const start = new Date(servedAt).getTime()
+
+    // Set initial value immediately
+    elapsedSeconds.value = Math.max(0, Math.floor((Date.now() - start) / 1000))
+
+    const interval = setInterval(() => {
+        elapsedSeconds.value = Math.max(0, Math.floor((Date.now() - start) / 1000))
+    }, 1000)
+
+    onCleanup(() => clearInterval(interval))
 })
 </script>
 
@@ -60,6 +92,11 @@ const servingShadowClass = computed(() => {
                     <UButton label="Re-announce Ticket" icon="i-lucide-volume-2" color="neutral" variant="outline"
                         size="lg" block class="px-8 py-3 col-span-2" :disabled="!isOnline"
                         @click="$emit('reannounce')" />
+                </div>
+
+                <div class="flex items-center justify-center gap-2 text-muted">
+                    <UIcon name="i-lucide-timer" class="w-5 h-5" />
+                    <p class="text-sm font-mono tabular-nums">{{ elapsedDisplay }}</p>
                 </div>
             </div>
         </div>

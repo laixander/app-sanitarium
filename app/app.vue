@@ -36,5 +36,8 @@ useSeoMeta({
         <NuxtLayout>
             <NuxtPage />
         </NuxtLayout>
+
+        <!-- Demo Tools -->
+        <DemoFab />
     </UApp>
 </template>

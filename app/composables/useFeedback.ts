@@ -39,6 +39,8 @@ export const useFeedback = () => {
         const saved = localStorage.getItem('sanitarium_feedback')
         if (saved) {
             feedbackList.value = JSON.parse(saved)
+        } else {
+            feedbackList.value = []
         }
     }
 

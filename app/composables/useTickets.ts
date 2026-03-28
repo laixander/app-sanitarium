@@ -17,6 +17,8 @@ export const useTickets = () => {
         const saved = localStorage.getItem('sanitarium_tickets')
         if (saved) {
             tickets.value = JSON.parse(saved)
+        } else {
+            tickets.value = []
         }
     }
 

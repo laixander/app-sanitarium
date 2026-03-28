@@ -43,6 +43,8 @@ export const useFeedbackSettings = () => {
         const saved = localStorage.getItem('sanitarium_feedback_settings')
         if (saved) {
             settings.value = JSON.parse(saved)
+        } else {
+            settings.value = { ...defaultSettings }
         }
     }
 

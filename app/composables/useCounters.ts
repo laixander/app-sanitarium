@@ -9,6 +9,8 @@ export const useCounters = () => {
         const saved = localStorage.getItem('sanitarium_counters')
         if (saved) {
             counters.value = JSON.parse(saved)
+        } else {
+            counters.value = []
         }
     }
 

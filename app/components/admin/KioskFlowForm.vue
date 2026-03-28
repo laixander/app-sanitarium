@@ -38,6 +38,8 @@ const state = ref<KioskSettings & { name: string; defaultLanguage: string }>({
     idleEnabled: props.initialData?.idleEnabled ?? false,
     idleTimeout: props.initialData?.idleTimeout ?? 30,
     idleMedia: props.initialData?.idleMedia || '',
+    idleImageUrl: props.initialData?.idleImageUrl || '',
+    idleVideoUrl: props.initialData?.idleVideoUrl || '',
     showQR: props.initialData?.showQR ?? true,
     showLanguageToggle: props.initialData?.showLanguageToggle ?? true,
     name: props.initialData?.name || ''
@@ -75,7 +77,9 @@ const idleFields = computed(() => {
     if (state.value.idleEnabled) {
         fields.push(
             { name: 'idleTimeout', label: 'Idle Timeout (seconds)', description: 'Time until idle screen appears.', type: 'number' },
-            { name: 'idleMedia', label: 'Idle Media', description: 'Upload the idle image or video.', type: 'file' }
+            { name: 'idleMedia', label: 'Idle Media (Upload)', description: 'Upload the idle image or video.', type: 'file' },
+            { name: 'idleImageUrl', label: 'Idle Image URL', description: 'External URL for idle image.', type: 'text' },
+            { name: 'idleVideoUrl', label: 'Idle Video URL', description: 'External URL for idle video.', type: 'text' }
         )
     }
     return fields

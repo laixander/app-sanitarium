@@ -28,6 +28,8 @@ export const useUsers = () => {
                 return migrated
             })
 
+        } else {
+            users.value = []
         }
     }
 

@@ -125,6 +125,8 @@ watch(
             <KioskIdleScreen 
                 v-if="isIdle && settings.idleEnabled" 
                 :media="settings.idleMedia" 
+                :image-url="settings.idleImageUrl"
+                :video-url="settings.idleVideoUrl"
                 @click="handleInteraction" 
             />
         </Transition>
