@@ -6,8 +6,10 @@ const props = withDefaults(defineProps<{
     settings: FeedbackSettings
     agent?: User
     isPreview?: boolean
+    isKiosk?: boolean
 }>(), {
-    isPreview: false
+    isPreview: false,
+    isKiosk: false
 })
 
 const emit = defineEmits<{
@@ -35,15 +37,15 @@ function onSubmit() {
             </div>
         </div>
 
-        <div v-if="!agent" class="p-4 sm:p-6 text-center animate-in fade-in zoom-in duration-300">
+        <div v-if="!agent && !isKiosk" class="p-4 sm:p-6 text-center animate-in fade-in zoom-in duration-300">
             <UIcon name="i-lucide-alert-circle" class="size-16 mx-auto text-neutral-400 mb-4" />
             <h2 class="text-xl font-semibold mb-2">Agent Not Found</h2>
             <p class="text-neutral-500">The QR code or link you accessed seems to be invalid or expired.</p>
         </div>
 
         <div v-else class="p-4 sm:p-6 flex flex-col gap-8 animate-in fade-in duration-300">
-            <!-- Agent Info -->
-            <div class="flex items-center gap-4 bg-muted p-4 rounded-xl border border-default/50">
+            <!-- Agent Info (hidden for kiosk) -->
+            <div v-if="agent && !isKiosk" class="flex items-center gap-4 bg-muted p-4 rounded-xl border border-default/50">
                 <UAvatar
                     :alt="agent.name"
                     size="lg"
@@ -94,7 +96,7 @@ function onSubmit() {
                     />
                 </UFormField>
 
-                <div v-if="settings.showCommentPresets && settings.commentPresets.length" class="flex flex-wrap gap-2">
+                <div v-if="settings.showCommentPresets && settings.commentPresets.length && !isKiosk" class="flex flex-wrap gap-2">
                     <UButton 
                         v-for="preset in settings.commentPresets" 
                         :key="preset"

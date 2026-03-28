@@ -53,8 +53,8 @@ function onDelete(transaction: TransactionCategory) {
         </UPageCard>
         <UCard variant="subtle" :ui="{ body: 'p-0 sm:p-0 divide-y divide-default' }">
             <AgentTransactionList v-for="transaction in transactions" :key="transaction.id" :title="transaction.name"
-                :description="transaction.description" :color="transaction.color" @edit="onEdit(transaction)"
-                @delete="onDelete(transaction)" />
+                :description="transaction.description" :color="transaction.color" :icon="transaction.icon"
+                @edit="onEdit(transaction)" @delete="onDelete(transaction)" />
         </UCard>
     </div>
 

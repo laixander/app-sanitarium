@@ -16,7 +16,7 @@ const { transactions } = useTransactions()
 const { counters } = useCounters()
 const { schedules } = useSchedules()
 const { updateUser } = useUsers()
-const toast = useToast()
+const appToast = useAppToast()
 
 const selectedCounter = ref('')
 const selectedTransaction = ref('')
@@ -41,11 +41,7 @@ function onAssignmentSubmit() {
             transaction: selectedTransaction.value,
             schedule: selectedSchedule.value
         })
-        toast.add({
-            title: 'Assignment Updated',
-            description: `${props.user.name} has been assigned.`,
-            color: 'success'
-        })
+        appToast.assignmentUpdated(props.user.name)
     }
     isOpen.value = false
     emit('success')

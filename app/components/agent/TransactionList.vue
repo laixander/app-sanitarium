@@ -5,10 +5,12 @@ interface Props {
     title: string
     description?: string
     color?: AppColor
+    icon?: string
 }
 
 withDefaults(defineProps<Props>(), {
-    color: 'primary'
+    color: 'primary',
+    icon: 'i-lucide-bookmark'
 })
 
 const emit = defineEmits(['edit', 'delete'])
@@ -37,7 +39,7 @@ const items = [
         <div class="flex justify-between items-start gap-2">
             <div class="flex flex-col gap-1">
                 <div class="flex items-center gap-2">
-                    <UBadge icon="i-lucide-bookmark" :color="color" variant="soft" />
+                    <UBadge :icon="icon" :color="color" variant="soft" />
                     <span class="text-sm font-semibold">{{ title }}</span>
                 </div>
                 <div v-if="description" class="text-sm text-dimmed">{{ description }}</div>

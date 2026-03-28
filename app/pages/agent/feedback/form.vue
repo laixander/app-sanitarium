@@ -7,7 +7,7 @@ definePageMeta({
 })
 
 const { settings, defaultSettings, saveSettings, resetSettings } = useFeedbackSettings()
-const toast = useToast()
+const appToast = useAppToast()
 
 const state = ref(JSON.parse(JSON.stringify(settings.value)))
 
@@ -106,11 +106,7 @@ function removePreset(index: number) {
 
 function onSave() {
     saveSettings(state.value)
-    toast.add({
-        title: 'Settings Saved',
-        description: 'Feedback form content has been updated successfully.',
-        color: 'success'
-    })
+    appToast.saved('Settings', 'Feedback form content has been updated successfully.')
 }
 
 const isResetModalOpen = ref(false)
@@ -118,11 +114,7 @@ const isResetModalOpen = ref(false)
 function onReset() {
     state.value = JSON.parse(JSON.stringify(settings.value))
     resetSettings()
-    toast.add({
-        title: 'Settings Reset',
-        description: 'Feedback form content has been reset to defaults.',
-        color: 'neutral'
-    })
+    appToast.reset('Settings', 'Feedback form content has been reset to defaults.')
 }
 
 const isUnchanged = computed(() => {
@@ -135,7 +127,7 @@ const isDefault = computed(() => {
 </script>
 
 <template>
-    <div class="flex flex-col lg:flex-row gap-8 lg:gap-12 w-full lg:max-w-7xl mx-auto pb-12">
+    <div class="flex flex-col lg:flex-row gap-8 lg:gap-16 w-full lg:max-w-7xl mx-auto pb-12">
         <!-- Editor Section -->
         <div class="flex-1 flex flex-col gap-4 sm:gap-6 lg:gap-12 max-w-2xl mx-auto lg:mx-0">
             <div class="flex flex-col gap-4">

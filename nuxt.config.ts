@@ -59,5 +59,13 @@ export default defineNuxtConfig({
                 'stone'
             ]
         }
+    },
+    vite: {
+        optimizeDeps: {
+            include: [
+                'chart.js',
+                'vue-chartjs',
+            ]
+        }
     }
 })

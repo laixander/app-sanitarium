@@ -7,8 +7,8 @@ export interface BrandingState {
 }
 
 export const DEFAULT_BRANDING: BrandingState = {
-    appName: 'Sulu Sanitarium',
-    appTagline: 'Hospital Management System',
+    appName: 'Sanitarium App',
+    appTagline: 'Queue Management System',
     primaryColor: 'blue',
     neutralColor: 'neutral',
     appLogo: null

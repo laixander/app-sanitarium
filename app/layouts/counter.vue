@@ -1,0 +1,74 @@
+<script setup lang="ts">
+useHead({
+    meta: [
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' }
+    ],
+    link: [
+        { rel: 'icon', href: '/favicon.ico' }
+    ],
+    htmlAttrs: {
+        lang: 'en'
+    }
+})
+
+const title = 'Nuxt Starter Template'
+const description = 'A production-ready starter template powered by Nuxt UI. Build beautiful, accessible, and performant applications in minutes, not hours.'
+
+useSeoMeta({
+    title,
+    description,
+    ogTitle: title,
+    ogDescription: description,
+    ogImage: 'https://ui.nuxt.com/assets/templates/nuxt/starter-light.png',
+    twitterImage: 'https://ui.nuxt.com/assets/templates/nuxt/starter-light.png',
+    twitterCard: 'summary_large_image'
+})
+
+const { sections } = useDocsMenu()
+</script>
+
+<template>
+    <UApp>
+        <UHeader :toggle="{
+            class: $route.name === 'index' ? 'hidden' : ''
+        }">
+            <template #left>
+                <NuxtLink to="/">
+                    <AppLogo class="w-auto h-6 shrink-0" />
+                </NuxtLink>
+            </template>
+
+            <template #right>
+                <UColorModeButton />
+                <!-- for simulation only -->
+                <AgentMenu />
+            </template>
+
+            <template #body v-if="$route.meta.showDocsMenu">
+                <UNavigationMenu :ui="{ linkTrailingIcon: 'hidden' }" :items="sections" orientation="vertical"
+                    class="-mx-2.5" />
+            </template>
+        </UHeader>
+
+        <UMain>
+            <slot />
+        </UMain>
+
+        <!-- <USeparator icon="i-simple-icons-nuxtdotjs" /> -->
+
+        <USeparator />
+
+        <UFooter>
+            <template #left>
+                <p class="text-sm text-muted">
+                    Built by Laix • © {{ new Date().getFullYear() }}
+                </p>
+            </template>
+
+            <template #right>
+                <UButton to="https://github.com/laixander" target="_blank" icon="i-simple-icons-github"
+                    aria-label="GitHub" color="neutral" variant="ghost" />
+            </template>
+        </UFooter>
+    </UApp>
+</template>

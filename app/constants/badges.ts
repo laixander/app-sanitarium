@@ -1,7 +1,7 @@
 import type { AppColor } from '~/types/ui'
 import type { BadgeType } from '~/utils/badges'
 
-export const BADGE_CONFIGS: Record<Exclude<BadgeType, 'role'>, Record<string, AppColor>> = {
+export const BADGE_CONFIGS: Record<Exclude<BadgeType, 'role' | 'transaction'>, Record<string, AppColor>> = {
     status: {
         // user status
         'Active': 'success',
@@ -11,7 +11,7 @@ export const BADGE_CONFIGS: Record<Exclude<BadgeType, 'role'>, Record<string, Ap
         'Online': 'success',
         'Serving': 'blue',
         'On Break': 'amber',
-        'Offline': 'error'
+        'Offline': 'neutral'
     },
     category: {
         'Account Management': 'indigo',
@@ -31,11 +31,5 @@ export const BADGE_CONFIGS: Record<Exclude<BadgeType, 'role'>, Record<string, Ap
         'Active': 'success',
         'Inactive': 'neutral',
         'Configuring': 'amber'
-    },
-    transaction: {
-        'Consultation': 'purple',
-        'Admission': 'sky',
-        'Billing': 'emerald',
-        'Outpatient': 'rose'
     }
 }

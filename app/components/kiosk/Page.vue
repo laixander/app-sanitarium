@@ -8,13 +8,14 @@ interface Props {
 }
 
 defineEmits<{
-  (e: 'back'): void
+    (e: 'back'): void
 }>()
 
 const props = defineProps<Props>();
 </script>
 <template>
-    <div class="min-h-screen bg-gradient-to-b from-primary/5 to-primary/15 relative">
+    <!-- <div class="min-h-screen bg-gradient-to-b from-primary/5 to-primary/15 relative"> -->
+    <div class="min-h-screen relative">
         <KioskBack v-if="props.back" @click="$emit('back')" />
         <div class="flex min-h-screen flex-col">
             <main class="flex flex-1 flex-col items-center justify-center p-6">

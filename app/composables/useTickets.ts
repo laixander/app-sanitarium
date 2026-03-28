@@ -85,16 +85,52 @@ export const useTickets = () => {
                 ...tickets.value[index]!,
                 status,
                 ...(counter ? { counter } : {}),
-                ...(status === 'serving' ? { servedAt: now } : {})
+                ...(status === 'serving' ? { servedAt: now } : {}),
+                ...(status === 'completed' ? { completedAt: now } : {})
             }
             saveToLocal()
         }
+    }
+
+    const getAverageServiceTime = (counterName?: string) => {
+        if (!counterName || counterName === '-') return '0:00'
+        
+        const completedTickets = tickets.value.filter(
+            t => t.status === 'completed' && t.counter === counterName && t.servedAt && t.completedAt
+        )
+        
+        if (completedTickets.length === 0) return '0:00'
+        
+        const totalMs = completedTickets.reduce((acc, t) => {
+            const start = new Date(t.servedAt!).getTime()
+            const end = new Date(t.completedAt!).getTime()
+            return acc + (end - start)
+        }, 0)
+        
+        const avgMs = totalMs / completedTickets.length
+        const avgMin = Math.floor(avgMs / 60000)
+        const avgSec = Math.floor((avgMs % 60000) / 1000)
+        
+        return `${avgMin}:${avgSec.toString().padStart(2, '0')}`
+    }
+
+    const getActiveTicket = (counterName?: string) => {
+        if (!counterName || counterName === '-') return null
+        return tickets.value.find(t => t.status === 'serving' && t.counter === counterName)
+    }
+
+    const getServedToday = (counterName?: string) => {
+        if (!counterName || counterName === '-') return 0
+        return tickets.value.filter(t => t.status === 'completed' && t.counter === counterName).length
     }
 
     return {
         tickets,
         createTicket,
         updateTicketStatus,
-        reloadTickets
+        reloadTickets,
+        getAverageServiceTime,
+        getActiveTicket,
+        getServedToday
     }
 }

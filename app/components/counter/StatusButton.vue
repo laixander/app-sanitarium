@@ -13,9 +13,9 @@ defineEmits<{
     <div class="flex items-center">
         <UButton
             v-if="isOnline"
-            label="Go Offline"
-            icon="i-lucide-power-off"
-            color="error"
+            label="Take a Break"
+            icon="i-lucide-coffee"
+            color="warning"
             variant="outline"
             size="lg"
             :disabled="isBusy"

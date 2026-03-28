@@ -1,15 +1,15 @@
 <template>
     <UDropdownMenu :items="items" :ui="{
         content: 'w-48'
+    }" :content="{
+        align: 'end',
+        side: 'bottom',
+        sideOffset: 4
     }">
-        <UButton
-            :avatar="{
-                src: 'https://github.com/benjamincanac.png',
-                size: 'lg'
-            }"
-            color="neutral"
-            variant="ghost"
-        />
+        <UButton :avatar="{
+            src: 'https://github.com/benjamincanac.png',
+            size: 'lg'
+        }" color="neutral" variant="ghost" />
     </UDropdownMenu>
 </template>
 <script setup lang="ts">

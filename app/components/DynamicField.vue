@@ -9,6 +9,7 @@ const props = defineProps<{
         description?: string
         type: string
         options?: string[] | any[]
+        multiple?: boolean
     }
     modelValue: any
 }>()
@@ -117,11 +118,15 @@ function onFileChange(files: any) {
 
         <UTextarea v-else-if="field.type === 'textarea'" v-model="value" autoresize :rows="2" class="w-full sm:w-64" />
 
-        <UInputNumber v-else-if="field.type === 'number'" v-model="value" class="w-full sm:w-40" />
+        <UInputNumber v-else-if="field.type === 'number'" v-model="value" class="w-full sm:w-64" />
 
-        <USelect v-else-if="field.type === 'select'" :items="field.options" v-model="value" class="w-full sm:w-40" />
+        <USelect v-else-if="field.type === 'select'" :items="field.options" v-model="value" :multiple="field.multiple"
+            value-key="value" class="w-full sm:w-64" />
 
         <USwitch v-else-if="field.type === 'boolean'" v-model="value" />
+
+        <USelectMenu v-else-if="field.type === 'selectMenu'" v-model="value" :items="field.options"
+            :multiple="field.multiple" value-key="value" class="w-full sm:w-64" />
 
     </UFormField>
 </template>

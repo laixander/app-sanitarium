@@ -14,15 +14,16 @@ const { feedbackList, addFeedback } = useFeedback()
 const { settings } = useFeedbackSettings()
 
 const alreadySubmitted = computed(() => feedbackList.value.some(f => f.agentCode === code.value))
-const agent = computed(() => users.value.find(u => u.code === code.value && u.role === 'Agent'))
+const isKiosk = computed(() => code.value.toUpperCase().startsWith('KIOSK'))
+const agent = computed(() => isKiosk.value ? undefined : users.value.find(u => u.code === code.value && u.role === 'Agent'))
 
 const isSubmitted = ref(false)
 
 const handleFeedbackSubmit = (data: { rating: number, comment: string }) => {
-    if (agent.value) {
+    if (isKiosk.value || agent.value) {
         addFeedback({
             agentCode: code.value,
-            agentId: agent.value.id,
+            agentId: agent.value?.id ?? 0,
             rating: data.rating,
             comment: data.comment
         })
@@ -41,7 +42,12 @@ const handleFeedbackSubmit = (data: { rating: number, comment: string }) => {
                 </div>
                 <h2 class="text-2xl font-bold mb-2">Thank You!</h2>
                 <p class="text-neutral-500 mb-8">
-                    Your feedback for <span class="font-semibold">{{ agent?.name || 'the agent' }}</span> has been successfully submitted. We appreciate your time.
+                    <template v-if="isKiosk">
+                        Your feedback has been successfully submitted. We appreciate your time.
+                    </template>
+                    <template v-else>
+                        Your feedback for <span class="font-semibold">{{ agent?.name || 'the agent' }}</span> has been successfully submitted. We appreciate your time.
+                    </template>
                 </p>
                 <UButton label="Go Back Home" to="/" color="neutral" variant="ghost" icon="i-lucide-arrow-left" />
             </UCard>
@@ -51,6 +57,7 @@ const handleFeedbackSubmit = (data: { rating: number, comment: string }) => {
             v-else
             :settings="settings" 
             :agent="agent" 
+            :is-kiosk="isKiosk"
             @submit="handleFeedbackSubmit" 
         />
         

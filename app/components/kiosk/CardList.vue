@@ -7,37 +7,21 @@ interface Props {
     regularQueue: boolean;
 }
 
+const props = defineProps<Props>();
+
+const { transactions } = useTransactions()
+
 const transactionIcon = computed(() => {
-    switch (props.transactionType) {
-        case 'Consultation':
-            return 'i-lucide-stethoscope';
-        case 'Admission':
-            return 'i-lucide-bed-double';
-        case 'Billing':
-            return 'i-lucide-credit-card';
-        case 'Outpatient':
-            return 'i-lucide-clipboard-list';
-        default:
-            return 'i-lucide-help-circle';
-    }
+    const tx = transactions.value.find(t => t.name === props.transactionType)
+    return tx ? tx.icon : 'i-lucide-help-circle'
 });
 
 const transactionColor = computed(() => {
-    switch (props.transactionType) {
-        case 'Consultation':
-            return 'sky';
-        case 'Admission':
-            return 'pink';
-        case 'Billing':
-            return 'teal';
-        case 'Outpatient':
-            return 'indigo';
-        default:
-            return 'slate';
-    }
+    const tx = transactions.value.find(t => t.name === props.transactionType)
+    return tx ? tx.color : 'slate'
 });
 
-const props = defineProps<Props>();
+
 </script>
 <template>
     <UCard class="w-full max-w-2xl mx-auto rounded-2xl ring-2">

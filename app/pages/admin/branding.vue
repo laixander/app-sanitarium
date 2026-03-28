@@ -47,27 +47,19 @@ const brandingFields = [
     }
 ]
 
-const toast = useToast()
+const appToast = useAppToast()
 
 function onSave() {
     updateBranding(state.value)
     initialState.value = { ...state.value }
-    toast.add({
-        title: 'Branding Updated',
-        description: 'Branding settings have been updated successfully.',
-        color: 'success'
-    })
+    appToast.updated('Branding', 'Branding settings have been updated successfully.')
 }
 
 function onReset() {
     resetBranding()
     state.value = { ...branding.value }
     initialState.value = { ...branding.value }
-    toast.add({
-        title: 'Branding Reset',
-        description: 'Branding settings have been reset to default.',
-        color: 'info'
-    })
+    appToast.reset('Branding', 'Branding settings have been reset to default.')
 }
 
 const isUnchanged = computed(() => {

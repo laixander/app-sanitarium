@@ -5,4 +5,5 @@ export interface TransactionCategory {
     name: string
     description?: string
     color: AppColor
+    icon: string
 }

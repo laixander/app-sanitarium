@@ -55,12 +55,16 @@ const getActionItems = (row: User) => [
                 selectedUser.value = row
                 isViewDrawerOpen.value = true
             }
-        },
+        }
+    ],
+    [
         {
             label: 'Edit',
             icon: 'i-lucide-square-pen',
             onSelect: () => onEdit(row)
-        },
+        }
+    ],
+    [
         {
             label: 'Delete',
             icon: 'i-lucide-trash-2',

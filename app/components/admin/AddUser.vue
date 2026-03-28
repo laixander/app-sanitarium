@@ -1,14 +1,9 @@
 <script setup lang="ts">
 const isModalOpen = ref(false)
-const toast = useToast()
+const appToast = useAppToast()
 
 function handleSuccess() {
-    toast.add({
-        title: 'User created',
-        description: 'New user account has been successfully created.',
-        color: 'success',
-        icon: 'i-lucide-check-circle'
-    })
+    appToast.created('User', 'New user account has been successfully created.')
 }
 </script>
 <template>

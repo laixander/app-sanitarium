@@ -5,15 +5,10 @@ const props = withDefaults(defineProps<{
     filename: 'data'
 })
 
-const toast = useToast()
+const appToast = useAppToast()
 
 function onExport() {
-    toast.add({
-        title: 'Exporting...',
-        description: `Your ${props.filename} are being prepared for export.`,
-        color: 'success',
-        icon: 'i-lucide-check-circle'
-    })
+    appToast.exporting(props.filename)
 }
 </script>
 <template>

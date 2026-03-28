@@ -13,4 +13,5 @@ export interface Ticket {
     counter?: string
     createdAt?: string
     servedAt?: string
+    completedAt?: string
 }

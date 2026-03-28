@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 useHead({
     meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1' }
@@ -23,11 +23,15 @@ useSeoMeta({
     twitterImage: 'https://ui.nuxt.com/assets/templates/nuxt/starter-light.png',
     twitterCard: 'summary_large_image'
 })
+
+const { sections } = useDocsMenu()
 </script>
 
 <template>
     <UApp>
-        <UHeader>
+        <UHeader :toggle="{
+            class: $route.name === 'index' ? 'hidden' : ''
+        }">
             <template #left>
                 <NuxtLink to="/">
                     <AppLogo class="w-auto h-6 shrink-0" />
@@ -36,9 +40,12 @@ useSeoMeta({
 
             <template #right>
                 <UColorModeButton />
+                <!-- <UserMenu /> -->
+            </template>
 
-                <UButton to="https://github.com/nuxt-ui-templates/starter" target="_blank" icon="i-simple-icons-github"
-                    aria-label="GitHub" color="neutral" variant="ghost" />
+            <template #body v-if="$route.meta.showDocsMenu">
+                <UNavigationMenu :ui="{ linkTrailingIcon: 'hidden' }" :items="sections" orientation="vertical"
+                    class="-mx-2.5" />
             </template>
         </UHeader>
 
@@ -46,17 +53,19 @@ useSeoMeta({
             <slot />
         </UMain>
 
-        <USeparator icon="i-simple-icons-nuxtdotjs" />
+        <!-- <USeparator icon="i-simple-icons-nuxtdotjs" /> -->
+
+        <USeparator />
 
         <UFooter>
             <template #left>
                 <p class="text-sm text-muted">
-                    Built with Nuxt UI • © {{ new Date().getFullYear() }}
+                    Built by Laix • © {{ new Date().getFullYear() }}
                 </p>
             </template>
 
             <template #right>
-                <UButton to="https://github.com/nuxt-ui-templates/starter" target="_blank" icon="i-simple-icons-github"
+                <UButton to="https://github.com/laixander" target="_blank" icon="i-simple-icons-github"
                     aria-label="GitHub" color="neutral" variant="ghost" />
             </template>
         </UFooter>

@@ -4,23 +4,7 @@ import { statusColors, tagColors } from '~/constants/queue'
 import { LazyAgentQueueDetails } from '#components'
 
 const props = defineProps<Ticket>()
-const { now } = useTimer()
-
-const waitingTime = computed(() => {
-    if (!props.createdAt) return 'N/A'
-
-    const start = new Date(props.createdAt).getTime()
-    const end = (['serving', 'missed', 'completed'].includes(props.status) && props.servedAt)
-        ? new Date(props.servedAt).getTime()
-        : now.value
-
-    const diffMs = Math.max(0, end - start)
-    const diffMin = Math.floor(diffMs / 60000)
-    const diffSec = Math.floor((diffMs % 60000) / 1000)
-
-    if (diffMin > 0) return `${diffMin}m ${diffSec}s`
-    return `${diffSec}s`
-})
+const { waitingTime } = useQueueTime(props.createdAt, props.servedAt, props.status)
 
 const allTags = computed(() => {
     const result = [...(props.tags || [])]
@@ -37,7 +21,7 @@ const getTagColor = (tag: string) => {
 // slideover programmatic usage
 const count = ref(0)
 
-const toast = useToast()
+const appToast = useAppToast()
 const overlay = useOverlay()
 
 const slideover = overlay.create(LazyAgentQueueDetails)
@@ -53,11 +37,7 @@ async function open() {
     if (shouldIncrement) {
         count.value++
 
-        toast.add({
-            title: `Success: ${shouldIncrement}`,
-            color: 'success',
-            id: 'slideover-success'
-        })
+        appToast.success(`Success: ${shouldIncrement}`)
 
         // Update the count
         slideover.patch({
@@ -69,7 +49,8 @@ async function open() {
 </script>
 <template>
     <UCard variant="subtle" :ui="{ body: 'flex items-center justify-between gap-6 sm:p-4 relative' }"
-        class="shadow-sm hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer" @click="open">
+        class="shrink-0 shadow-sm hover:scale-105 hover:shadow-lg transition-all duration-200 cursor-pointer"
+        @click="open">
         <div class="flex items-center gap-2">
             <div class="text-lg font-extrabold whitespace-nowrap">{{ ticket }}</div>
             <UBadge v-for="tag in allTags" :key="tag" :label="tag" :color="getTagColor(tag)" variant="subtle" />

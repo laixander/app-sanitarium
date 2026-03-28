@@ -61,18 +61,14 @@ const ssos = [
     }
 ]
 
-const toast = useToast()
+const appToast = useAppToast()
 
 async function onChange() {
     // Update initial state to match current state after saving
     initialState.value = { ...state.value }
 
     // Do something with data
-    toast.add({
-        title: 'Settings Updated',
-        description: 'SSO settings have been updated successfully.',
-        color: 'success'
-    })
+    appToast.updated('Settings', 'SSO settings have been updated successfully.')
 }
 
 function resetToDefault() {

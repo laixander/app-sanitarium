@@ -12,17 +12,32 @@ export const useTransactions = () => {
         } else {
             // Default ones based on previous badge constants
             transactions.value = [
-                { id: '1', name: 'Consultation', description: 'Patient seeing a doctor', color: 'purple' },
-                { id: '2', name: 'Admission', description: 'Admitting a patient', color: 'sky' },
-                { id: '3', name: 'Billing', description: 'Paying for services', color: 'emerald' },
-                { id: '4', name: 'Outpatient', description: 'Outpatient care and services', color: 'rose' }
+                { id: '1', name: 'Consultation', description: 'Patient seeing a doctor', color: 'sky', icon: 'i-lucide-stethoscope' },
+                { id: '2', name: 'Admission', description: 'Admitting a patient', color: 'pink', icon: 'i-lucide-bed-double' },
+                { id: '3', name: 'Billing', description: 'Paying for services', color: 'teal', icon: 'i-lucide-credit-card' },
+                { id: '4', name: 'Outpatient', description: 'Outpatient care and services', color: 'indigo', icon: 'i-lucide-clipboard-list' }
             ]
             saveToLocal()
         }
     }
 
+    const handleStorageChange = (e: StorageEvent) => {
+        if (e.key === 'sanitarium_transactions') {
+            reloadTransactions()
+        }
+    }
+
     onMounted(() => {
         reloadTransactions()
+        if (import.meta.client) {
+            window.addEventListener('storage', handleStorageChange)
+        }
+    })
+
+    onUnmounted(() => {
+        if (import.meta.client) {
+            window.removeEventListener('storage', handleStorageChange)
+        }
     })
 
     const saveToLocal = () => {

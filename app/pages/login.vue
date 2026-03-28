@@ -1,30 +1,45 @@
 <template>
-    <div class="fixed inset-0 flex justify-center items-center bg-elevated/50">
-        <UPageCard class="w-full max-w-sm shadow-sm">
-            <UAuthForm
-                title="Login"
-                description="Enter your credentials to access your account."
-                :fields="fields"
-                :submit="{
-                    size: 'lg'
-                }"
-                :ui="{
-                    description: 'text-sm'
-                }"
-            >
-                <template #leading>
-                    <UButton icon="i-lucide-hospital" color="primary" variant="soft" :ui="ui" square disabled
-                        class="rounded-none squircle w-fit" />
-                </template>
-                <template #footer>
-                    Unable to login? Contact your administrator.
-                </template>
-            </UAuthForm>
-        </UPageCard>
+  <div class="fixed inset-0 flex justify-center items-center bg-elevated/50">
+    <UPageCard class="w-full max-w-sm shadow-sm">
+      <UAuthForm :key="formKey" title="Login" description="Enter your credentials to access your account." :fields="fields"
+        :state="state" @submit="onSubmit" :submit="{
+          size: 'lg'
+        }" :ui="{
+                  description: 'text-sm'
+                }">
+        <template #leading>
+          <UButton icon="i-lucide-hospital" color="primary" variant="soft" :ui="ui" square disabled
+            class="rounded-none squircle w-fit" />
+        </template>
+        <template #footer>
+          Unable to login? Contact your administrator.
+        </template>
+      </UAuthForm>
+    </UPageCard>
+
+    <!-- Mock Login FAB -->
+    <div class="fixed bottom-6 right-6 flex flex-col items-end gap-2 z-50">
+      <Transition name="fab-menu">
+        <div v-if="fabOpen" class="flex flex-col items-end gap-2 mb-2">
+          <UButton v-for="item in mockRoles" :key="item.role" :icon="item.icon" :label="item.label" size="lg"
+            :color="item.color" variant="soft" class="shadow-lg" @click="mockLogin(item)" />
+        </div>
+      </Transition>
+      <UButton icon="i-lucide-flask-conical" size="xl" color="primary" class="rounded-full shadow-lg"
+        :class="{ 'rotate-45': fabOpen }" style="transition: transform 0.2s ease" @click="fabOpen = !fabOpen" />
     </div>
+  </div>
 </template>
 <script setup lang="ts">
 import type { AuthFormField } from '@nuxt/ui'
+
+const state = reactive({
+  email: '',
+  password: ''
+})
+
+const routeToRedirect = ref('')
+const formKey = ref(0)
 
 const fields = ref<AuthFormField[]>([
   {
@@ -40,34 +55,93 @@ const fields = ref<AuthFormField[]>([
     label: 'Password',
     variant: 'soft',
     size: 'lg'
-  },
-  {
-    name: 'role',
-    type: 'select',
-    label: 'User Role',
-    placeholder: 'Select your role',
-    variant: 'soft',
-    size: 'lg',
-    searchInput: false,
-    items: [
-      {
-        label: 'Admin',
-        value: 'admin'
-      },
-      {
-        label: 'Agent',
-        value: 'agent'
-      },
-      {
-        label: 'Staff',
-        value: 'staff'
-      }
-    ]
   }
 ])
 
 const ui = {
-    base: 'p-5 disabled:cursor-default aria-disabled:cursor-default disabled:opacity-100 aria-disabled:opacity-100',
-    leadingIcon: 'size-8'
+  base: 'p-5 disabled:cursor-default aria-disabled:cursor-default disabled:opacity-100 aria-disabled:opacity-100',
+  leadingIcon: 'size-8'
+}
+
+// Mock Login FAB
+const fabOpen = ref(false)
+
+interface MockRole {
+  role: string
+  label: string
+  icon: string
+  color: 'primary' | 'success' | 'warning' | 'error' | 'info' | 'secondary' | 'neutral'
+  route: string
+}
+
+const mockRoles: MockRole[] = [
+  {
+    role: 'admin',
+    label: 'Admin',
+    icon: 'i-lucide-shield',
+    color: 'error',
+    route: '/admin'
+  },
+  {
+    role: 'manager',
+    label: 'Manager',
+    icon: 'i-lucide-briefcase',
+    color: 'warning',
+    route: '/agent'
+  },
+  {
+    role: 'agent',
+    label: 'Agent',
+    icon: 'i-lucide-headset',
+    color: 'success',
+    route: '/counter'
+  }
+]
+
+function mockLogin(item: MockRole) {
+  fabOpen.value = false
+  
+  const email = `${item.role}@sanitarium.com`
+  const password = 'password123'
+  
+  state.email = email
+  state.password = password
+  
+  // Attempt prefill by setting field values internally depending on UAuthForm implementation
+  const emailField = fields.value[0] as any
+  const passwordField = fields.value[1] as any
+  if (emailField) {
+    emailField.value = email
+    emailField.defaultValue = email
+  }
+  if (passwordField) {
+    passwordField.value = password
+    passwordField.defaultValue = password
+  }
+
+  routeToRedirect.value = item.route
+  formKey.value++
+}
+
+function onSubmit() {
+  let route = routeToRedirect.value
+  if (!route) {
+    if (state.email.includes('agent')) route = '/counter'
+    else route = '/admin'
+  }
+  navigateTo(route)
 }
 </script>
+
+<style scoped>
+.fab-menu-enter-active,
+.fab-menu-leave-active {
+  transition: all 0.25s ease;
+}
+
+.fab-menu-enter-from,
+.fab-menu-leave-to {
+  opacity: 0;
+  transform: translateY(12px) scale(0.9);
+}
+</style>

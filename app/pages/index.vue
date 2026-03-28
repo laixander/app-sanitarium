@@ -4,7 +4,16 @@ definePageMeta({
 })
 </script>
 <template>
-    <div>
+    <div class="relative overflow-hidden">
+        <!-- Subtle mesh background blobs -->
+        <div class="absolute inset-0 z-[-1] pointer-events-none">
+            <div
+                class="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] md:w-[50vw] md:h-[50vw] rounded-full bg-[var(--ui-primary)]/20 blur-[100px] md:blur-[150px] opacity-70 dark:opacity-50 mix-blend-multiply dark:mix-blend-screen" />
+            <div
+                class="absolute top-[20%] -right-[10%] w-[60vw] h-[60vw] md:w-[40vw] md:h-[40vw] rounded-full bg-[var(--ui-info)]/20 blur-[100px] md:blur-[150px] opacity-70 dark:opacity-50 mix-blend-multiply dark:mix-blend-screen" />
+            <div
+                class="absolute -bottom-[20%] left-[20%] w-[80vw] h-[80vw] md:w-[60vw] md:h-[60vw] rounded-full bg-violet-500/10 blur-[100px] md:blur-[150px] opacity-70 dark:opacity-50 mix-blend-multiply dark:mix-blend-screen" />
+        </div>
         <UPageHero title="Smarter Queues. Happier Patients."
             description="Eliminate wait-time frustration with an intelligent queue platform built for modern healthcare. Real-time tracking, smart routing, and actionable analytics — all in one place."
             :links="[{
@@ -12,62 +21,70 @@ definePageMeta({
                 to: '/kiosk',
                 target: '_blank',
                 trailingIcon: 'i-lucide-arrow-right',
-                size: 'xl'
+                size: 'xl',
+                class: 'py-4 px-8 min-w-full lg:min-w-64 justify-center'
             }, {
-                label: 'Let\'s Get Started',
+                label: 'Request a Demo',
                 to: '/login',
                 target: '_blank',
                 trailingIcon: 'i-lucide-chevron-right',
                 size: 'xl',
                 color: 'neutral',
-                variant: 'subtle'
-            }]" />
+                variant: 'subtle',
+                class: 'py-4 px-8 min-w-full lg:min-w-64 justify-center'
+            }]">
+            <UColorModeImage light="/img/img_light.png" dark="/img/img_dark.png" alt="App screenshot"
+                class="rounded-lg shadow-2xl ring ring-default" />
+        </UPageHero>
 
-        <UPageSection id="features" title="Everything you need to build modern Nuxt apps"
-            description="Start with a solid foundation. This template includes all the essentials for building production-ready applications with Nuxt UI's powerful component system."
+        <UPageSection id="features" title="Comprehensive Queue Management for Healthcare"
+            description="Our platform is designed to streamline every step of the patient journey, ensuring efficiency for staff and clarity for patients."
             :features="[{
-                icon: 'i-lucide-rocket',
-                title: 'Production-ready from day one',
-                description: 'Pre-configured with TypeScript, ESLint, Tailwind CSS, and all the best practices. Focus on building features, not setting up tooling.'
+                icon: 'i-lucide-monitor',
+                title: 'Self-Service Kiosks',
+                description: 'Intuitive touchscreens for patients to select services and receive immediate queue tickets.'
             }, {
-                icon: 'i-lucide-palette',
-                title: 'Beautiful by default',
-                description: 'Leveraging Nuxt UI\'s design system with automatic dark mode, consistent spacing, and polished components that look great out of the box.'
+                icon: 'i-lucide-layout-dashboard',
+                title: 'Real-Time Monitoring',
+                description: 'Live tracking of queue lengths, wait times, and agent performance across all departments.'
             }, {
-                icon: 'i-lucide-zap',
-                title: 'Lightning fast',
-                description: 'Optimized for performance with SSR/SSG support, automatic code splitting, and edge-ready deployment. Your users will love the speed.'
+                icon: 'i-lucide-user-cog',
+                title: 'Smart Agent Interface',
+                description: 'A powerful dashboard for healthcare staff to call, serve, and manage patients with ease.'
             }, {
-                icon: 'i-lucide-blocks',
-                title: '100+ components included',
-                description: 'Access Nuxt UI\'s comprehensive component library. From forms to navigation, everything is accessible, responsive, and customizable.'
+                icon: 'i-lucide-tv-2',
+                title: 'Counter Displays',
+                description: 'High-visibility digital signage to notify patients of their turn with clear audio-visual cues.'
             }, {
-                icon: 'i-lucide-code-2',
-                title: 'Developer experience first',
-                description: 'Auto-imports, hot module replacement, and TypeScript support. Write less boilerplate and ship more features.'
+                icon: 'i-lucide-message-square-heart',
+                title: 'Integrated Feedback',
+                description: 'Capturing patient satisfaction instantly to help maintain the highest standards of care.'
             }, {
                 icon: 'i-lucide-shield-check',
-                title: 'Built for scale',
-                description: 'Enterprise-ready architecture with proper error handling, SEO optimization, and security best practices built-in.'
+                title: 'Secure Administration',
+                description: 'Advanced role-based access control and detailed audit logs for hospital-grade security.'
             }]" />
 
         <UPageSection>
-            <UPageCTA title="Ready to build your next Nuxt app?"
-                description="Join thousands of developers building with Nuxt and Nuxt UI. Get this template and start shipping today."
-                variant="subtle" :links="[{
-                    label: 'Start building',
-                    to: 'https://ui.nuxt.com/docs/getting-started/installation/nuxt',
-                    target: '_blank',
+            <UPageCTA title="Ready to transform your patient experience?"
+                description="Join Sulu Sanitarium in delivering world-class healthcare with our intelligent queue management solution."
+                orientation="horizontal" :links="[{
+                    label: 'Get Started',
+                    to: '/login',
                     trailingIcon: 'i-lucide-arrow-right',
-                    color: 'neutral'
-                }, {
-                    label: 'View on GitHub',
-                    to: 'https://github.com/nuxt-ui-templates/starter',
-                    target: '_blank',
-                    icon: 'i-simple-icons-github',
                     color: 'neutral',
-                    variant: 'outline'
-                }]" />
+                    class: 'py-4 px-8 min-w-full lg:min-w-56 justify-center'
+                }, {
+                    label: 'View Documentation',
+                    to: '/docs',
+                    icon: 'i-lucide-book-open',
+                    color: 'neutral',
+                    variant: 'outline',
+                    class: 'py-4 px-8 min-w-full lg:min-w-56 justify-center'
+                }]">
+                <UColorModeImage light="/img/img_light.png" dark="/img/img_dark.png" alt="App screenshot"
+                    class="rounded-lg shadow-2xl ring ring-default" width="100%" />
+            </UPageCTA>
         </UPageSection>
     </div>
 </template>

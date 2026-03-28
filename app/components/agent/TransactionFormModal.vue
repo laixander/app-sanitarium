@@ -16,7 +16,8 @@ const { addTransaction, updateTransaction } = useTransactions()
 const form = ref({
     name: '',
     description: '',
-    color: 'neutral' as any
+    color: 'neutral' as any,
+    icon: 'i-lucide-clipboard-list'
 })
 
 const availableColors = appColors.map(color => ({
@@ -25,16 +26,30 @@ const availableColors = appColors.map(color => ({
     chip: { color: color as any }
 }))
 
+const availableIcons = [
+    { label: 'Stethoscope', value: 'i-lucide-stethoscope', icon: 'i-lucide-stethoscope' },
+    { label: 'Bed', value: 'i-lucide-bed-double', icon: 'i-lucide-bed-double' },
+    { label: 'Credit Card', value: 'i-lucide-credit-card', icon: 'i-lucide-credit-card' },
+    { label: 'Clipboard', value: 'i-lucide-clipboard-list', icon: 'i-lucide-clipboard-list' },
+    { label: 'Activity', value: 'i-lucide-activity', icon: 'i-lucide-activity' },
+    { label: 'Heart', value: 'i-lucide-heart-pulse', icon: 'i-lucide-heart-pulse' },
+    { label: 'Pill', value: 'i-lucide-pill', icon: 'i-lucide-pill' },
+    { label: 'Syringe', value: 'i-lucide-syringe', icon: 'i-lucide-syringe' },
+    { label: 'Users', value: 'i-lucide-users', icon: 'i-lucide-users' }
+]
+
 watch([() => props.transaction, isOpen], ([newTransaction, open]) => {
     if (open) {
         if (newTransaction) {
             form.value.name = newTransaction.name
             form.value.description = newTransaction.description || ''
             form.value.color = newTransaction.color || 'neutral'
+            form.value.icon = newTransaction.icon || 'i-lucide-clipboard-list'
         } else {
             form.value.name = ''
             form.value.description = ''
             form.value.color = 'neutral'
+            form.value.icon = 'i-lucide-clipboard-list'
         }
     }
 }, { immediate: true })
@@ -62,6 +77,15 @@ function onSubmit() {
 
                 <UFormField label="Description" name="description">
                     <UTextarea v-model="form.description" placeholder="Short description of this transaction type" class="w-full" />
+                </UFormField>
+
+                <UFormField label="Icon" name="icon" required>
+                    <USelectMenu v-model="form.icon" :items="availableIcons" value-key="value"
+                        placeholder="Select icon" class="w-full">
+                        <template #leading="{ modelValue }">
+                            <UIcon v-if="modelValue" :name="(typeof modelValue === 'string' ? modelValue : (modelValue as any).value)" class="w-5 h-5" />
+                        </template>
+                    </USelectMenu>
                 </UFormField>
 
                 <UFormField label="Category Color" name="color">

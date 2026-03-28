@@ -1,14 +1,9 @@
 <script setup lang="ts">
 const isModalOpen = ref(false)
-const toast = useToast()
+const appToast = useAppToast()
 
 function handleSuccess() {
-    toast.add({
-        title: 'Role created',
-        description: 'New role has been successfully created.',
-        color: 'success',
-        icon: 'i-lucide-check-circle'
-    })
+    appToast.created('Role')
 }
 </script>
 <template>

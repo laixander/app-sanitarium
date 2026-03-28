@@ -40,7 +40,7 @@ const formatTime = (iso?: string) => {
 const description = computed(() => {
     switch (props.queue.status) {
         case 'serving':
-            return props.queue.counter 
+            return props.queue.counter
                 ? `This ticket is currently being served at ${props.queue.counter}`
                 : 'This ticket is currently being served'
         case 'waiting':
@@ -54,20 +54,7 @@ const description = computed(() => {
     }
 })
 
-const mockFeedback = [
-    {
-        ticket: props.queue.ticket === 'B-127',
-        rating: 4,
-        comment: "The agent was very helpful with my concerns and processed everything quickly. Highly recommended!"
-    },
-    {
-        ticket: props.queue.ticket === 'P-125',
-        rating: 5,
-        comment: "The agent was very accommodating and friendly."
-    }
-]
 
-const feedback = computed(() => mockFeedback.find(f => f.ticket))
 </script>
 
 <template>
@@ -78,7 +65,8 @@ const feedback = computed(() => mockFeedback.find(f => f.ticket))
                 <div class="flex items-center justify-between">
                     <div class="flex flex-col gap-1">
                         <span class="text-xs font-medium text-dimmed uppercase tracking-wider">Status</span>
-                        <UBadge :label="upperFirst(queue.status)" :color="statusColors[queue.status]" variant="subtle" />
+                        <UBadge :label="upperFirst(queue.status)" :color="statusColors[queue.status]"
+                            variant="subtle" />
                     </div>
                     <div v-if="queue.counter" class="flex flex-col gap-1 text-right">
                         <span class="text-xs font-medium text-dimmed uppercase tracking-wider">Counter</span>
@@ -105,38 +93,11 @@ const feedback = computed(() => mockFeedback.find(f => f.ticket))
                 <div v-if="queue.tags?.length" class="flex flex-col gap-2">
                     <span class="text-xs font-medium text-dimmed uppercase tracking-wider">Tags</span>
                     <div class="flex flex-wrap gap-2">
-                        <UBadge v-for="tag in queue.tags" :key="tag" :label="tag" :color="getTagColor(tag)" variant="outline" />
+                        <UBadge v-for="tag in queue.tags" :key="tag" :label="tag" :color="getTagColor(tag)"
+                            variant="outline" />
                     </div>
                 </div>
 
-                <template v-if="!['waiting', 'missed'].includes(queue.status)">
-                    <USeparator />
-
-                    <div class="flex flex-col gap-2">
-                        <span class="text-xs font-medium text-dimmed uppercase tracking-wider">Customer Feedback</span>
-                        <!-- Customer Feedback UI Placeholder -->
-                        <UCard v-if="feedback" :ui="{ body: 'sm:p-4' }">
-                            <div class="flex flex-col gap-4">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm font-semibold">Service Rating</span>
-                                    <div class="flex items-center text-amber-500 gap-0.5">
-                                        <UIcon v-for="star in 5" :key="star"
-                                            :name="feedback.rating >= star ? 'i-heroicons-star-solid' : 'i-heroicons-star'"
-                                            class="size-4" :class="feedback.rating < star ? 'text-dimmed' : ''" />
-                                    </div>
-                                </div>
-                                
-                                <div v-if="feedback.comment" class="p-4 bg-muted rounded-lg">
-                                    <p class="text-sm text-dimmed italic">"{{ feedback.comment }}"</p>
-                                </div>
-                            </div>
-                        </UCard>
-                        <div v-else class="text-center p-8 bg-default/5 rounded-lg border border-dashed border-default">
-                            <UIcon name="i-lucide-message-square-off" class="size-8 mx-auto text-dimmed mb-2" />
-                            <p class="text-sm text-dimmed">No feedback provided for this ticket yet.</p>
-                        </div>
-                    </div>
-                </template>
             </div>
         </template>
 

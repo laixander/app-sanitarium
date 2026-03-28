@@ -8,7 +8,7 @@ definePageMeta({
     fullWidth: true
 })
 
-const toast = useToast()
+const appToast = useAppToast()
 const { users, updateUser, reloadUsers } = useUsers()
 const { schedules } = useSchedules()
 
@@ -115,11 +115,7 @@ const getActionItems = (row: User) => {
 function refresh() {
     reloadUsers()
     // toast success
-    toast.add({
-        title: 'Refreshed',
-        description: 'Agents data has been refreshed.',
-        color: 'success'
-    })
+    appToast.refreshed('Agents')
 }
 </script>
 <template>
@@ -190,7 +186,8 @@ function refresh() {
     </UTable>
 
     <!-- Assignment Modal -->
-    <AgentAssignmentFormModal v-model:open="isAssignmentModalOpen" :user="selectedAgent" @success="selectedAgent = null" />
+    <AgentAssignmentFormModal v-model:open="isAssignmentModalOpen" :user="selectedAgent"
+        @success="selectedAgent = null" />
 
     <!-- QR Code Modal -->
     <AgentQRCodeModal v-model:open="isQRCodeModalOpen" :user="selectedQRCodeAgent" />
