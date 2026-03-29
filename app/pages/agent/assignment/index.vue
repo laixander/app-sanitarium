@@ -55,6 +55,8 @@ function onDelete(transaction: TransactionCategory) {
             <AgentTransactionList v-for="transaction in transactions" :key="transaction.id" :title="transaction.name"
                 :description="transaction.description" :color="transaction.color" :icon="transaction.icon"
                 @edit="onEdit(transaction)" @delete="onDelete(transaction)" />
+            <UEmpty v-if="transactions.length === 0" icon="i-lucide-inbox" title="No transactions found"
+                description="It looks like you haven't added any transactions. Create one to get started." />
         </UCard>
     </div>
 

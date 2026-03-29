@@ -65,6 +65,8 @@ export default defineNuxtConfig({
             include: [
                 'chart.js',
                 'vue-chartjs',
+                '@vue/devtools-core',
+                '@vue/devtools-kit',
             ]
         }
     }

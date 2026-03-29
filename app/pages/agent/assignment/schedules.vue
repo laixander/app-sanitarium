@@ -54,6 +54,8 @@ function onDeleteSchedule(schedule: Schedule) {
             <AgentScheduleList v-for="schedule in schedules" :key="schedule.id" :title="schedule.name"
                 :start-time="schedule.startTime" :end-time="schedule.endTime" :color="schedule.color"
                 @edit="onEditSchedule(schedule)" @delete="onDeleteSchedule(schedule)" />
+            <UEmpty v-if="schedules.length === 0" icon="i-lucide-clock" title="No schedules found"
+                description="It looks like you haven't added any schedules. Create one to get started." />
         </UCard>
     </div>
 

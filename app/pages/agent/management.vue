@@ -183,6 +183,12 @@ function refresh() {
                 <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" size="sm" />
             </UDropdownMenu>
         </template>
+        <template #empty>
+            <div class="flex flex-col items-center justify-center py-12 gap-2">
+                <UIcon name="i-lucide-user" class="size-12 text-dimmed opacity-50" />
+                <p class="text-dimmed">No agents found.</p>
+            </div>
+        </template>
     </UTable>
 
     <!-- Assignment Modal -->

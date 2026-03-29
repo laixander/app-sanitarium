@@ -3,10 +3,16 @@ import type { Ticket } from '~/types/queue'
 import { statusColors, tagColors } from '~/constants/queue'
 import { upperFirst } from 'scule'
 
+const { transactions } = useTransactions()
+
 const props = defineProps<{
     count: number
     queue: Ticket
 }>()
+
+const getTransactionColor = (name: string) => {
+    return transactions.value.find(t => t.name === name)?.color || 'neutral'
+}
 
 const emit = defineEmits<{ close: [boolean] }>()
 
@@ -54,11 +60,25 @@ const description = computed(() => {
     }
 })
 
+const displayTags = computed(() => {
+    const t = new Set<string>(props.queue.tags || [])
+    if (props.queue.isHmo) t.add('HMO')
+    if (props.queue.isPriority) t.add('Priority')
+    return Array.from(t)
+})
+
 
 </script>
 
 <template>
-    <USlideover :close="{ onClick: () => emit('close', false) }" :title="`${queue.ticket}`" :description="description">
+    <USlideover :close="{ onClick: () => emit('close', false) }" :description="description">
+        <template #title>
+            <div class="flex items-center gap-3">
+                <span class="text-xl font-bold">{{ queue.ticket }}</span>
+                <UBadge v-if="queue.transactionType" :label="queue.transactionType"
+                    :color="getTransactionColor(queue.transactionType)" variant="soft" class="font-semibold" />
+            </div>
+        </template>
         <template #body>
             <div class="flex flex-col gap-6">
                 <!-- Status & Identity -->
@@ -70,9 +90,20 @@ const description = computed(() => {
                     </div>
                     <div v-if="queue.counter" class="flex flex-col gap-1 text-right">
                         <span class="text-xs font-medium text-dimmed uppercase tracking-wider">Counter</span>
-                        <div class="font-bold text-lg flex items-center gap-1 justify-end">
+                        <div class="font-semibold text-sm flex items-center gap-1 justify-end">
                             <UIcon name="i-lucide-monitor" class="size-5" />
                             {{ queue.counter }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HMO, PWD, Senior, etc -->
+                <div v-if="displayTags.length" class="flex items-center justify-between">
+                    <div class="flex flex-col gap-1">
+                        <span class="text-xs font-medium text-dimmed uppercase tracking-wider">Details</span>
+                        <div class="flex flex-wrap gap-2">
+                            <UBadge v-for="tag in displayTags" :key="tag" :label="tag" :color="getTagColor(tag)"
+                                variant="soft" />
                         </div>
                     </div>
                 </div>

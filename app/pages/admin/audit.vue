@@ -82,5 +82,11 @@ const columns = [
         <template #time-cell="{ row }">
             <span class="whitespace-nowrap">{{ row.original.time }}</span>
         </template>
+        <template #empty>
+            <div class="flex flex-col items-center justify-center py-12 gap-2">
+                <UIcon name="i-lucide-scroll-text" class="size-12 text-dimmed opacity-50" />
+                <p class="text-dimmed">No audit logs recorded yet.</p>
+            </div>
+        </template>
     </UTable>
 </template>

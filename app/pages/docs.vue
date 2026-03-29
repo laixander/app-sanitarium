@@ -331,7 +331,7 @@ const techStack = [
                                 :ui="{ body: 'sm:p-4' }">
                                 <div class="flex items-center gap-3 mb-1">
                                     <UBadge color="primary" variant="subtle" size="sm" class="font-mono">{{ api.method
-                                        }}
+                                    }}
                                     </UBadge>
                                     <span class="font-mono font-bold">{{ api.path }}</span>
                                 </div>
@@ -388,7 +388,7 @@ const techStack = [
                                 <div :class="index > 0 ? 'opacity-60' : ''">
                                     <span class="text-xs font-mono text-neutral-500">{{
                                         item.date
-                                        }}</span>
+                                    }}</span>
                                     <h5 class="font-bold mt-1">
                                         {{ item.version }} - {{ item.title }}
                                     </h5>

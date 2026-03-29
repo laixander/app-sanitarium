@@ -28,6 +28,8 @@ const completed = computed(() => props.tickets.filter(t => t.status === 'complet
                 </div>
                 <div class="flex flex-col gap-2 p-6 max-h-96 overflow-y-auto">
                     <CounterQueueTicket v-for="item in waiting" :key="item.id" v-bind="item" hide-index />
+                    <UEmpty v-if="waiting.length === 0" description="No Data" variant="naked"
+                        :ui="{ root: 'sm:p-4 lg:p-4' }" />
                 </div>
             </div>
             <!-- Serving -->
@@ -39,6 +41,8 @@ const completed = computed(() => props.tickets.filter(t => t.status === 'complet
                 </div>
                 <div class="flex flex-col gap-2 p-6 max-h-96 overflow-y-auto">
                     <CounterQueueTicket v-for="item in serving" :key="item.id" v-bind="item" hide-index />
+                    <UEmpty v-if="serving.length === 0" description="No Data" variant="naked"
+                        :ui="{ root: 'sm:p-4 lg:p-4' }" />
                 </div>
             </div>
             <!-- Missed -->
@@ -50,6 +54,8 @@ const completed = computed(() => props.tickets.filter(t => t.status === 'complet
                 </div>
                 <div class="flex flex-col gap-2 p-6 max-h-96 overflow-y-auto">
                     <CounterQueueTicket v-for="item in missed" :key="item.id" v-bind="item" hide-index />
+                    <UEmpty v-if="missed.length === 0" description="No Data" variant="naked"
+                        :ui="{ root: 'sm:p-4 lg:p-4' }" />
                 </div>
             </div>
             <!-- Completed -->
@@ -61,6 +67,8 @@ const completed = computed(() => props.tickets.filter(t => t.status === 'complet
                 </div>
                 <div class="flex flex-col gap-2 p-6 max-h-96 overflow-y-auto">
                     <CounterQueueTicket v-for="item in completed" :key="item.id" v-bind="item" hide-index />
+                    <UEmpty v-if="completed.length === 0" description="No Data" variant="naked"
+                        :ui="{ root: 'sm:p-4 lg:p-4' }" />
                 </div>
             </div>
         </div>

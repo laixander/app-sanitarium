@@ -335,9 +335,12 @@ fetchPanelStatus()
                         {{ tickets.length }}
                         <span class="text-sm font-normal text-muted-foreground">Total</span>
                     </div> -->
-                    <div class="h-16 w-full mt-2">
-                        <ChartBarChart :data="ticketStatusData.data" :labels="ticketStatusData.labels"
-                            :color="['#f59e0b', '#3b82f6', '#10b981', '#ef4444']" label="Tickets" />
+                    <div class="w-full mt-2" :class="tickets.length === 0 ? 'h-full pb-6' : 'h-20'">
+                        <ChartBarChart v-if="tickets.length > 0" :data="ticketStatusData.data"
+                            :labels="ticketStatusData.labels" :color="['#f59e0b', '#3b82f6', '#10b981', '#ef4444']"
+                            label="Tickets" />
+                        <UEmpty v-else description="No Data" variant="naked"
+                            :ui="{ root: 'h-full p-0 sm:p-0 lg:p-0' }" />
                     </div>
                 </template>
             </UiFStatCard>
@@ -347,9 +350,12 @@ fetchPanelStatus()
                         {{ tickets.length }}
                         <span class="text-sm font-normal text-muted-foreground">Queue</span>
                     </div> -->
-                    <div class="h-16 w-full mt-2">
-                        <ChartFilledLineChart :data="ticketsOverTime.data" :labels="ticketsOverTime.labels"
-                            color="#a855f7" backgroundColor="rgba(168, 85, 247, 0.2)" label="Tickets Generated" />
+                    <div class="w-full mt-2" :class="tickets.length === 0 ? 'h-full pb-6' : 'h-20'">
+                        <ChartFilledLineChart v-if="tickets.length > 0" :data="ticketsOverTime.data"
+                            :labels="ticketsOverTime.labels" color="#a855f7" backgroundColor="rgba(168, 85, 247, 0.2)"
+                            label="Tickets Generated" />
+                        <UEmpty v-else description="No Data" variant="naked"
+                            :ui="{ root: 'h-full p-0 sm:p-0 lg:p-0' }" />
                     </div>
                 </template>
             </UiFStatCard>
@@ -362,9 +368,12 @@ fetchPanelStatus()
                             <UIcon name="i-lucide-circle-dot" class="mr-1 text-green-500 size-3" /> Active
                         </span>
                     </div> -->
-                    <div class="h-16 w-full mt-2">
-                        <ChartBarChart :data="agentStatusData.data" :labels="agentStatusData.labels"
-                            :color="['#10b981', '#3b82f6', '#f59e0b', '#64748b']" label="Count" />
+                    <div class="w-full mt-2" :class="agents.length === 0 ? 'h-full pb-6' : 'h-20'">
+                        <ChartBarChart v-if="agents.length > 0" :data="agentStatusData.data"
+                            :labels="agentStatusData.labels" :color="['#10b981', '#3b82f6', '#f59e0b', '#64748b']"
+                            label="Count" />
+                        <UEmpty v-else description="No Data" variant="naked"
+                            :ui="{ root: 'h-full p-0 sm:p-0 lg:p-0' }" />
                     </div>
                 </template>
             </UiFStatCard>
@@ -376,9 +385,13 @@ fetchPanelStatus()
                             <UIcon name="i-lucide-check" class="mr-1 text-purple-500 size-3" /> Done
                         </span>
                     </div> -->
-                    <div class="h-16 w-full mt-2">
-                        <ChartFilledLineChart :datasets="completedOverTime.datasets"
-                            :labels="completedOverTime.labels" />
+                    <div class="w-full mt-2"
+                        :class="tickets.filter(t => t.status === 'completed' || t.status === 'missed').length === 0 ? 'h-full pb-6' : 'h-20'">
+                        <ChartFilledLineChart
+                            v-if="tickets.filter(t => t.status === 'completed' || t.status === 'missed').length > 0"
+                            :datasets="completedOverTime.datasets" :labels="completedOverTime.labels" />
+                        <UEmpty v-else description="No Data" variant="naked"
+                            :ui="{ root: 'h-full p-0 sm:p-0 lg:p-0' }" />
                     </div>
                 </template>
             </UiFStatCard>
@@ -479,6 +492,12 @@ fetchPanelStatus()
                         :ui="{ content: 'w-auto' }" size="sm">
                         <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" size="sm" />
                     </UDropdownMenu>
+                </template>
+                <template #empty>
+                    <div class="flex flex-col items-center justify-center py-12 gap-2">
+                        <UIcon name="i-lucide-user" class="size-12 text-dimmed opacity-50" />
+                        <p class="text-dimmed">No agents found.</p>
+                    </div>
                 </template>
             </UTable>
         </UiFCard>

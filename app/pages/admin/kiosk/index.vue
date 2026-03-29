@@ -86,5 +86,11 @@ const getActionItems = (row: any) => [
                 </UDropdownMenu>
             </div>
         </template>
+        <template #empty>
+            <div class="flex flex-col items-center justify-center py-12 gap-2">
+                <UIcon name="i-lucide-monitor-smartphone" class="size-12 text-dimmed opacity-50" />
+                <p class="text-dimmed">No kiosk flows recorded yet.</p>
+            </div>
+        </template>
     </UTable>
 </template>

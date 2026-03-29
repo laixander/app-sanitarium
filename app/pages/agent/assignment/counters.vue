@@ -54,6 +54,8 @@ function onDeleteCounter(counter: Counter) {
             <AgentCounterList v-for="counter in counters" :key="counter.id" :title="counter.name"
                 :description="counter.description" :color="counter.color" @edit="onEditCounter(counter)"
                 @delete="onDeleteCounter(counter)" />
+            <UEmpty v-if="counters.length === 0" icon="i-lucide-inbox" title="No counters found"
+                description="It looks like you haven't added any counters. Create one to get started." />
         </UCard>
     </div>
 

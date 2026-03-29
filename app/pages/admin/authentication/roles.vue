@@ -60,6 +60,8 @@ function openConfirmModal(config: { title: string, description: string, confirmL
                 <AdminRoleList v-for="role in roles" :key="role.title" :title="role.title"
                     :user-count="getUserCount(role.title)" :permissions="role.permissions" :color="role.color"
                     @edit="onEdit(role)" @delete="onDelete(role)" />
+                <UEmpty v-if="roles.length === 0" icon="i-lucide-user-cog" title="No roles found"
+                    description="It looks like you haven't added any roles. Create one to get started." />
             </UCard>
         </div>
     </div>

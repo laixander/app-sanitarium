@@ -49,7 +49,7 @@ const items = [
 ] as any[][]
 
 // Draggable logic
-const position = ref({ x: 24, y: 24 }) // relative to bottom-right initially
+const position = ref({ x: 24, y: 24 }) // relative to bottom-left initially
 const isDragging = ref(false)
 const dragStart = ref({ x: 0, y: 0 })
 const initialPosition = ref({ x: 0, y: 0 })
@@ -76,7 +76,7 @@ const handleMouseMove = (e: MouseEvent) => {
     }
 
     position.value = {
-        x: initialPosition.value.x - dx,
+        x: initialPosition.value.x + dx,
         y: initialPosition.value.y - dy
     }
 }
@@ -91,13 +91,12 @@ const handleMouseUp = () => {
 <template>
     <div class="fixed z-[999] group select-none" :style="{
         bottom: `${position.y}px`,
-        right: `${position.x}px`,
-        // When relative to bottom-right, we use negative for 'away' from corner if we want it to stay there, 
-        // but simpler to use positive bottom/right.
+        left: `${position.x}px`,
+        // When relative to bottom-left, we use positive bottom/left.
         // Let's refine the initial position.
     }">
         <!-- Main FAB -->
-        <UDropdownMenu :items="items" :content="{ align: 'end', side: 'top', sideOffset: 12 }" :ui="{ content: 'w-56' }"
+        <UDropdownMenu :items="items" :content="{ align: 'start', side: 'top', sideOffset: 12 }" :ui="{ content: 'w-56' }"
             :prevent-close="hasMoved">
             <UButton square size="xl" variant="solid" color="primary" :loading="isLoading"
                 class="rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 ring-4 ring-primary-500/20 cursor-move"
@@ -119,7 +118,7 @@ const handleMouseUp = () => {
 
         <!-- Tooltip hint (visible on hover) -->
         <span
-            class="absolute right-full mr-4 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-neutral-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-xl border border-neutral-800">
+            class="absolute left-full ml-4 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-neutral-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-xl border border-neutral-800">
             Demo Control Center
         </span>
     </div>
