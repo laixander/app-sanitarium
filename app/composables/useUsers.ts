@@ -2,6 +2,7 @@ import type { User } from '~/types/user'
 
 export const useUsers = () => {
     const users = useState<User[]>('users', () => [])
+    const { logActivity } = useAudits()
 
     // Initialize users from API if empty
     const { data: initialUsers } = useFetch<User[]>('/api/users', {
@@ -96,11 +97,28 @@ export const useUsers = () => {
         }
         users.value = [newUser, ...users.value]
         saveToLocal()
+
+        logActivity({
+            title: 'User Created',
+            description: `New ${userData.role} account created for ${userData.name}`,
+            category: 'Account Management',
+            actor: 'Admin'
+        })
     }
 
     const deleteUser = (id: number) => {
+        const user = users.value.find(u => u.id === id)
         users.value = users.value.filter(u => u.id !== id)
         saveToLocal()
+
+        if (user) {
+            logActivity({
+                title: 'User Deleted',
+                description: `Account for ${user.name} was removed from the system`,
+                category: 'Account Management',
+                actor: 'Admin'
+            })
+        }
     }
 
     const updateUser = (id: number, userData: Partial<Omit<User, 'id'>>) => {
@@ -129,6 +147,24 @@ export const useUsers = () => {
                 ...(hasAssignment ? (isFirstAssignment ? { dateAssigned: now } : { dateUpdated: now }) : {})
             } as User
             saveToLocal()
+
+            const changedFields = []
+            if (userData.transaction) changedFields.push(`transaction to ${userData.transaction}`)
+            if (userData.counter) changedFields.push(`counter to ${userData.counter}`)
+            if (userData.schedule) changedFields.push(`schedule to ${userData.schedule}`)
+
+            const logTitle = changedFields.length > 0 ? 'Assignment Updated' : 'User Updated'
+            const logDescription = changedFields.length > 0
+                ? `Assigned ${changedFields.join(', ')} for ${user.name}`
+                : `Updated details for ${user.name}`
+            const logCategory = changedFields.length > 0 ? 'Assignment Management' : 'Account Management'
+
+            logActivity({
+                title: logTitle,
+                description: logDescription,
+                category: logCategory,
+                actor: 'Admin'
+            })
         }
     }
 

@@ -7,10 +7,13 @@ definePageMeta({
     fullWidth: true
 })
 
-const { audits } = useAudits()
+const { audits, clearAudits } = useAudits()
+const { info } = useAppToast()
 const globalFilter = ref('')
 const table = useTemplateRef('table')
 const columnVisibility = ref({})
+const isClearModalOpen = ref(false)
+
 
 const columns = [
     {
@@ -34,11 +37,22 @@ const columns = [
         header: 'Time'
     }
 ]
+
+const handleClear = () => {
+    isClearModalOpen.value = true
+}
+
+const onConfirmClear = () => {
+    clearAudits()
+    info('Audit Logs Cleared', 'All activity logs have been permanently deleted.')
+}
 </script>
 <template>
     <div class="grid grid-cols-1 md:flex justify-between gap-2 px-4 sm:px-6 py-3.5 border-b border-default">
         <UInput v-model="globalFilter" class="max-w-full md:max-w-sm" placeholder="Filter..." />
         <div class="grid grid-cols-1 md:flex gap-2">
+            <UButton label="Clear logs" color="error" variant="soft" icon="i-lucide-trash-2"
+                :disabled="!audits.length" @click="handleClear" />
             <Export filename="Audit Logs" />
             <UDropdownMenu :items="table?.tableApi
                 ?.getAllColumns()
@@ -89,4 +103,8 @@ const columns = [
             </div>
         </template>
     </UTable>
+
+    <ConfirmationModal v-model:open="isClearModalOpen" title="Clear Audit Logs"
+        description="Are you sure you want to clear all audit logs? This action cannot be undone."
+        confirm-label="Clear All" confirm-color="error" @confirm="onConfirmClear" />
 </template>

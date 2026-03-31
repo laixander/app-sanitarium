@@ -17,6 +17,7 @@ export const DEFAULT_BRANDING: BrandingState = {
 export const useBranding = () => {
     const branding = useState<BrandingState>('branding', () => DEFAULT_BRANDING)
     const isLoaded = useState<boolean>('branding_loaded', () => false)
+    const { logActivity } = useAudits()
 
     if (import.meta.client && !isLoaded.value) {
         onMounted(() => {
@@ -37,6 +38,13 @@ export const useBranding = () => {
         if (import.meta.client) {
             localStorage.setItem('branding_settings', JSON.stringify(branding.value))
         }
+
+        logActivity({
+            title: 'Branding Updated',
+            description: `Global branding and theme settings were modified`,
+            category: 'System Configuration',
+            actor: 'Admin'
+        })
     }
 
     const resetBranding = () => {
@@ -44,6 +52,13 @@ export const useBranding = () => {
         if (import.meta.client) {
             localStorage.removeItem('branding_settings')
         }
+
+        logActivity({
+            title: 'Branding Reset',
+            description: `Global branding settings were reset to defaults`,
+            category: 'System Configuration',
+            actor: 'Admin'
+        })
     }
 
     return {

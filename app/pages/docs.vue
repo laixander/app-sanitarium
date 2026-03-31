@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { NavigationMenuItem } from "@nuxt/ui";
+const appConfig = useAppConfig()
 
 definePageMeta({
     layout: "landing",
@@ -31,23 +31,33 @@ const apiEndpoints = [
     {
         method: "GET",
         path: "/api/users",
-        description: "Fetch all users with their roles and current status.",
+        description: "Fetch all users with their roles and agent status.",
     },
     {
         method: "GET",
         path: "/api/queue",
         description:
-            "Get live queue data including waiting, serving, and completed tickets.",
+            "Get live queue lines, including waiting, serving, and completed tickets.",
     },
     {
         method: "GET",
         path: "/api/audits",
-        description: "Retrieve system-wide audit logs for security and tracking.",
+        description: "Retrieve system-wide activity logs (Audits) for transparency.",
+    },
+    {
+        method: "GET",
+        path: "/api/queue-panel",
+        description: "Fetch real-time data specifically for the Lobby Display Panel.",
+    },
+    {
+        method: "POST",
+        path: "/api/panel-status",
+        description: "Manage lobby panel visibility and active announcement states.",
     },
     {
         method: "GET",
         path: "/api/roles",
-        description: "List all available user roles and permissions.",
+        description: "List all available user roles and their permission sets.",
     },
 ];
 
@@ -55,55 +65,89 @@ const dataModels = [
     {
         name: "User",
         fields:
-            "id, name, email, role, code, transaction, agentStatus, counter, ticket, served, avgService, schedule, createdAt, updatedAt, createdBy, updatedBy",
+            "id, name, email, role, code, transaction, agentStatus, counter, ticket, served, avgService, schedule, createdAt, updatedAt",
     },
     {
         name: "Ticket",
         fields:
-            "id, ticket, transactionType, tags, status, counter, isHmo, isPriority, createdAt, servedAt, completedAt",
+            "id, ticket, transactionType, status, counter, isHmo, isPriority, tags, createdAt, servedAt, completedAt",
     },
-    { name: "Audit", fields: "id, user, action, timestamp" },
+    { 
+        name: "Audit", 
+        fields: "id, title, description, category, actor, time" 
+    },
     {
         name: "KioskFlow",
         fields:
-            "id, name, status, title, description, welcomeTitle, welcomeDescription, layout, languages, showQR, showLanguageToggle, idleEnabled, idleTimeout, idleMedia, updatedAt",
+            "id, name, status, title, description, layout, languages, idleEnabled, idleTimeout, idleMedia, updatedAt",
     },
 ];
 
 const workflowSteps = [
     {
         title: "Ticket Generation",
-        description: "Patient selects a transaction type at the Kiosk.",
+        description: "Patient selects a transaction at the Kiosk. Audit: Ticket Created.",
         status: "Waiting",
     },
     {
         title: "Queue Entry",
-        description: "Ticket is assigned a number and enters the system queue.",
+        description: "Ticket enters the system. Real-time sync across all dashboards.",
         status: "Queued",
     },
     {
         title: "Agent Call",
-        description: "Agent notifies the next patient via the Counter Display.",
+        description: "Agent calls ticket. Lobby Panel announces current ticket & counter.",
         status: "Calling",
     },
     {
-        title: "Service Delivery",
-        description: "Agent serves the patient at the designated counter.",
+        title: "Service",
+        description: "Agent serves patient. Performance metrics (SLA) are tracked.",
         status: "Serving",
     },
     {
         title: "Completion",
-        description: "Agent marks the transaction as finished.",
+        description: "Agent completes ticket. Audit: Ticket Completed.",
         status: "Completed",
     },
     {
         title: "Feedback",
-        description: "Patient provides optional feedback on the service.",
+        description: "Optional patient feedback gathered via post-service module.",
         status: "Feedback",
     },
 ];
 
 const changelogItems = [
+    {
+        date: "March 31, 2026",
+        version: "v1.6.1",
+        title: "Documentation Alignment",
+        changes: [
+            "Synchronized documentation with current application architecture",
+            "Refined TOC and content alignment for improved readability",
+            "Updated API and Data Model references to match production schema",
+        ],
+    },
+    {
+        date: "March 30, 2026",
+        version: "v1.6.0",
+        title: "Lobby Panel & Dynamic Audits",
+        changes: [
+            "Launched Lobby Queue Display for patient-facing announcements",
+            "Implemented persistent system-wide Audit Logging (useAudits)",
+            "Integrated real-time state synchronization via localStorage and API",
+            "Added support for dynamic transaction-based ticket prefixes (e.g., C-001)",
+        ],
+    },
+    {
+        date: "March 29, 2026",
+        version: "v1.5.5",
+        title: "Counter Interface Refinement",
+        changes: [
+            "Introduced CounterStats for real-time performance tracking",
+            "Enhanced counter status visibility with transaction-specific themes",
+            "Optimized ticket call workflow with session persistence",
+        ],
+    },
     {
         date: "March 28, 2026",
         version: "v1.5.0",
@@ -127,67 +171,42 @@ const changelogItems = [
             "Enhanced landing page with modern mesh background",
         ],
     },
-    {
-        date: "March 27, 2026",
-        version: "v1.3.0",
-        title: "Queue Display Update",
-        changes: ["Added Queue Lobby Panel for patient-facing queue display"],
-    },
-    {
-        date: "March 27, 2026",
-        version: "v1.2.0",
-        title: "Operations Update",
-        changes: [
-            "Added centralized Toast Notification system (`useAppToast`)",
-            'Introduced "Quick Guide" documentation page',
-            "Updated Dashboard sidebar with improved navigation",
-        ],
-    },
-    {
-        date: "March 24, 2026",
-        version: "v1.1.0",
-        title: "Feedback",
-        changes: [
-            "Enhanced Feedback Management for agents",
-            "Added QR Code generation for kiosks",
-        ],
-    },
 ];
 
 const modules = [
     {
         name: "Kiosk",
-        desc: "Patient-facing interface for selecting services and printing tickets.",
+        desc: "Omni-channel interface for ticket generation and priority routing.",
         icon: "i-lucide-monitor",
     },
     {
-        name: "Queue Lobby Panel",
-        desc: "Patient-facing display showing live queue lines and serving counters.",
+        name: "Lobby Display",
+        desc: "Large-screen dashboard showing live queue maps and announcements.",
         icon: "i-lucide-users",
     },
     {
-        name: "Agent Dashboard",
-        desc: "Interface for staff to call, serve, and complete patient tickets.",
+        name: "Agent Counter",
+        desc: "High-performance interface for calling and managing active tickets.",
         icon: "i-lucide-user-cog",
     },
     {
-        name: "Kiosk Content",
-        desc: "Dynamic flow builder for customizing the patient kiosk experience.",
+        name: "Kiosk Builder",
+        desc: "Low-code visual editor for customizing visitor flows and idle media.",
         icon: "i-lucide-layout-template",
     },
     {
         name: "Admin Console",
-        desc: "System-wide configuration, user management, and audit tracking.",
+        desc: "Unified center for audits, role configuration, and system logs.",
         icon: "i-lucide-shield-check",
     },
     {
         name: "Counter Display",
-        desc: "Public-facing screens showing current tickets being served.",
+        desc: "Point-of-service screens for individual counter number visibility.",
         icon: "i-lucide-tv-2",
     },
     {
-        name: "Feedback System",
-        desc: "Captures patient satisfaction data post-service.",
+        name: "Feedback",
+        desc: "Embedded satisfaction surveys for post-service patient analytics.",
         icon: "i-lucide-heart-handshake",
     },
 ];
@@ -223,11 +242,17 @@ const techStack = [
                 <!-- Sidebar TOC -->
                 <aside class="hidden lg:block w-64 sticky top-24 shrink-0">
                     <div class="flex flex-col gap-4">
+                        <div class="px-2 mb-2">
+                            <UBadge variant="soft" size="md" class="rounded-full px-3 font-mono">
+                                v{{ appConfig.version }}
+                            </UBadge>
+                        </div>
                         <UNavigationMenu :ui="{ linkTrailingIcon: 'hidden' }" orientation="vertical"
                             :items="sections" />
                     </div>
                 </aside>
 
+                <!-- Main Content -->
                 <div class="flex-1 max-w-4xl space-y-16">
                     <!-- Platform Overview -->
                     <DocsSection id="overview" title="Platform Overview" icon="i-lucide-info">
@@ -412,7 +437,7 @@ const techStack = [
     scroll-behavior: smooth;
 }
 
-.scroll-mt-20 {
-    scroll-margin-top: 5rem;
+.scroll-mt-24 {
+    scroll-margin-top: 6rem;
 }
 </style>

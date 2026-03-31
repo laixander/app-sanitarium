@@ -3,6 +3,7 @@ import type { Ticket, TicketStatus } from '~/types/queue'
 
 export const useTickets = () => {
     const tickets = useState<Ticket[]>('tickets', () => [])
+    const { logActivity } = useAudits()
 
     // Initialize tickets from API if empty
     const { data: initialTickets } = useFetch<Ticket[]>('/api/queue', {
@@ -76,6 +77,14 @@ export const useTickets = () => {
 
         tickets.value = [...tickets.value, newTicket]
         saveToLocal()
+
+        logActivity({
+            title: 'Ticket Created',
+            description: `New ticket ${data.ticket} generated for ${data.transactionType}`,
+            category: 'Queue Management',
+            actor: 'Kiosk'
+        })
+
         return newTicket
     }
 
@@ -90,6 +99,17 @@ export const useTickets = () => {
                 ...(status === 'serving' ? { servedAt: now } : {}),
                 ...(status === 'completed' ? { completedAt: now } : {})
             }
+
+            const ticket = tickets.value[index]
+            const actionText = status === 'serving' ? 'Called' : (status === 'completed' ? 'Completed' : (status === 'missed' ? 'Marked as No-Show' : (status === 'waiting' ? 'Put Back to Queue' : status)))
+            
+            logActivity({
+                title: `Ticket ${actionText}`,
+                description: `Ticket ${ticket?.ticket} ${actionText.toLowerCase()} ${counter ? `at ${counter}` : ''}`,
+                category: 'Queue Management',
+                actor: counter || 'System'
+            })
+
             saveToLocal()
         }
     }

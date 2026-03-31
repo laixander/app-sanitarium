@@ -96,10 +96,10 @@ const handleMouseUp = () => {
         // Let's refine the initial position.
     }">
         <!-- Main FAB -->
-        <UDropdownMenu :items="items" :content="{ align: 'start', side: 'top', sideOffset: 12 }" :ui="{ content: 'w-56' }"
+        <UDropdownMenu :items="items" :content="{ align: 'start', side: 'top', sideOffset: 12 }" :ui="{ content: 'w-44' }"
             :prevent-close="hasMoved">
-            <UButton square size="xl" variant="solid" color="primary" :loading="isLoading"
-                class="rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 ring-4 ring-primary-500/20 cursor-move"
+            <UButton square size="xl" color="primary" :loading="isLoading"
+                class="rounded-full hover:scale-110 active:scale-95 transition-all duration-300 ring-4 ring-primary-500/20 cursor-move"
                 :class="{ 'animate-pulse': isLoading }" @mousedown="handleMouseDown"
                 @click.capture="hasMoved ? $event.stopPropagation() : null">
                 <template #leading>
@@ -123,9 +123,3 @@ const handleMouseUp = () => {
         </span>
     </div>
 </template>
-
-<style scoped>
-.shadow-2xl {
-    box-shadow: 0 25px 50px -12px rgba(var(--color-primary-500), 0.5);
-}
-</style>

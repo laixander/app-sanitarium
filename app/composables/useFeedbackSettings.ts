@@ -30,12 +30,20 @@ export const useFeedbackSettings = () => {
     }
 
     const settings = useState<FeedbackSettings>('feedbackSettings', () => defaultSettings)
+    const { logActivity } = useAudits()
 
     const saveSettings = (newSettings: FeedbackSettings) => {
         settings.value = { ...newSettings }
         if (import.meta.client) {
             localStorage.setItem('sanitarium_feedback_settings', JSON.stringify(settings.value))
         }
+
+        logActivity({
+            title: 'Feedback Config Updated',
+            description: `Kiosk feedback survey and rating settings were modified`,
+            category: 'System Configuration',
+            actor: 'Admin'
+        })
     }
 
     const reloadSettings = () => {

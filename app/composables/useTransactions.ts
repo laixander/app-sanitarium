@@ -1,6 +1,7 @@
 import type { TransactionCategory } from '~/types/transaction'
 
 export const useTransactions = () => {
+    const { logActivity } = useAudits()
     const transactions = useState<TransactionCategory[]>('transactions', () => [])
 
     const reloadTransactions = () => {
@@ -50,19 +51,44 @@ export const useTransactions = () => {
         const id = Date.now().toString()
         transactions.value = [...transactions.value, { ...data, id }]
         saveToLocal()
+
+        logActivity({
+            title: 'Category Created',
+            description: `New transaction category '${data.name}' was added`,
+            category: 'Assignment Management',
+            actor: 'Admin'
+        })
     }
 
     const updateTransaction = (id: string, data: Partial<Omit<TransactionCategory, 'id'>>) => {
         const index = transactions.value.findIndex(t => t.id === id)
         if (index !== -1) {
-            transactions.value[index] = { ...transactions.value[index], ...data } as TransactionCategory
+            const transaction = transactions.value[index]
+            transactions.value[index] = { ...transaction, ...data } as TransactionCategory
             saveToLocal()
+
+            logActivity({
+                title: 'Category Updated',
+                description: `Transaction category '${transaction?.name}' was modified`,
+                category: 'Assignment Management',
+                actor: 'Admin'
+            })
         }
     }
 
     const deleteTransaction = (id: string) => {
+        const transaction = transactions.value.find(t => t.id === id)
         transactions.value = transactions.value.filter(t => t.id !== id)
         saveToLocal()
+
+        if (transaction) {
+            logActivity({
+                title: 'Category Deleted',
+                description: `Transaction category '${transaction.name}' was removed`,
+                category: 'Assignment Management',
+                actor: 'Admin'
+            })
+        }
     }
 
     return {

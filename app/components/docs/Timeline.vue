@@ -15,7 +15,7 @@ const props = defineProps<{
     <div class="relative border-l-2 border-primary/20 ml-4 space-y-12">
         <div v-for="(item, i) in props.items" :key="i" class="relative pl-8">
             <div
-                class="absolute -left-[5px] top-2 w-2 h-2 rounded-full bg-primary ring-4 ring-white dark:ring-neutral-950" />
+                class="absolute -left-[5px] top-2 w-2 h-2 rounded-full bg-primary ring-4 ring-white dark:ring-neutral-900" />
 
             <slot name="item" :item="item" :index="i">
                 <UBadge v-if="item.status" :variant="i === 0 ? 'solid' : 'subtle'" class="mb-2">

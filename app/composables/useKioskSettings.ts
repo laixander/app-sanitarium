@@ -23,6 +23,7 @@ export interface KioskFlow extends KioskSettings {
 }
 
 export const useKioskSettings = () => {
+    const { logActivity } = useAudits()
     const defaultSettings: KioskSettings = {
         title: '',
         description: '',
@@ -69,6 +70,14 @@ export const useKioskSettings = () => {
         }
         flows.value.push(newFlow)
         saveFlows()
+
+        logActivity({
+            title: 'Kiosk Flow Created',
+            description: `New kiosk flow '${config.name}' was created`,
+            category: 'Kiosk Management',
+            actor: 'Admin'
+        })
+
         return newFlow
     }
 
@@ -85,22 +94,49 @@ export const useKioskSettings = () => {
                 }
                 flows.value[index] = updated
                 saveFlows()
+
+                logActivity({
+                    title: 'Kiosk Flow Updated',
+                    description: `Kiosk flow '${current.name}' settings were modified`,
+                    category: 'Kiosk Management',
+                    actor: 'Admin'
+                })
             }
         }
     }
 
     const deleteFlow = (id: string) => {
+        const flow = flows.value.find(f => f.id === id)
         flows.value = flows.value.filter(f => f.id !== id)
         if (activeFlowId.value === id) activeFlowId.value = null
         saveFlows()
+
+        if (flow) {
+            logActivity({
+                title: 'Kiosk Flow Deleted',
+                description: `Kiosk flow '${flow.name}' was removed`,
+                category: 'Kiosk Management',
+                actor: 'Admin'
+            })
+        }
     }
 
     const activateFlow = (id: string) => {
+        const flow = flows.value.find(f => f.id === id)
         flows.value.forEach(f => {
             f.status = f.id === id ? 'Active' : 'Draft'
         })
         activeFlowId.value = id
         saveFlows()
+
+        if (flow) {
+            logActivity({
+                title: 'Kiosk Flow Activated',
+                description: `Kiosk flow '${flow.name}' is now active`,
+                category: 'Kiosk Management',
+                actor: 'Admin'
+            })
+        }
     }
 
     const reloadSettings = () => {
