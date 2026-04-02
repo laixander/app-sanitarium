@@ -1,4 +1,5 @@
 import type { User } from '~/types/user'
+import { getNowStamp } from '~/utils/date'
 
 export const useUsers = () => {
     const users = useState<User[]>('users', () => [])
@@ -71,14 +72,7 @@ export const useUsers = () => {
         const maxId = users.value.reduce((max, u) => Math.max(max, u.id), 0)
         const id = maxId + 1
 
-        const now = new Date().toLocaleString('en-US', { 
-            month: 'short', 
-            day: '2-digit', 
-            year: 'numeric', 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            hour12: true 
-        })
+        const now = getNowStamp()
 
         const isAgent = userData.role === 'Agent'
         const email = userData.email || (isAgent ? `${userData.name.toLowerCase().replace(/\s+/g, '.')}@sanitarium.com` : userData.email)
@@ -130,14 +124,7 @@ export const useUsers = () => {
             const user = users.value[index]
             if (!user) return
 
-            const now = new Date().toLocaleString('en-US', { 
-                month: 'short', 
-                day: '2-digit', 
-                year: 'numeric', 
-                hour: '2-digit', 
-                minute: '2-digit', 
-                hour12: true 
-            })
+            const now = getNowStamp()
 
             const hasAssignment = userData.transaction || userData.counter || userData.schedule
             const isFirstAssignment = !user.dateAssigned || user.dateAssigned === '-'

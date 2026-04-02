@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import type { KioskSettings, KioskFlow } from '~/composables/useKioskSettings'
+import { useKioskLocale } from '~/composables/useKioskLocale'
 
 const props = defineProps<{
     initialData?: KioskFlow
@@ -14,6 +15,7 @@ const emit = defineEmits<{
 }>()
 
 const { settings } = useKioskSettings()
+const { languages: availableLanguages } = useKioskLocale()
 
 const layouts = [
     { value: 'split', label: 'Split Screen', description: 'Video on the left, queue numbers on the right.' },
@@ -21,10 +23,10 @@ const layouts = [
     { value: 'sidebar', label: 'Sidebar Queue', description: 'Small sidebar for queue, majority for content.' }
 ]
 
-const languages = [
-    { value: 'en', label: 'English' },
-    { value: 'fil', label: 'Filipino' }
-]
+const languages = computed(() => availableLanguages.value.map(lang => ({
+    value: lang.code,
+    label: lang.name
+})))
 
 // Initialize state from existing data or defaults
 const state = ref<KioskSettings & { name: string; defaultLanguage: string }>({
@@ -65,7 +67,7 @@ const languageFields = computed(() => {
         { name: 'showLanguageToggle', label: 'Show Language Toggle', description: 'Enable the floating language selection button.', type: 'boolean' }
     ]
     if (!state.value.showLanguageToggle) {
-        fields.push({ name: 'defaultLanguage', label: 'Default Language', description: 'The display language for this kiosk', type: 'select', options: languages, multiple: false })
+        fields.push({ name: 'defaultLanguage', label: 'Default Language', description: 'The display language for this kiosk', type: 'select', options: languages.value, multiple: false })
     }
     return fields
 })
@@ -88,7 +90,7 @@ const idleFields = computed(() => {
 const getPayload = () => {
     const payload = { ...state.value, name: state.value.title || 'Untitled Flow' }
     if (payload.showLanguageToggle) {
-        payload.languages = languages.map(l => l.value)
+        payload.languages = languages.value.map(l => l.value)
     } else {
         payload.languages = [payload.defaultLanguage]
     }

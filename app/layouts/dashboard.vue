@@ -172,7 +172,7 @@ const items = computed<NavigationMenuItem[][]>(() => [
                 ]
             },
             {
-                label: 'Kiosk Content',
+                label: 'Kiosk Management',
                 icon: 'i-lucide-monitor-smartphone',
                 to: '/admin/kiosk',
                 active: route.path.startsWith('/admin/kiosk')

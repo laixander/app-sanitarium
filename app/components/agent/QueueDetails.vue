@@ -2,6 +2,7 @@
 import type { Ticket } from '~/types/queue'
 import { statusColors, tagColors } from '~/constants/queue'
 import { upperFirst } from 'scule'
+import { formatDateStamp } from '~/utils/date'
 
 const { transactions } = useTransactions()
 
@@ -25,10 +26,7 @@ const avgServiceTime = computed(() => getAverageServiceTime(props.queue.counter)
 
 const { waitingTime, serviceTime } = useQueueTime(props.queue.createdAt, props.queue.servedAt, props.queue.status, props.queue.accumulatedServiceDuration)
 
-const formatTime = (iso?: string) => {
-    if (!iso) return 'N/A'
-    return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-}
+const formatTime = (iso?: string) => formatDateStamp(iso)
 
 const description = computed(() => {
     switch (props.queue.status) {

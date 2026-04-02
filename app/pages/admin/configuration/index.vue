@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
-    title: 'Queue Configuration',
+    title: 'System Configuration',
     showUserToolbar: true,
 })
 
@@ -64,8 +64,7 @@ const isUnchanged = computed(() => {
             <UPageCard title="Queue Configuration" description="Manage queue settings" variant="naked"
                 orientation="horizontal" />
             <UCard variant="subtle" :ui="{ body: 'p-0 sm:p-0 divide-y divide-default' }">
-                <DynamicField v-for="field in queue" :key="field.name" :field="field"
-                    v-model="state[field.name]" />
+                <DynamicField v-for="field in queue" :key="field.name" :field="field" v-model="state[field.name]" />
             </UCard>
         </div>
 

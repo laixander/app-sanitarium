@@ -1,4 +1,5 @@
 import type { AuditLog } from '~/types/audit'
+import { getNowStamp } from '~/utils/date'
 
 export const useAudits = () => {
     const audits = useState<AuditLog[]>('audits', () => [])
@@ -33,14 +34,7 @@ export const useAudits = () => {
 
     const logActivity = (log: Omit<AuditLog, 'id' | 'time'>) => {
         const id = String(Date.now())
-        const time = new Date().toLocaleString('en-US', {
-            month: 'short',
-            day: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
-        })
+        const time = getNowStamp()
 
         const newLog: AuditLog = {
             id,

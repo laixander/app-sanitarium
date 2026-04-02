@@ -2,7 +2,7 @@
 import type { Role } from '~/types/role'
 
 definePageMeta({
-    title: 'Role-Based Access Control',
+    title: 'Authentication & Roles',
     showUserToolbar: true,
 })
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
-    title: 'Security Settings',
+    title: 'Authentication & Roles',
     showUserToolbar: true,
 })
 

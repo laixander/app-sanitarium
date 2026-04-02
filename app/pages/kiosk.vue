@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue';
+import { useKioskLocale } from '~/composables/useKioskLocale';
 
 type KioskStep = 'welcome' | 'payment' | 'priority' | 'summary' | 'ticket';
 
@@ -12,7 +13,7 @@ const kioskData = reactive({
     queueNumber: 'A001'
 });
 
-const queueType = computed(() => kioskData.isPriority ? t('kiosk.priority_queue') : t('kiosk.regular_queue'));
+// const queueType = computed(() => kioskData.isPriority ? t('kiosk.priority_queue') : t('kiosk.regular_queue'));
 
 const handleTransactionSelect = (transaction: string) => {
     kioskData.transactionType = transaction;
@@ -37,7 +38,7 @@ const handleConfirm = () => {
     const prefix = transaction?.code || kioskData.transactionType.charAt(0).toUpperCase();
     const num = Math.floor(Math.random() * 100).toString().padStart(3, '0');
     kioskData.queueNumber = `${prefix}${num}`;
-    
+
     // Create the actual ticket in the shared state
     createQueueTicket({
         ticket: kioskData.queueNumber,
@@ -67,13 +68,13 @@ let idleTimer: ReturnType<typeof setTimeout> | null = null;
 const resetIdleTimer = () => {
     if (idleTimer) clearTimeout(idleTimer);
     if (!settings.value.idleEnabled) return;
-    
+
     // If returning from idle, reset the flow to welcome screen
     if (isIdle.value) {
         resetKiosk();
     }
     isIdle.value = false;
-    
+
     idleTimer = setTimeout(() => {
         isIdle.value = true;
         resetKiosk();
@@ -108,7 +109,7 @@ onUnmounted(() => {
 
 watch(() => settings.value, resetIdleTimer, { deep: true });
 watch(
-    () => [settings.value.showLanguageToggle, settings.value.languages], 
+    () => [settings.value.showLanguageToggle, settings.value.languages],
     ([show, languages]) => {
         const langs = languages as string[];
         if (!show) {
@@ -116,7 +117,7 @@ watch(
         } else if (!langs.includes(activeLanguage.value)) {
             activeLanguage.value = langs?.[0] || 'en';
         }
-    }, 
+    },
     { immediate: true, deep: true }
 );
 </script>
@@ -124,67 +125,38 @@ watch(
 <template>
     <div class="kiosk-flow relative h-screen overflow-y-auto">
         <Transition name="fade">
-            <KioskIdleScreen 
-                v-if="isIdle && settings.idleEnabled" 
-                :media="settings.idleMedia" 
-                :image-url="settings.idleImageUrl"
-                :video-url="settings.idleVideoUrl"
-                @click="handleInteraction" 
-            />
+            <KioskIdleScreen v-if="isIdle && settings.idleEnabled" :media="settings.idleMedia"
+                :image-url="settings.idleImageUrl" :video-url="settings.idleVideoUrl" @click="handleInteraction" />
         </Transition>
 
         <!-- Language Switcher -->
-        <div v-if="settings.showLanguageToggle && settings.languages?.length > 1" class="absolute bottom-6 right-6 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur rounded-full shadow-sm border border-default p-1 flex items-center gap-1">
-            <UButton 
-                v-for="lang in settings.languages" 
-                :key="lang"
-                :label="lang.toUpperCase()" 
-                :variant="activeLanguage === lang ? 'solid' : 'ghost'" 
-                :color="activeLanguage === lang ? 'primary' : 'neutral'"
-                size="sm"
-                class="rounded-full px-4"
-                @click="activeLanguage = lang; resetIdleTimer()"
-            />
+        <div v-if="settings.showLanguageToggle && settings.languages?.length > 1"
+            class="fixed bottom-6 right-6 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur rounded-full shadow-sm border border-default p-1 flex items-center gap-1">
+            <UButton v-for="lang in settings.languages" :key="lang" :label="lang.toUpperCase()"
+                :variant="activeLanguage === lang ? 'solid' : 'ghost'"
+                :color="activeLanguage === lang ? 'primary' : 'neutral'" size="sm" class="rounded-full px-4"
+                @click="activeLanguage = lang; resetIdleTimer()" />
         </div>
 
         <KioskQR v-if="settings.showQR" />
 
         <Transition name="page-fade" mode="out-in">
             <div :key="currentStep" class="w-full">
-                <KioskWelcome 
-                    v-if="currentStep === 'welcome'" 
-                    @select="handleTransactionSelect" 
-                />
-                
-                <KioskPayment 
-                    v-else-if="currentStep === 'payment'" 
-                    @select="handlePaymentSelect" 
-                    @back="currentStep = 'welcome'" 
-                />
-                
-                <KioskPriority 
-                    v-else-if="currentStep === 'priority'" 
-                    @select="handlePrioritySelect" 
-                    @back="currentStep = 'payment'" 
-                />
-                
-                <KioskSummary 
-                    v-else-if="currentStep === 'summary'" 
-                    :transaction-type="kioskData.transactionType"
-                    :payment-method="kioskData.paymentMethod"
-                    :queue-type="queueType"
-                    @confirm="handleConfirm" 
-                    @back="currentStep = 'priority'" 
-                />
-                
-                <KioskTicket 
-                    v-else-if="currentStep === 'ticket'" 
-                    :queue-number="kioskData.queueNumber"
-                    :transaction-type="kioskData.transactionType"
-                    :payment-method="kioskData.paymentMethod"
-                    :queue-type="queueType"
-                    @reset="resetKiosk" 
-                />
+                <KioskWelcome v-if="currentStep === 'welcome'" @select="handleTransactionSelect" />
+
+                <KioskPayment v-else-if="currentStep === 'payment'" @select="handlePaymentSelect"
+                    @back="currentStep = 'welcome'" />
+
+                <KioskPriority v-else-if="currentStep === 'priority'" @select="handlePrioritySelect"
+                    @back="currentStep = 'payment'" />
+
+                <KioskSummary v-else-if="currentStep === 'summary'" :transaction-type="kioskData.transactionType"
+                    :payment-method="kioskData.paymentMethod" :is-priority="kioskData.isPriority"
+                    @confirm="handleConfirm" @back="currentStep = 'priority'" />
+
+                <KioskTicket v-else-if="currentStep === 'ticket'" :queue-number="kioskData.queueNumber"
+                    :transaction-type="kioskData.transactionType" :payment-method="kioskData.paymentMethod"
+                    :is-priority="kioskData.isPriority" @reset="resetKiosk" />
             </div>
         </Transition>
     </div>

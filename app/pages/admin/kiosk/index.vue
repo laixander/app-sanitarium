@@ -3,7 +3,7 @@ const { flows, activateFlow, deleteFlow, clearAllFlows } = useKioskSettings()
 const router = useRouter()
 
 definePageMeta({
-    title: 'Kiosk Content Management',
+    title: 'Kiosk Management',
     fullWidth: true
 })
 
@@ -76,7 +76,7 @@ const getActionItems = (row: any) => [
         </template>
 
         <template #updatedAt-cell="{ row }">
-            <span class="text-gray-500 dark:text-gray-400">{{ row.original.updatedAt }}</span>
+            <span class="whitespace-nowrap">{{ row.original.updatedAt }}</span>
         </template>
 
         <template #actions-cell="{ row }">

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useKioskLocale } from '~/composables/useKioskLocale';
 
 const { tickets } = useTickets();
 const { transactions } = useTransactions();
@@ -38,14 +39,14 @@ interface Props {
     queueNumber?: string;
     transactionType?: string;
     paymentMethod?: string;
-    queueType?: string;
+    isPriority?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
     queueNumber: 'A-001',
     transactionType: 'Consultation',
     paymentMethod: 'Cash/Card',
-    queueType: 'Regular Queue'
+    isPriority: false
 });
 
 const emit = defineEmits<{
@@ -101,7 +102,7 @@ onUnmounted(() => {
                             variant="soft" class="text-base py-2 px-4" />
                         <UBadge v-if="props.paymentMethod !== 'Cash/Card'" label="HMO/Insurance"
                             icon="i-lucide-shield-check" color="purple" variant="soft" class="text-base py-2 px-4" />
-                        <UBadge v-if="props.queueType !== 'Regular Queue'" label="Priority" icon="i-lucide-heart"
+                        <UBadge v-if="props.isPriority" :label="t('label.priority_queue')" icon="i-lucide-heart"
                             color="rose" variant="soft" class="text-base py-2 px-4" />
                     </div>
                     <div class="flex justify-between border-y border-default p-6">

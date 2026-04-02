@@ -1,4 +1,5 @@
 // app/composables/useKioskSettings.ts
+import { getNowStamp } from '~/utils/date'
 export interface KioskSettings {
     title: string
     description: string
@@ -55,11 +56,7 @@ export const useKioskSettings = () => {
         }
     }
 
-    const getNowFormatted = () => {
-        const parts = new Date().toISOString().replace('T', ' ').split('.')
-        const datePart = parts[0] || ''
-        return datePart.slice(0, 16)
-    }
+    const getNowFormatted = () => getNowStamp()
 
     const addFlow = (config: KioskSettings & { name: string }) => {
         const newFlow: KioskFlow = {

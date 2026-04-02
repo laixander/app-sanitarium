@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
-    title: 'Panel Status Simulation',
+    title: 'System Configuration',
     showUserToolbar: true,
 })
 

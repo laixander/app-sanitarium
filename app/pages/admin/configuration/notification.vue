@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
-    title: 'Notification Settings',
+    title: 'System Configuration',
     showUserToolbar: true,
 })
 

@@ -2,6 +2,7 @@
 import FBadge from '~/components/ui/FBadge.vue'
 import { statusColors } from '~/constants/queue'
 import { upperFirst } from 'scule'
+import { formatDateStamp } from '~/utils/date'
 
 definePageMeta({
     title: 'Ticket History',
@@ -30,10 +31,7 @@ const columns = [
     { id: 'duration', header: 'Duration' }
 ]
 
-const formatTime = (iso?: string) => {
-    if (!iso) return '-'
-    return new Date(iso).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })
-}
+const formatTime = (iso?: string) => formatDateStamp(iso)
 
 const formatDuration = (ms?: number) => {
     if (!ms) return '-'

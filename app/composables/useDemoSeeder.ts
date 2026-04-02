@@ -2,6 +2,7 @@ import { type User } from '~/types/user'
 import { type Ticket } from '~/types/queue'
 import { type Counter } from '~/types/counter'
 import { type Feedback } from './useFeedback'
+import { formatDateStamp } from '~/utils/date'
 
 export const useDemoSeeder = () => {
     const { tickets, reloadTickets } = useTickets()
@@ -11,11 +12,12 @@ export const useDemoSeeder = () => {
     const { transactions, reloadTransactions } = useTransactions()
     const { reloadSettings: reloadKioskSettings } = useKioskSettings()
     const { reloadSettings: reloadFeedbackSettings } = useFeedbackSettings()
+    const { reloadLanguages } = useKioskLocale()
 
     const resetAll = () => {
         if (!import.meta.client) return
         console.log('Resetting all demo data...')
-        
+
         localStorage.removeItem('sanitarium_tickets')
         localStorage.removeItem('sanitarium_users')
         localStorage.removeItem('sanitarium_feedback')
@@ -24,6 +26,7 @@ export const useDemoSeeder = () => {
         localStorage.removeItem('sanitarium_kiosk_flows')
         localStorage.removeItem('sanitarium_active_flow_id')
         localStorage.removeItem('sanitarium_feedback_settings')
+        localStorage.removeItem('sanitarium_languages')
 
         // Reload all composables to clear state
         reloadTickets()
@@ -33,6 +36,7 @@ export const useDemoSeeder = () => {
         reloadTransactions()
         reloadKioskSettings()
         reloadFeedbackSettings()
+        reloadLanguages()
         console.log('System reset complete.')
     }
 
@@ -46,18 +50,16 @@ export const useDemoSeeder = () => {
             return d.toISOString()
         }
 
-        const formatPrettyDate = (dateStr: string) => {
-            return new Date(dateStr).toLocaleString('en-US', { 
-                month: 'short', 
-                day: '2-digit', 
-                year: 'numeric', 
-                hour: '2-digit', 
-                minute: '2-digit', 
-                hour12: true 
-            })
-        }
+        const formatPrettyDate = (dateStr: string) => formatDateStamp(dateStr)
 
-        // 1. Seed Transactions (Ensuring we have the basics)
+        // 1. Seed Languages
+        const demoLanguages = [
+            { code: 'en', name: 'English' },
+            { code: 'fil', name: 'Filipino' }
+        ]
+        localStorage.setItem('sanitarium_languages', JSON.stringify(demoLanguages))
+
+        // 2. Seed Transactions (Ensuring we have the basics)
         const demoTransactions = [
             { id: '1', name: 'Consultation', code: 'C', description: 'Patient seeing a doctor', color: 'sky' as const, icon: 'i-lucide-stethoscope' },
             { id: '2', name: 'Admission', code: 'A', description: 'Admitting a patient', color: 'pink' as const, icon: 'i-lucide-bed-double' },
@@ -66,7 +68,7 @@ export const useDemoSeeder = () => {
         ]
         localStorage.setItem('sanitarium_transactions', JSON.stringify(demoTransactions))
 
-        // 2. Seed Counters
+        // 3. Seed Counters
         const demoCounters: Counter[] = Array.from({ length: 8 }, (_, i) => ({
             id: String(i + 1),
             name: `Counter 0${i + 1}`,
@@ -76,7 +78,7 @@ export const useDemoSeeder = () => {
         }))
         localStorage.setItem('sanitarium_counters', JSON.stringify(demoCounters))
 
-        // 3. Seed Users/Agents
+        // 4. Seed Users/Agents
         const agentNames = ['John Doe', 'Jane Smith', 'Alice Johnson', 'Bob Brown', 'Charlie Davis', 'Diana Prince', 'Edward Norton', 'Fiona Apple', 'George Costanza', 'Hubert Farnsworth']
         const demoUsers: User[] = [
             {
@@ -94,7 +96,7 @@ export const useDemoSeeder = () => {
                 const isOnline = i < 8
                 const isServing = i < 5
                 const isOnBreak = i === 6
-                
+
                 return {
                     id,
                     name,
@@ -115,16 +117,15 @@ export const useDemoSeeder = () => {
                 } as User
             })
         ]
-        localStorage.setItem('sanitarium_users', JSON.stringify(demoUsers))
 
-        // 4. Seed Tickets
+        // 5. Seed Tickets
         const demoTickets: Ticket[] = []
         const reasonPresets = {
             missed: ['Not physically present', 'Did not respond after 3 calls', 'Left premises'],
             held: ['Incomplete requirements', 'Waiting for payment/approval', 'Emergency pause'],
             skipped: ['Wrong counter / transaction', 'System error', 'Requested skip by patient']
         }
-        
+
         // Generate ~150 completed tickets (for analytics)
         for (let i = 0; i < 150; i++) {
             const transaction = demoTransactions[i % demoTransactions.length]!
@@ -132,13 +133,13 @@ export const useDemoSeeder = () => {
             const num = String(i + 1).padStart(3, '0')
             const minutesAgo = Math.floor(Math.random() * 480) + 30 // Last 8 hours
             const serviceTime = (Math.floor(Math.random() * 15) + 3) * 60000 // In ms
-            
+
             const createdAt = getPastDate(minutesAgo)
             const servedAt = getPastDate(minutesAgo - 2)
             const completedAt = getPastDate(minutesAgo - 2 - (serviceTime / 60000))
-            
+
             const agent = demoUsers.filter(u => u.role === 'Agent')[i % agentNames.length]!
-            
+
             const isPriority = Math.random() > 0.8
             const isHmo = Math.random() > 0.7
             const isRegular = !isPriority
@@ -174,7 +175,7 @@ export const useDemoSeeder = () => {
             const servedAt = getPastDate(5 + i)
             const hasAccumulated = Math.random() > 0.5
             const accumulated = hasAccumulated ? (Math.floor(Math.random() * 10) + 2) * 60000 : 0
-            
+
             const isPriority = Math.random() > 0.8
             const isHmo = Math.random() > 0.7
             const isRegular = !isPriority
@@ -183,9 +184,10 @@ export const useDemoSeeder = () => {
             if (isHmo) tags.push('HMO')
             if (isRegular) tags.push('Regular')
 
+            const ticketId = `${letter}${num}`
             demoTickets.push({
                 id: `serv-${i}`,
-                ticket: `${letter}${num}`,
+                ticket: ticketId,
                 transactionType: agent.transaction,
                 status: 'serving',
                 counter: agent.counter,
@@ -198,7 +200,7 @@ export const useDemoSeeder = () => {
                 tags
             })
             // Update agent with current ticket
-            agent.ticket = `${letter}${num}`
+            agent.ticket = ticketId
         })
 
         // Generate ~30 waiting tickets
@@ -207,7 +209,7 @@ export const useDemoSeeder = () => {
             const letter = transaction.code
             const num = String(180 + i).padStart(3, '0')
             const createdAt = getPastDate(30 - i)
-            
+
             const isPriority = Math.random() > 0.9
             const isHmo = Math.random() > 0.8
             const isRegular = !isPriority
@@ -235,7 +237,7 @@ export const useDemoSeeder = () => {
             const letter = transaction.code
             const num = String(210 + i).padStart(3, '0')
             const minutesAgo = Math.floor(Math.random() * 120) + 10
-            
+
             let status = 'missed'
             let reason = reasonPresets.missed[i % reasonPresets.missed.length]!
             if (i < 10) {
@@ -283,9 +285,9 @@ export const useDemoSeeder = () => {
         }
 
         localStorage.setItem('sanitarium_tickets', JSON.stringify(demoTickets))
-        localStorage.setItem('sanitarium_users', JSON.stringify(demoUsers)) // Update with serving tickets
+        localStorage.setItem('sanitarium_users', JSON.stringify(demoUsers))
 
-        // 5. Seed Feedback
+        // 6. Seed Feedback
         const comments = [
             'Excellent service, very fast!',
             'The agent was very helpful and professional.',
@@ -327,7 +329,7 @@ export const useDemoSeeder = () => {
         ]
         localStorage.setItem('sanitarium_feedback', JSON.stringify(demoFeedback))
 
-        // 6. Seed Kiosk Content Management
+        // 7. Seed Kiosk Content Management
         const demoKioskFlows = [
             {
                 id: 'flow-1',
@@ -338,12 +340,12 @@ export const useDemoSeeder = () => {
                 welcomeTitle: 'Welcome to St. Mary’s',
                 welcomeDescription: 'We are here to care for you with compassion and excellence.',
                 layout: 'split',
-                languages: ['English', 'Spanish', 'Tagalog'],
+                languages: ['en', 'fil'],
                 idleEnabled: true,
                 idleTimeout: 30,
                 idleMedia: '',
-                idleImageUrl: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=2053',
-                idleVideoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-modern-hospital-hallway-with-doctors-and-patients-40251-large.mp4',
+                idleImageUrl: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d',
+                idleVideoUrl: '',
                 showQR: true,
                 showLanguageToggle: true,
                 updatedAt: formatPrettyDate(getPastDate(60))
@@ -357,7 +359,7 @@ export const useDemoSeeder = () => {
                 welcomeTitle: 'Premium Medical Services',
                 welcomeDescription: 'Your health, our priority. Experience world-class care.',
                 layout: 'vertical',
-                languages: ['English'],
+                languages: ['en'],
                 idleEnabled: false,
                 idleTimeout: 60,
                 idleMedia: '',
@@ -376,11 +378,11 @@ export const useDemoSeeder = () => {
                 welcomeTitle: 'Express Lab Services',
                 welcomeDescription: 'Minimal waiting, maximal accuracy.',
                 layout: 'grid',
-                languages: ['English', 'Spanish'],
+                languages: ['en', 'fil'],
                 idleEnabled: true,
                 idleTimeout: 15,
                 idleMedia: '',
-                idleImageUrl: 'https://images.unsplash.com/photo-1579154273841-491138b21e67?auto=format&fit=crop&q=80&w=2070',
+                idleImageUrl: 'https://images.unsplash.com/photo-1578991624414-276ef23a534f',
                 idleVideoUrl: '',
                 showQR: true,
                 showLanguageToggle: true,
@@ -390,7 +392,7 @@ export const useDemoSeeder = () => {
         localStorage.setItem('sanitarium_kiosk_flows', JSON.stringify(demoKioskFlows))
         localStorage.setItem('sanitarium_active_flow_id', 'flow-1')
 
-        // 7. Seed Kiosk Feedback Settings
+        // 8. Seed Kiosk Feedback Settings
         const demoFeedbackSettings = {
             title: 'How was your experience?',
             description: 'Help us provide better care for everyone.',
@@ -403,10 +405,10 @@ export const useDemoSeeder = () => {
             commentTitle: 'Tell us more',
             commentPlaceholder: 'Any specific department or staff member you’d like to mention?',
             commentPresets: [
-                'Very clean environment', 
-                'Friendly staff at reception', 
-                'Fast waiting time', 
-                'Professional doctors', 
+                'Very clean environment',
+                'Friendly staff at reception',
+                'Fast waiting time',
+                'Professional doctors',
                 'Clear instructions'
             ],
             submitButtonLabel: 'Confirm Feedback'
@@ -421,6 +423,7 @@ export const useDemoSeeder = () => {
         reloadTransactions()
         reloadKioskSettings()
         reloadFeedbackSettings()
+        reloadLanguages()
         console.log('Demo data seeding complete.')
     }
 

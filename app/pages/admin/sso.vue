@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
-    title: 'SSO Configuration'
+    title: 'SSO Integration'
 })
 
 const defaultState = {
