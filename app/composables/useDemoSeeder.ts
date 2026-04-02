@@ -59,10 +59,10 @@ export const useDemoSeeder = () => {
 
         // 1. Seed Transactions (Ensuring we have the basics)
         const demoTransactions = [
-            { id: '1', name: 'Consultation', description: 'Patient seeing a doctor', color: 'sky' as const, icon: 'i-lucide-stethoscope' },
-            { id: '2', name: 'Admission', description: 'Admitting a patient', color: 'pink' as const, icon: 'i-lucide-bed-double' },
-            { id: '3', name: 'Billing', description: 'Paying for services', color: 'teal' as const, icon: 'i-lucide-credit-card' },
-            { id: '4', name: 'Outpatient', description: 'Outpatient care and services', color: 'indigo' as const, icon: 'i-lucide-clipboard-list' }
+            { id: '1', name: 'Consultation', code: 'C', description: 'Patient seeing a doctor', color: 'sky' as const, icon: 'i-lucide-stethoscope' },
+            { id: '2', name: 'Admission', code: 'A', description: 'Admitting a patient', color: 'pink' as const, icon: 'i-lucide-bed-double' },
+            { id: '3', name: 'Billing', code: 'B', description: 'Paying for services', color: 'teal' as const, icon: 'i-lucide-credit-card' },
+            { id: '4', name: 'Outpatient', code: 'O', description: 'Outpatient care and services', color: 'indigo' as const, icon: 'i-lucide-clipboard-list' }
         ]
         localStorage.setItem('sanitarium_transactions', JSON.stringify(demoTransactions))
 
@@ -119,44 +119,70 @@ export const useDemoSeeder = () => {
 
         // 4. Seed Tickets
         const demoTickets: Ticket[] = []
-        const letters = ['A', 'B', 'C', 'D']
+        const reasonPresets = {
+            missed: ['Not physically present', 'Did not respond after 3 calls', 'Left premises'],
+            held: ['Incomplete requirements', 'Waiting for payment/approval', 'Emergency pause'],
+            skipped: ['Wrong counter / transaction', 'System error', 'Requested skip by patient']
+        }
         
         // Generate ~150 completed tickets (for analytics)
         for (let i = 0; i < 150; i++) {
-            const letter = letters[i % letters.length]!
+            const transaction = demoTransactions[i % demoTransactions.length]!
+            const letter = transaction.code
             const num = String(i + 1).padStart(3, '0')
             const minutesAgo = Math.floor(Math.random() * 480) + 30 // Last 8 hours
-            const serviceTime = Math.floor(Math.random() * 15) + 3
+            const serviceTime = (Math.floor(Math.random() * 15) + 3) * 60000 // In ms
             
             const createdAt = getPastDate(minutesAgo)
             const servedAt = getPastDate(minutesAgo - 2)
-            const completedAt = getPastDate(minutesAgo - 2 - serviceTime)
+            const completedAt = getPastDate(minutesAgo - 2 - (serviceTime / 60000))
             
             const agent = demoUsers.filter(u => u.role === 'Agent')[i % agentNames.length]!
             
+            const isPriority = Math.random() > 0.8
+            const isHmo = Math.random() > 0.7
+            const isRegular = !isPriority
+            const tags = []
+            if (isPriority) tags.push('Priority')
+            if (isHmo) tags.push('HMO')
+            if (isRegular) tags.push('Regular')
+
             demoTickets.push({
                 id: `hist-${i}`,
                 ticket: `${letter}${num}`,
-                transactionType: demoTransactions[i % demoTransactions.length]!.name,
+                transactionType: transaction.name,
                 status: 'completed',
                 counter: agent.counter,
                 createdAt,
                 servedAt,
                 completedAt,
-                isPriority: Math.random() > 0.8,
-                isHmo: Math.random() > 0.7,
-                tags: []
+                accumulatedServiceDuration: serviceTime,
+                isPriority,
+                isHmo,
+                isRegular,
+                tags
             })
         }
 
         // Generate ~20 serving tickets
         const servingAgents = demoUsers.filter(u => u.agentStatus === 'Serving')
         servingAgents.forEach((agent, i) => {
-            const letter = letters[i % letters.length]!
+            const transaction = demoTransactions.find(t => t.name === agent.transaction) || demoTransactions[0]!
+            const letter = transaction.code
             const num = String(151 + i).padStart(3, '0')
-            const createdAt = getPastDate(10 + i)
+            const createdAt = getPastDate(20 + i)
             const servedAt = getPastDate(5 + i)
+            const hasAccumulated = Math.random() > 0.5
+            const accumulated = hasAccumulated ? (Math.floor(Math.random() * 10) + 2) * 60000 : 0
             
+            const isPriority = Math.random() > 0.8
+            const isHmo = Math.random() > 0.7
+            const isRegular = !isPriority
+            const tags = []
+            if (isPriority) tags.push('Priority')
+            if (isHmo) tags.push('HMO')
+            if (isRegular) tags.push('Regular')
+
             demoTickets.push({
                 id: `serv-${i}`,
                 ticket: `${letter}${num}`,
@@ -165,9 +191,11 @@ export const useDemoSeeder = () => {
                 counter: agent.counter,
                 createdAt,
                 servedAt,
-                isPriority: Math.random() > 0.8,
-                isHmo: Math.random() > 0.7,
-                tags: []
+                accumulatedServiceDuration: accumulated,
+                isPriority,
+                isHmo,
+                isRegular,
+                tags
             })
             // Update agent with current ticket
             agent.ticket = `${letter}${num}`
@@ -175,19 +203,82 @@ export const useDemoSeeder = () => {
 
         // Generate ~30 waiting tickets
         for (let i = 0; i < 30; i++) {
-            const letter = letters[i % letters.length]!
+            const transaction = demoTransactions[Math.floor(Math.random() * demoTransactions.length)]!
+            const letter = transaction.code
             const num = String(180 + i).padStart(3, '0')
             const createdAt = getPastDate(30 - i)
             
+            const isPriority = Math.random() > 0.9
+            const isHmo = Math.random() > 0.8
+            const isRegular = !isPriority
+            const tags = []
+            if (isPriority) tags.push('Priority')
+            if (isHmo) tags.push('HMO')
+            if (isRegular) tags.push('Regular')
+
             demoTickets.push({
                 id: `wait-${i}`,
                 ticket: `${letter}${num}`,
-                transactionType: demoTransactions[Math.floor(Math.random() * demoTransactions.length)]!.name,
+                transactionType: transaction.name,
                 status: 'waiting',
                 createdAt,
-                isPriority: Math.random() > 0.9,
-                isHmo: Math.random() > 0.8,
-                tags: []
+                isPriority,
+                isHmo,
+                isRegular,
+                tags
+            })
+        }
+
+        // Generate ~30 held, skipped, missed tickets
+        for (let i = 0; i < 30; i++) {
+            const transaction = demoTransactions[Math.floor(Math.random() * demoTransactions.length)]!
+            const letter = transaction.code
+            const num = String(210 + i).padStart(3, '0')
+            const minutesAgo = Math.floor(Math.random() * 120) + 10
+            
+            let status = 'missed'
+            let reason = reasonPresets.missed[i % reasonPresets.missed.length]!
+            if (i < 10) {
+                status = 'held'
+                reason = reasonPresets.held[i % reasonPresets.held.length]!
+            } else if (i < 20) {
+                status = 'skipped'
+                reason = reasonPresets.skipped[i % reasonPresets.skipped.length]!
+            }
+
+            const createdAt = getPastDate(minutesAgo + 20)
+            const calledAt = getPastDate(minutesAgo + 10)
+            const heldAt = (status === 'held' || status === 'skipped') ? getPastDate(minutesAgo) : undefined
+            const servedAt = (status === 'held' || status === 'skipped') ? getPastDate(minutesAgo + 5) : undefined
+            const accumulated = (status === 'held' || status === 'skipped') ? (Math.floor(Math.random() * 8) + 2) * 60000 : 0
+
+            const agent = demoUsers.filter(u => u.role === 'Agent')[i % agentNames.length]!
+            const counterAssigned = agent.counter !== '-' ? agent.counter : `Counter 0${(i % 8) + 1}`
+
+            const isPriority = Math.random() > 0.8
+            const isHmo = Math.random() > 0.7
+            const isRegular = !isPriority
+            const tags = []
+            if (isPriority) tags.push('Priority')
+            if (isHmo) tags.push('HMO')
+            if (isRegular) tags.push('Regular')
+
+            demoTickets.push({
+                id: `${status}-${i}`,
+                ticket: `${letter}${num}`,
+                transactionType: transaction.name,
+                status: status as any,
+                counter: counterAssigned,
+                createdAt,
+                calledAt,
+                heldAt,
+                servedAt,
+                reason,
+                accumulatedServiceDuration: accumulated,
+                isPriority,
+                isHmo,
+                isRegular,
+                tags
             })
         }
 

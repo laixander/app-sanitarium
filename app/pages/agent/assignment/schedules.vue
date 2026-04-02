@@ -47,7 +47,7 @@ function onDeleteSchedule(schedule: Schedule) {
 
 <template>
     <div class="flex flex-col gap-4 w-full lg:max-w-2xl mx-auto">
-        <UPageCard title="Schedule" description="Manage schedule" variant="naked" orientation="horizontal">
+        <UPageCard title="Schedules" description="Manage schedules" variant="naked" orientation="horizontal">
             <AgentAddSchedule />
         </UPageCard>
         <UCard variant="subtle" :ui="{ body: 'p-0 sm:p-0 divide-y divide-default' }">

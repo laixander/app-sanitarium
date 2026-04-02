@@ -34,6 +34,11 @@ const apiEndpoints = [
         description: "Fetch all users with their roles and agent status.",
     },
     {
+        method: "DELETE",
+        path: "/api/users/:id",
+        description: "Remove an agent from the system with cascading cleanup.",
+    },
+    {
         method: "GET",
         path: "/api/queue",
         description:
@@ -70,7 +75,7 @@ const dataModels = [
     {
         name: "Ticket",
         fields:
-            "id, ticket, transactionType, status, counter, isHmo, isPriority, tags, createdAt, servedAt, completedAt",
+            "id, ticket, transactionType, status, counter, isHmo, isPriority, isRegular, tags, reason, accumulatedServiceDuration, createdAt, servedAt, completedAt",
     },
     { 
         name: "Audit", 
@@ -96,17 +101,17 @@ const workflowSteps = [
     },
     {
         title: "Agent Call",
-        description: "Agent calls ticket. Lobby Panel announces current ticket & counter.",
+        description: "Agent calls ticket. Lobby Panel announces current ticket & counter. Supports hold/skip with reasons.",
         status: "Calling",
     },
     {
         title: "Service",
-        description: "Agent serves patient. Performance metrics (SLA) are tracked.",
+        description: "Agent serves patient. Performance metrics (SLA) and accumulated service time are tracked.",
         status: "Serving",
     },
     {
         title: "Completion",
-        description: "Agent completes ticket. Audit: Ticket Completed.",
+        description: "Agent completes ticket with optional outcome notes. Audit: Ticket Completed.",
         status: "Completed",
     },
     {
@@ -117,6 +122,20 @@ const workflowSteps = [
 ];
 
 const changelogItems = [
+    {
+        date: "April 02, 2026",
+        version: "v1.7.0",
+        title: "Transaction Codes & Kanban Workflow",
+        changes: [
+            "Implemented unique Transaction Codes for ticket prefixes (e.g., LT for Lab Tests)",
+            "Standardized ticket formatting by removing dash separators (e.g., LT001)",
+            "Enhanced Agent Dashboard with 'Held/Skipped' column and visibility toggles",
+            "Improved redirection flow for unassigned agents with dedicated landing states",
+            "Optimized performance with ticket card limiting and memoized service metrics",
+            "Added 'Regular' ticket status and support for custom skip/hold reasons",
+            "Integrated agent deletion capability in the management console",
+        ],
+    },
     {
         date: "March 31, 2026",
         version: "v1.6.1",
@@ -135,7 +154,7 @@ const changelogItems = [
             "Launched Lobby Queue Display for patient-facing announcements",
             "Implemented persistent system-wide Audit Logging (useAudits)",
             "Integrated real-time state synchronization via localStorage and API",
-            "Added support for dynamic transaction-based ticket prefixes (e.g., C-001)",
+            "Added support for dynamic transaction-based ticket prefixes (e.g., LT001)",
         ],
     },
     {

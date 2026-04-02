@@ -20,23 +20,10 @@ const getTagColor = (tag: string) => {
     return (tagColors as any)[tag] || 'neutral'
 }
 
-const { now } = useTimer()
+const { getAverageServiceTime } = useTickets()
+const avgServiceTime = computed(() => getAverageServiceTime(props.queue.counter))
 
-const waitingTime = computed(() => {
-    if (!props.queue.createdAt) return 'N/A'
-
-    const start = new Date(props.queue.createdAt).getTime()
-    const end = (['serving', 'missed', 'completed'].includes(props.queue.status) && props.queue.servedAt)
-        ? new Date(props.queue.servedAt).getTime()
-        : now.value
-
-    const diffMs = Math.max(0, end - start)
-    const diffMin = Math.floor(diffMs / 60000)
-    const diffSec = Math.floor((diffMs % 60000) / 1000)
-
-    if (diffMin > 0) return `${diffMin}m ${diffSec}s`
-    return `${diffSec}s`
-})
+const { waitingTime, serviceTime } = useQueueTime(props.queue.createdAt, props.queue.servedAt, props.queue.status, props.queue.accumulatedServiceDuration)
 
 const formatTime = (iso?: string) => {
     if (!iso) return 'N/A'
@@ -82,15 +69,15 @@ const displayTags = computed(() => {
         <template #body>
             <div class="flex flex-col gap-6">
                 <!-- Status & Identity -->
-                <div class="flex items-center justify-between">
+                <div class="grid grid-cols-2 gap-4">
                     <div class="flex flex-col gap-1">
                         <span class="text-xs font-medium text-dimmed uppercase tracking-wider">Status</span>
-                        <UBadge :label="upperFirst(queue.status)" :color="statusColors[queue.status]"
-                            variant="subtle" />
+                        <UBadge :label="upperFirst(queue.status)" :color="statusColors[queue.status]" variant="subtle"
+                            class="w-fit" />
                     </div>
-                    <div v-if="queue.counter" class="flex flex-col gap-1 text-right">
+                    <div v-if="queue.counter" class="flex flex-col gap-1">
                         <span class="text-xs font-medium text-dimmed uppercase tracking-wider">Counter</span>
-                        <div class="font-semibold text-sm flex items-center gap-1 justify-end">
+                        <div class="font-semibold text-sm flex items-center gap-1">
                             <UIcon name="i-lucide-monitor" class="size-5" />
                             {{ queue.counter }}
                         </div>
@@ -98,7 +85,7 @@ const displayTags = computed(() => {
                 </div>
 
                 <!-- HMO, PWD, Senior, etc -->
-                <div v-if="displayTags.length" class="flex items-center justify-between">
+                <!-- <div v-if="displayTags.length" class="flex items-center justify-between">
                     <div class="flex flex-col gap-1">
                         <span class="text-xs font-medium text-dimmed uppercase tracking-wider">Details</span>
                         <div class="flex flex-wrap gap-2">
@@ -106,10 +93,22 @@ const displayTags = computed(() => {
                                 variant="soft" />
                         </div>
                     </div>
-                </div>
+                </div> -->
+
+                <!-- Reason Alert -->
+                <UAlert v-if="queue.reason" variant="soft"
+                    :color="['missed'].includes(queue.status) ? 'error' : (['held', 'skipped'].includes(queue.status) ? 'warning' : 'primary')"
+                    class="rounded-lg">
+                    <template #title>
+                        <span class="font-semibold text-sm">Reason for {{ queue.status }}</span>
+                    </template>
+                    <template #description>
+                        <span class="text-sm font-medium">{{ queue.reason }}</span>
+                    </template>
+                </UAlert>
 
                 <!-- Details Grid -->
-                <div class="grid grid-cols-2 gap-4 bg-default/5 rounded-lg p-4 border border-default">
+                <div class="grid grid-cols-2 gap-x-4 gap-y-3 bg-default/5 rounded-lg p-4 border border-default">
                     <div class="flex flex-col gap-1">
                         <span class="text-xs font-medium text-dimmed uppercase tracking-wider">Created At</span>
                         <span class="text-sm font-semibold">{{ formatTime(queue.createdAt) }}</span>
@@ -117,6 +116,34 @@ const displayTags = computed(() => {
                     <div class="flex flex-col gap-1">
                         <span class="text-xs font-medium text-dimmed uppercase tracking-wider">Waiting Time</span>
                         <span class="text-sm font-bold text-primary">{{ waitingTime }}</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <span class="text-xs font-medium text-dimmed uppercase tracking-wider">Called At</span>
+                        <span class="text-sm font-semibold">{{ formatTime(queue.calledAt) }}</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <span class="text-xs font-medium text-dimmed uppercase tracking-wider">Started At</span>
+                        <span class="text-sm font-semibold">{{ formatTime(queue.servedAt) }}</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <span class="text-xs font-medium text-dimmed uppercase tracking-wider">Held At</span>
+                        <span class="text-sm font-semibold">{{ formatTime(queue.heldAt) }}</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <span class="text-xs font-medium text-dimmed uppercase tracking-wider">Completed At</span>
+                        <span class="text-sm font-semibold">{{ formatTime(queue.completedAt) }}</span>
+                    </div>
+                </div>
+
+                <!-- Service Stats -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex flex-col gap-1">
+                        <span class="text-xs font-medium text-dimmed uppercase tracking-wider">Service Duration</span>
+                        <span class="text-sm font-bold text-primary">{{ serviceTime }}</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <span class="text-xs font-medium text-dimmed uppercase tracking-wider">Avg. Counter Time</span>
+                        <span class="text-sm font-bold text-blue-500">{{ avgServiceTime }}</span>
                     </div>
                 </div>
 

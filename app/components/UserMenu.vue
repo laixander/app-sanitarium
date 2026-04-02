@@ -13,6 +13,10 @@
     </UDropdownMenu>
 </template>
 <script setup lang="ts">
+const handleLogout = () => {
+    navigateTo('/login')
+}
+
 const items = ref([
     [
         {
@@ -27,7 +31,8 @@ const items = ref([
     [
         {
             label: 'Logout',
-            icon: 'i-lucide-log-out'
+            icon: 'i-lucide-log-out',
+            onSelect: handleLogout
         }
     ]
 ])

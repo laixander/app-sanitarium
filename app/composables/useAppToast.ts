@@ -65,6 +65,10 @@ export const useAppToast = () => {
         success('Assignment Updated', `${agentName} has been assigned.`)
     }
 
+    const logsRefreshed = () => {
+        success('Logs Refreshed', 'Ticket logs have been refreshed.')
+    }
+
     return {
         add,
         success,
@@ -80,6 +84,7 @@ export const useAppToast = () => {
         reset,
         exporting,
         created,
-        assignmentUpdated
+        assignmentUpdated,
+        logsRefreshed
     }
 }

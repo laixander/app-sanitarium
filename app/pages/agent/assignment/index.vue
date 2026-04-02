@@ -47,14 +47,13 @@ function onDelete(transaction: TransactionCategory) {
 
 <template>
     <div class="flex flex-col gap-4 w-full lg:max-w-2xl mx-auto">
-        <UPageCard title="Transaction Categories" description="Manage transaction categories" variant="naked"
-            orientation="horizontal">
+        <UPageCard title="Transactions" description="Manage transactions" variant="naked" orientation="horizontal">
             <AgentAddTransaction />
         </UPageCard>
         <UCard variant="subtle" :ui="{ body: 'p-0 sm:p-0 divide-y divide-default' }">
             <AgentTransactionList v-for="transaction in transactions" :key="transaction.id" :title="transaction.name"
-                :description="transaction.description" :color="transaction.color" :icon="transaction.icon"
-                @edit="onEdit(transaction)" @delete="onDelete(transaction)" />
+                :code="transaction.code" :description="transaction.description" :color="transaction.color"
+                :icon="transaction.icon" @edit="onEdit(transaction)" @delete="onDelete(transaction)" />
             <UEmpty v-if="transactions.length === 0" icon="i-lucide-inbox" title="No transactions found"
                 description="It looks like you haven't added any transactions. Create one to get started." />
         </UCard>

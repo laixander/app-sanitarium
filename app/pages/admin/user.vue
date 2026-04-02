@@ -46,41 +46,47 @@ function openConfirmModal(config: { title: string, description: string, confirmL
     isConfirmModalOpen.value = true
 }
 
-const getActionItems = (row: User) => [
-    [
-        {
-            label: 'View Details',
-            icon: 'i-lucide-eye',
-            onSelect: () => {
-                selectedUser.value = row
-                isViewDrawerOpen.value = true
+const getActionItems = (row: User) => {
+    const isOnlineAgent = row.role === 'Agent' && row.agentStatus !== 'Offline'
+
+    return [
+        [
+            {
+                label: 'View Details',
+                icon: 'i-lucide-eye',
+                onSelect: () => {
+                    selectedUser.value = row
+                    isViewDrawerOpen.value = true
+                }
             }
-        }
-    ],
-    [
-        {
-            label: 'Edit',
-            icon: 'i-lucide-square-pen',
-            onSelect: () => onEdit(row)
-        }
-    ],
-    [
-        {
-            label: 'Delete',
-            icon: 'i-lucide-trash-2',
-            color: 'error' as const,
-            onSelect: () => {
-                openConfirmModal({
-                    title: 'Delete User',
-                    description: `Are you sure you want to delete ${row.name}? This action cannot be undone.`,
-                    confirmLabel: 'Delete',
-                    confirmColor: 'error',
-                    onConfirm: () => deleteUser(row.id)
-                })
+        ],
+        [
+            {
+                label: 'Edit',
+                icon: 'i-lucide-square-pen',
+                disabled: isOnlineAgent,
+                onSelect: () => onEdit(row)
             }
-        }
+        ],
+        [
+            {
+                label: 'Delete',
+                icon: 'i-lucide-trash-2',
+                color: 'error' as const,
+                disabled: isOnlineAgent,
+                onSelect: () => {
+                    openConfirmModal({
+                        title: 'Delete User',
+                        description: `Are you sure you want to delete ${row.name}? This action cannot be undone.`,
+                        confirmLabel: 'Delete',
+                        confirmColor: 'error',
+                        onConfirm: () => deleteUser(row.id)
+                    })
+                }
+            }
+        ]
     ]
-]
+}
 
 const columns = [
     {

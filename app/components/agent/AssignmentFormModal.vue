@@ -15,14 +15,23 @@ const emit = defineEmits(['success'])
 const { transactions } = useTransactions()
 const { counters } = useCounters()
 const { schedules } = useSchedules()
-const { updateUser } = useUsers()
+const { users, updateUser } = useUsers()
 const appToast = useAppToast()
 
 const selectedCounter = ref('')
 const selectedTransaction = ref('')
 const selectedSchedule = ref('')
 
-const availableCounters = computed(() => counters.value.map(c => c.name))
+const availableCounters = computed(() => {
+    const assignedCounterNames = users.value
+        .filter(u => u.id !== props.user?.id)
+        .map(u => u.counter)
+        .filter(c => c && c !== '-')
+
+    return counters.value
+        .filter(c => !assignedCounterNames.includes(c.name))
+        .map(c => c.name)
+})
 const availableTransactions = computed(() => transactions.value.map(t => t.name))
 const availableSchedules = computed(() => schedules.value.map(s => s.name))
 

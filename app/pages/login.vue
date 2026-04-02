@@ -34,6 +34,9 @@
 <script setup lang="ts">
 import type { AuthFormField } from '@nuxt/ui'
 
+const { users, updateUser } = useUsers()
+const { counters } = useCounters()
+
 const state = reactive({
     email: '',
     password: ''
@@ -73,36 +76,49 @@ interface MockRole {
     icon: string
     color: 'primary' | 'success' | 'warning' | 'error' | 'info' | 'secondary' | 'neutral'
     route: string
+    email?: string
 }
 
-const mockRoles: MockRole[] = [
-    {
-        role: 'admin',
-        label: 'Admin',
-        icon: 'i-lucide-shield',
-        color: 'error',
-        route: '/admin'
-    },
-    {
-        role: 'manager',
-        label: 'Manager',
-        icon: 'i-lucide-briefcase',
-        color: 'warning',
-        route: '/agent'
-    },
-    {
-        role: 'agent',
-        label: 'Agent',
-        icon: 'i-lucide-headset',
-        color: 'success',
-        route: '/counter'
-    }
-]
+const mockRoles = computed(() => {
+    const base: MockRole[] = [
+        {
+            role: 'admin',
+            label: 'Admin',
+            icon: 'i-lucide-shield',
+            color: 'error',
+            route: '/admin'
+        },
+        {
+            role: 'manager',
+            label: 'Manager',
+            icon: 'i-lucide-briefcase',
+            color: 'warning',
+            route: '/agent'
+        }
+    ]
+
+    // Add dynamic agents
+    const agents = users.value
+        .filter(u => u.role === 'Agent')
+        .map(agent => {
+            const counter = counters.value.find(c => c.name === agent.counter)
+            return {
+                role: 'agent',
+                label: `Agent ${agent.name}`,
+                icon: 'i-lucide-headset',
+                color: 'success' as const,
+                route: counter ? `/counter/${counter.id}` : '/counter/unassigned',
+                email: agent.email
+            }
+        })
+
+    return [...base, ...agents]
+})
 
 function mockLogin(item: MockRole) {
     fabOpen.value = false
 
-    const email = `${item.role}@sanitarium.com`
+    const email = item.email || `${item.role}@sanitarium.com`
     const password = 'password123'
 
     state.email = email
@@ -121,15 +137,42 @@ function mockLogin(item: MockRole) {
     }
 
     routeToRedirect.value = item.route
+    
+    // Set agent status to Online on login
+    const user = users.value.find(u => u.email === email)
+    if (user && user.role === 'Agent') {
+        updateUser(user.id, { agentStatus: 'Online' })
+    }
+
     formKey.value++
 }
 
 function onSubmit() {
     let route = routeToRedirect.value
+    const user = users.value.find(u => u.email.toLowerCase() === state.email.toLowerCase())
+
     if (!route) {
-        if (state.email.includes('agent')) route = '/counter'
-        else route = '/admin'
+        if (user) {
+            if (user.role === 'Agent') {
+                const counter = counters.value.find(c => c.name === user.counter)
+                route = counter ? `/counter/${counter.id}` : '/counter/unassigned'
+            } else if (user.role === 'Admin') {
+                route = '/admin'
+            } else if (user.role === 'Manager') {
+                route = '/agent'
+            }
+        } else {
+            // Fallback for manual login without a found user
+            if (state.email.includes('agent')) route = '/counter/unassigned'
+            else route = '/admin'
+        }
     }
+
+    // Set agent status to Online on login if role is agent
+    if (user && user.role === 'Agent') {
+        updateUser(user.id, { agentStatus: 'Online' })
+    }
+
     navigateTo(route)
 }
 </script>

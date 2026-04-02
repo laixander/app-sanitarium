@@ -5,19 +5,24 @@ defineProps<{
     tickets: Ticket[]
     disabled?: boolean
 }>()
+
+defineEmits<{
+    (e: 'recall', id: string): void
+}>()
 </script>
 
 <template>
     <div class="transition-all duration-300" :class="disabled ? 'opacity-60 grayscale' : ''">
         <div class="flex items-center gap-2 text-sm text-muted mb-4">
-            <UIcon name="i-lucide-circle-check" class="size-4 text-green-500" />
-            <div class="font-semibold uppercase tracking-wider text-xs">Recently Completed</div>
+            <UIcon name="i-lucide-circle-x" class="size-4 text-red-500" />
+            <div class="font-semibold uppercase tracking-wider text-xs">Recently Missed (No-Show)</div>
         </div>
         <div v-if="tickets.length" class="space-y-3">
-            <CounterCompletedTicket v-for="t in tickets" :key="t.id" v-bind="t" />
+            <CounterMissedTicket v-for="t in tickets" :key="t.id" v-bind="t" :disabled="disabled"
+                @recall="$emit('recall', t.id)" />
         </div>
         <div v-else class="text-center py-6 border border-dashed border-muted rounded-xl bg-muted dark:bg-muted/50">
-            <p class="text-sm text-dimmed">No tickets served yet today.</p>
+            <p class="text-sm text-dimmed">No missed tickets recently.</p>
         </div>
     </div>
 </template>

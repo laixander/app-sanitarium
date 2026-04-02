@@ -24,6 +24,14 @@ const { tickets, reloadTickets, getAverageServiceTime, getActiveTicket, getServe
 const { transactions } = useTransactions()
 const queueData = tickets
 
+const kanbanColumns = ref({
+    waiting: true,
+    serving: true,
+    held: true,
+    missed: true,
+    completed: true
+})
+
 const agents = computed(() => users.value.filter(u => u.role === 'Agent' && u.counter && u.counter !== '-'))
 
 const getAgentDisplayStatus = (agent: User) => {
@@ -234,14 +242,10 @@ function openConfirmModal(config: { title: string, description: string, confirmL
 const getActionItems = (row: User) =>
     [
         [{
-            label: 'Reassign Counter',
-            icon: 'i-lucide-monitor',
-            onSelect: () => onAssignCounter(row)
-        }],
-        [{
             label: 'Set On Break',
             icon: 'i-lucide-coffee',
             color: 'warning' as const,
+            disabled: row.agentStatus === 'Offline' || row.agentStatus === 'On Break',
             onSelect: () => {
                 openConfirmModal({
                     title: 'Set On Break',
@@ -259,6 +263,7 @@ const getActionItems = (row: User) =>
             label: 'Force Logout',
             icon: 'i-lucide-user-x',
             color: 'error' as const,
+            disabled: row.agentStatus === 'Offline',
             onSelect: () => {
                 openConfirmModal({
                     title: 'Force Logout',
@@ -312,8 +317,6 @@ fetchPanelStatus()
     <div class="px-4 sm:px-6 py-3.5 border-b border-default">
         <!-- create multi-select menu that can toggle sections -->
         <div class="flex justify-between gap-2">
-            <USelect v-model="selectedSections" :items="sections" value-key="value" label-key="label"
-                placeholder="Select Sections" multiple trailing-icon="i-lucide-monitor" class="w-64" />
             <div class="flex items-center gap-2">
                 <UiFTag :label="`Kiosk: ${kioskPanelStatus}`"
                     :color="kioskPanelStatus === 'Online' ? 'green' : 'neutral'" show-chip
@@ -322,6 +325,30 @@ fetchPanelStatus()
                     :color="queuePanelStatus === 'Online' ? 'green' : 'neutral'" show-chip
                     :ping="queuePanelStatus === 'Online'" />
             </div>
+            <UDropdownMenu :items="[
+                sections.map((section) => ({
+                    label: section.label,
+                    type: 'checkbox' as const,
+                    checked: selectedSections.includes(section.value),
+                    onUpdateChecked(checked: boolean) {
+                        if (checked) {
+                            if (!selectedSections.includes(section.value)) {
+                                selectedSections.push(section.value)
+                            }
+                        } else {
+                            const index = selectedSections.indexOf(section.value)
+                            if (index !== -1) {
+                                selectedSections.splice(index, 1)
+                            }
+                        }
+                    },
+                    onSelect(e: Event) {
+                        e.preventDefault()
+                    }
+                }))
+            ]" :content="{ align: 'end' }">
+                <UButton label="Sections" trailing-icon="i-lucide-monitor" color="neutral" variant="outline" />
+            </UDropdownMenu>
         </div>
     </div>
     <div class="flex flex-col gap-4 sm:gap-6 w-full -mt-4 sm:-mt-6 p-6 overflow-y-auto">
@@ -377,7 +404,7 @@ fetchPanelStatus()
                     </div>
                 </template>
             </UiFStatCard>
-            <UiFStatCard title="Completed & Missed Output" icon="i-lucide-check-circle" iconColor="blue">
+            <UiFStatCard title="Completed vs Missed" icon="i-lucide-check-circle" iconColor="blue">
                 <template #customValue>
                     <!-- <div class="text-3xl font-bold flex items-center gap-2">
                         {{tickets.filter(t => t.status === 'completed').length}}
@@ -401,10 +428,28 @@ fetchPanelStatus()
         <div v-if="selectedSections.includes('queue-overview')" class="grid grid-cols-1 shrink-0">
             <UiFCard title="Queue Overview" description="Monitor and manage queue" as-table>
                 <template #actions>
-                    <UButton label="Refresh" icon="i-lucide-refresh-cw" color="neutral" variant="subtle"
-                        @click="refresh" />
+                    <div class="flex items-center gap-2">
+                        <UButton label="Refresh" icon="i-lucide-refresh-cw" color="neutral" variant="subtle"
+                            @click="refresh" />
+                        <UDropdownMenu :items="[
+                            Object.keys(kanbanColumns).map((key) => ({
+                                label: key === 'held' ? 'Held/Skipped' : upperFirst(key),
+                                type: 'checkbox' as const,
+                                checked: kanbanColumns[key as keyof typeof kanbanColumns],
+                                onUpdateChecked(checked: boolean) {
+                                    kanbanColumns[key as keyof typeof kanbanColumns] = checked
+                                },
+                                onSelect(e: Event) {
+                                    e.preventDefault()
+                                }
+                            }))
+                        ]" :content="{ align: 'end' }">
+                            <UButton label="Display" trailing-icon="i-lucide-settings-2" color="neutral"
+                                variant="outline" />
+                        </UDropdownMenu>
+                    </div>
                 </template>
-                <AgentQueueKanban :tickets="queueData || []" />
+                <AgentQueueKanban :tickets="queueData || []" :visible-columns="kanbanColumns" />
             </UiFCard>
         </div>
 

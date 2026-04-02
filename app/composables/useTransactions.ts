@@ -13,10 +13,10 @@ export const useTransactions = () => {
         } else {
             // Default ones based on previous badge constants
             transactions.value = [
-                { id: '1', name: 'Consultation', description: 'Patient seeing a doctor', color: 'sky', icon: 'i-lucide-stethoscope' },
-                { id: '2', name: 'Admission', description: 'Admitting a patient', color: 'pink', icon: 'i-lucide-bed-double' },
-                { id: '3', name: 'Billing', description: 'Paying for services', color: 'teal', icon: 'i-lucide-credit-card' },
-                { id: '4', name: 'Outpatient', description: 'Outpatient care and services', color: 'indigo', icon: 'i-lucide-clipboard-list' }
+                { id: '1', name: 'Consultation', code: 'C', description: 'Patient seeing a doctor', color: 'sky', icon: 'i-lucide-stethoscope' },
+                { id: '2', name: 'Admission', code: 'A', description: 'Admitting a patient', color: 'pink', icon: 'i-lucide-bed-double' },
+                { id: '3', name: 'Billing', code: 'B', description: 'Paying for services', color: 'teal', icon: 'i-lucide-credit-card' },
+                { id: '4', name: 'Outpatient', code: 'O', description: 'Outpatient care and services', color: 'indigo', icon: 'i-lucide-clipboard-list' }
             ]
             saveToLocal()
         }

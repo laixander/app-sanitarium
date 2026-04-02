@@ -24,7 +24,7 @@ const feedbackLinks: NavigationMenuItem[] = [
 
 const assignmentLinks: NavigationMenuItem[] = [
     {
-        label: 'Transaction Categories',
+        label: 'Transactions',
         to: '/agent/assignment'
     },
     {

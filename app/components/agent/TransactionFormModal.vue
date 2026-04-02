@@ -15,10 +15,13 @@ const { addTransaction, updateTransaction } = useTransactions()
 
 const form = ref({
     name: '',
+    code: '',
     description: '',
     color: 'neutral' as any,
     icon: 'i-lucide-clipboard-list'
 })
+
+const isManualCode = ref(false)
 
 const availableColors = appColors.map(color => ({
     label: color.charAt(0).toUpperCase() + color.slice(1),
@@ -42,17 +45,32 @@ watch([() => props.transaction, isOpen], ([newTransaction, open]) => {
     if (open) {
         if (newTransaction) {
             form.value.name = newTransaction.name
+            form.value.code = newTransaction.code
             form.value.description = newTransaction.description || ''
             form.value.color = newTransaction.color || 'neutral'
             form.value.icon = newTransaction.icon || 'i-lucide-clipboard-list'
+            isManualCode.value = true
         } else {
             form.value.name = ''
+            form.value.code = ''
             form.value.description = ''
             form.value.color = 'neutral'
             form.value.icon = 'i-lucide-clipboard-list'
+            isManualCode.value = false
         }
     }
 }, { immediate: true })
+
+watch(() => form.value.name, (newName) => {
+    if (!isManualCode.value && !props.transaction) {
+        form.value.code = newName
+            .split(' ')
+            .filter(Boolean)
+            .map(word => word[0])
+            .join('')
+            .toUpperCase()
+    }
+})
 
 function onSubmit() {
     if (props.transaction) {
@@ -66,29 +84,38 @@ function onSubmit() {
 </script>
 
 <template>
-    <UModal v-model:open="isOpen" :title="transaction ? 'Edit Transaction Category' : 'Add Transaction Category'"
-        :description="transaction ? 'Update transaction category details below.' : 'Fill in the details below to create a new transaction category.'"
+    <UModal v-model:open="isOpen" :title="transaction ? 'Edit Transaction' : 'Add Transaction'"
+        :description="transaction ? 'Update transaction details below.' : 'Fill in the details below to create a new transaction.'"
         :dismissible="false">
         <template #body>
             <UForm :state="form" class="flex flex-col gap-4" @submit="onSubmit">
-                <UFormField label="Category Name" name="name" required>
+                <UFormField label="Transaction Name" name="name" required>
                     <UInput v-model="form.name" placeholder="e.g. Lab Tests" class="w-full" required />
                 </UFormField>
 
+                <!-- Transaction Code: Default is the First Letter of the Transaction Name -->
+                <UFormField label="Transaction Code" name="code" required>
+                    <UInput v-model="form.code" placeholder="e.g. LT" class="w-full" required
+                        @input="isManualCode = true" />
+                </UFormField>
+
                 <UFormField label="Description" name="description">
-                    <UTextarea v-model="form.description" placeholder="Short description of this transaction type" class="w-full" />
+                    <UTextarea v-model="form.description" placeholder="Short description of this transaction type"
+                        class="w-full" />
                 </UFormField>
 
                 <UFormField label="Icon" name="icon" required>
-                    <USelectMenu v-model="form.icon" :items="availableIcons" value-key="value"
-                        placeholder="Select icon" class="w-full">
+                    <USelectMenu v-model="form.icon" :items="availableIcons" value-key="value" placeholder="Select icon"
+                        class="w-full">
                         <template #leading="{ modelValue }">
-                            <UIcon v-if="modelValue" :name="(typeof modelValue === 'string' ? modelValue : (modelValue as any).value)" class="w-5 h-5" />
+                            <UIcon v-if="modelValue"
+                                :name="(typeof modelValue === 'string' ? modelValue : (modelValue as any).value)"
+                                class="w-5 h-5" />
                         </template>
                     </USelectMenu>
                 </UFormField>
 
-                <UFormField label="Category Color" name="color">
+                <UFormField label="Transaction Color" name="color">
                     <USelectMenu v-model="form.color" :items="availableColors" value-key="value"
                         placeholder="Select color" class="w-full">
                         <template #leading="{ modelValue, ui }">

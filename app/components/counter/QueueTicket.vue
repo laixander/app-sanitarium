@@ -6,6 +6,7 @@ interface Props {
     transactionType?: string
     isPriority?: boolean
     isHmo?: boolean
+    isRegular?: boolean
     createdAt?: string
     index?: number
     hideIndex?: boolean
@@ -15,6 +16,7 @@ interface Props {
     tags?: string[]
     servedAt?: string
     completedAt?: string
+    accumulatedServiceDuration?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -54,7 +56,10 @@ const transactionColor = computed(() => {
     return tx ? tx.color : 'primary'
 })
 
-const { waitingTime } = useQueueTime(props.createdAt)
+const { getAverageServiceTime } = useTickets()
+const avgServiceTime = computed(() => getAverageServiceTime(props.counter))
+
+const { waitingTime, serviceTime } = useQueueTime(props.createdAt, props.servedAt, props.status, props.accumulatedServiceDuration)
 </script>
 
 <template>
@@ -78,27 +83,55 @@ const { waitingTime } = useQueueTime(props.createdAt)
 
         <!-- Transaction Info -->
         <div class="flex-1 min-w-0">
-            <span class="font-semibold truncate">{{ transactionType || 'General' }}</span>
+            <!-- <span class="font-semibold truncate">{{ transactionType || 'General' }}</span> -->
+            <UBadge :color="transactionColor" variant="subtle" size="sm">
+                {{ transactionType || 'General' }}
+            </UBadge>
             <div class="flex items-center gap-2 mt-1">
-                <UBadge :color="transactionColor" variant="subtle" size="sm">
-                    {{ transactionType || 'General' }}
-                </UBadge>
                 <UBadge v-if="isHmo" color="purple" variant="soft" size="sm">HMO</UBadge>
                 <UBadge v-if="isPriority" color="red" variant="soft" size="sm">Priority</UBadge>
+                <UBadge v-if="isRegular" color="neutral" variant="soft" size="sm">Regular</UBadge>
             </div>
         </div>
 
-        <!-- Wait Time / Counter -->
+        <!-- Wait Time / Counter / Status indicators -->
         <div class="text-right shrink-0">
-            <!-- if serving, missed, completed: monitor icon and counter -->
-            <div v-if="['serving', 'missed', 'completed'].includes(status!)"
+            <!-- Commented out counter UI as per request -->
+            <!-- <div v-if="['serving', 'missed', 'completed', 'held', 'skipped'].includes(status!)"
                 class="flex items-center justify-end gap-1 text-sm text-muted">
                 <UIcon name="i-lucide-monitor" class="size-3.5" />
                 <span>{{ counter || 'N/A' }}</span>
+            </div> -->
+
+            <!-- Serving: Active timer -->
+            <div v-if="status === 'serving'" class="flex items-center justify-end gap-1 text-sm text-primary">
+                <UIcon name="i-lucide-play" class="size-3.5" />
+                <span>{{ serviceTime }}</span>
             </div>
 
-            <!-- Wait time: always show if not serving/missed/completed, or if we want both (card had it separate) -->
-            <!-- But let's follow the card's logic which showed one or the other -->
+            <!-- Held: Paused timer -->
+            <div v-else-if="status === 'held'" class="flex items-center justify-end gap-1 text-sm text-amber-500">
+                <UIcon name="i-lucide-pause" class="size-3.5" />
+                <span>{{ serviceTime }}</span>
+            </div>
+
+            <!-- Skipped: Pause icon -->
+            <div v-else-if="status === 'skipped'" class="flex items-center justify-end gap-1 text-sm text-amber-500">
+                <UIcon name="i-lucide-skip-forward" class="size-3.5" />
+            </div>
+
+            <!-- Completed: Avg. Service Time -->
+            <div v-else-if="status === 'completed'" class="flex flex-col items-end">
+                <span class="text-[10px] text-muted uppercase font-semibold leading-none mb-0.5 tracking-tight">Avg.
+                    Service</span>
+                <span class="text-sm text-blue-500">{{ avgServiceTime }}</span>
+            </div>
+
+            <!-- Missed or No Status: don't show any timer -->
+            <div v-else-if="status === 'missed'">
+            </div>
+
+            <!-- Default (Waiting): Waiting time -->
             <div v-else class="flex items-center justify-end gap-1 text-sm text-muted">
                 <UIcon name="i-lucide-clock" class="size-3.5" />
                 <span>{{ waitingTime }}</span>

@@ -9,7 +9,7 @@ const kioskData = reactive({
     transactionType: '',
     paymentMethod: '',
     isPriority: false,
-    queueNumber: 'A-001'
+    queueNumber: 'A001'
 });
 
 const queueType = computed(() => kioskData.isPriority ? t('kiosk.priority_queue') : t('kiosk.regular_queue'));
@@ -29,12 +29,14 @@ const handlePrioritySelect = (isPriority: boolean) => {
     currentStep.value = 'summary';
 };
 
+const { transactions } = useTransactions();
 const { createTicket: createQueueTicket } = useTickets();
 
 const handleConfirm = () => {
-    const prefix = kioskData.transactionType.charAt(0).toUpperCase();
+    const transaction = transactions.value.find(tx => tx.name === kioskData.transactionType);
+    const prefix = transaction?.code || kioskData.transactionType.charAt(0).toUpperCase();
     const num = Math.floor(Math.random() * 100).toString().padStart(3, '0');
-    kioskData.queueNumber = `${prefix}-${num}`;
+    kioskData.queueNumber = `${prefix}${num}`;
     
     // Create the actual ticket in the shared state
     createQueueTicket({

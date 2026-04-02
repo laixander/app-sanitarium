@@ -4,7 +4,7 @@ import { statusColors, tagColors } from '~/constants/queue'
 import { LazyAgentQueueDetails } from '#components'
 
 const props = defineProps<Ticket>()
-const { waitingTime } = useQueueTime(props.createdAt, props.servedAt, props.status)
+const { waitingTime, serviceTime } = useQueueTime(props.createdAt, props.servedAt, props.status, props.accumulatedServiceDuration)
 
 const allTags = computed(() => {
     const result = [...(props.tags || [])]
@@ -56,23 +56,34 @@ async function open() {
             <UBadge v-for="tag in allTags" :key="tag" :label="tag" :color="getTagColor(tag)" variant="subtle" />
         </div>
 
-        <!-- if waiting: waitingTime -->
+        <!-- Waiting: Waiting time -->
         <div v-if="status === 'waiting' || !status" class="flex items-center gap-1 text-sm text-dimmed">
             <UIcon name="i-lucide-clock" class="shrink-0" />
             <div>{{ waitingTime }}</div>
         </div>
 
-        <!-- if serving, missed, completed: counter -->
-        <div v-else-if="['serving', 'missed', 'completed'].includes(status!)"
-            class="flex items-center gap-1 text-sm text-dimmed">
-            <UIcon name="i-lucide-monitor" />
-            <div>{{ counter || 'N/A' }}</div>
+        <!-- Serving: Active timer -->
+        <div v-else-if="status === 'serving'" class="flex items-center gap-1 text-sm text-primary font-bold animate-pulse">
+            <UIcon name="i-lucide-play" class="shrink-0" />
+            <div>{{ serviceTime }}</div>
         </div>
 
-        <!-- other statuses: show total wait time -->
-        <div v-else class="flex items-center gap-1 text-sm text-dimmed text-nowrap">
-            <UIcon name="i-lucide-clock" />
-            <div class="truncate">{{ waitingTime }}</div>
+        <!-- Held: Paused timer -->
+        <div v-else-if="status === 'held'" class="flex items-center gap-1 text-sm text-amber-500 font-semibold">
+            <UIcon name="i-lucide-pause" class="shrink-0" />
+            <div>{{ serviceTime }}</div>
+        </div>
+
+        <!-- Skipped: Pause icon -->
+        <div v-else-if="status === 'skipped'" class="flex items-center gap-1 text-sm text-muted">
+            <UIcon name="i-lucide-pause-circle" class="shrink-0" />
+            <span>Skipped</span>
+        </div>
+
+        <!-- Completed/Missed: Service time or counter -->
+        <div v-else class="flex items-center gap-1 text-sm text-dimmed">
+            <UIcon name="i-lucide-monitor" class="shrink-0" />
+            <div>{{ counter || 'N/A' }}</div>
         </div>
 
         <!-- apply color based on status -->

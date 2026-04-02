@@ -17,6 +17,11 @@ const items = computed<NavigationMenuItem[][]>(() => [
                 to: '/agent/dashboard'
             },
             {
+                label: 'Ticket History',
+                icon: 'i-lucide-history',
+                to: '/agent/logs'
+            },
+            {
                 label: 'Assignment Items',
                 icon: 'i-lucide-clipboard-check',
                 to: '/agent/assignment',
@@ -24,7 +29,7 @@ const items = computed<NavigationMenuItem[][]>(() => [
                 type: 'trigger',
                 children: [
                     {
-                        label: 'Transaction Categories',
+                        label: 'Transactions',
                         to: '/agent/assignment',
                         exact: true,
                         onSelect: () => {

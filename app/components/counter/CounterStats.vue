@@ -2,7 +2,7 @@
 defineProps<{
     servedToday: number
     missedCount: number
-    waitingCount: number
+    heldCount: number
     isOnline: boolean
     isBusy?: boolean
 }>()
@@ -30,10 +30,10 @@ defineEmits<{
                 </div>
             </div>
             <div class="space-y-1">
-                <p class="text-xs uppercase font-medium text-muted tracking-wider">Waiting</p>
+                <p class="text-xs uppercase font-medium text-muted tracking-wider">On Hold/Skipped</p>
                 <div class="flex items-center gap-2 font-bold text-lg">
-                    <UIcon name="i-lucide-ticket" class="h-4 w-4 text-primary" />
-                    {{ waitingCount }}
+                    <UIcon name="i-lucide-pause-circle" class="h-4 w-4 text-warning" />
+                    {{ heldCount }}
                 </div>
             </div>
         </div>

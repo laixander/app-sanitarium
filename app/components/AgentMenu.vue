@@ -14,7 +14,6 @@
 </template>
 <script setup lang="ts">
 const route = useRoute()
-const router = useRouter()
 const { counters } = useCounters()
 const { users, updateUser } = useUsers()
 
@@ -26,10 +25,11 @@ const agentRecord = computed(() =>
 const handleLogout = () => {
     if (agentRecord.value) {
         updateUser(agentRecord.value.id, {
-            agentStatus: 'Offline'
+            agentStatus: 'Offline',
+            ticket: '-'
         })
     }
-    router.push('/counter')
+    navigateTo('/login')
 }
 
 const items = computed(() => [

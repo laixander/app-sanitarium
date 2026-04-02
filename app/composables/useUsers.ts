@@ -81,8 +81,11 @@ export const useUsers = () => {
         })
 
         const isAgent = userData.role === 'Agent'
+        const email = userData.email || (isAgent ? `${userData.name.toLowerCase().replace(/\s+/g, '.')}@sanitarium.com` : userData.email)
+        
         const newUser: User = {
             ...userData,
+            email,
             id,
             createdAt: now,
             updatedAt: now,
@@ -177,7 +180,7 @@ export const useUsers = () => {
     }
 
     const forceLogout = (id: number) => {
-        updateUser(id, { agentStatus: 'Offline', counter: '-', ticket: '-' })
+        updateUser(id, { agentStatus: 'Offline', ticket: '-' })
     }
 
     return {

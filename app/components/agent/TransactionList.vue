@@ -3,6 +3,7 @@ import type { AppColor } from '~/types/ui'
 
 interface Props {
     title: string
+    code: string
     description?: string
     color?: AppColor
     icon?: string
@@ -41,6 +42,7 @@ const items = [
                 <div class="flex items-center gap-2">
                     <UBadge :icon="icon" :color="color" variant="soft" />
                     <span class="text-sm font-semibold">{{ title }}</span>
+                    <UBadge :label="code" variant="subtle" color="neutral" size="sm" />
                 </div>
                 <div v-if="description" class="text-sm text-dimmed">{{ description }}</div>
             </div>

@@ -11,8 +11,11 @@ const props = defineProps<{
 
 defineEmits<{
     (e: 'callNext'): void
+    (e: 'start'): void
     (e: 'complete'): void
     (e: 'miss'): void
+    (e: 'skip'): void
+    (e: 'hold'): void
     (e: 'reannounce'): void
 }>()
 
@@ -65,7 +68,7 @@ watchEffect((onCleanup) => {
         <!-- NOW SERVING VIEW -->
         <div v-if="servingTicket"
             class="min-h-[240px] flex flex-col items-center justify-center rounded-2xl border-2 border-primary/30 p-8 bg-primary/5">
-            <div class="text-center space-y-6 w-full max-w-sm">
+            <div class="text-center space-y-6 w-full max-w-lg">
                 <p class="text-sm font-semibold uppercase tracking-widest text-primary">Now Serving</p>
 
                 <UBadge class="rounded-2xl p-8 shadow-lg mx-auto w-fit min-w-[180px]" :class="servingShadowClass"
@@ -84,17 +87,34 @@ watchEffect((onCleanup) => {
                     </template>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <UButton label="Complete" icon="i-lucide-circle-check-big" color="success" size="lg" block
-                        class="px-8 py-3" :disabled="!isOnline" @click="$emit('complete')" />
-                    <UButton label="No Show" icon="i-lucide-circle-x" color="error" size="lg" block class="px-8 py-3"
-                        :disabled="!isOnline" @click="$emit('miss')" />
-                    <UButton label="Re-announce Ticket" icon="i-lucide-volume-2" color="neutral" variant="outline"
-                        size="lg" block class="px-8 py-3 col-span-2" :disabled="!isOnline"
-                        @click="$emit('reannounce')" />
+                <div class="grid grid-cols-3 gap-4">
+                    <!-- START / COMPLETE Actions -->
+                    <template v-if="!servingTicket.servedAt">
+                        <UButton label="Start" icon="i-lucide-play" color="primary" size="lg" block class="px-8 py-3"
+                            :disabled="!isOnline" @click="$emit('start')" />
+
+                        <UButton label="Skip" icon="i-lucide-skip-forward" color="warning" size="lg" block
+                            class="px-8 py-3" :disabled="!isOnline" @click="$emit('skip')" />
+
+                        <UButton label="No Show" icon="i-lucide-circle-x" color="error" size="lg" block class="px-8 py-3"
+                            :disabled="!isOnline" @click="$emit('miss')" />
+
+                        <UButton label="Re-announce Ticket" icon="i-lucide-volume-2" color="neutral" variant="outline"
+                            size="lg" block class="px-8 py-3 col-span-3" :disabled="!isOnline"
+                            @click="$emit('reannounce')" />
+                    </template>
+
+                    <!-- Started Actions -->
+                    <template v-else>
+                        <UButton label="Complete" icon="i-lucide-circle-check-big" color="success" size="lg" block
+                            class="px-8 py-3 col-span-2" :disabled="!isOnline" @click="$emit('complete')" />
+                        <UButton label="On Hold" icon="i-lucide-pause-circle" color="warning" size="lg" block
+                            class="px-8 py-3" :disabled="!isOnline" @click="$emit('hold')" />
+                    </template>
                 </div>
 
-                <div class="flex items-center justify-center gap-2 text-muted">
+                <!-- Show timer only when the ticket is Started (servedAt exists) -->
+                <div v-if="servingTicket.servedAt" class="flex items-center justify-center gap-2 text-muted">
                     <UIcon name="i-lucide-timer" class="w-5 h-5" />
                     <p class="text-sm font-mono tabular-nums">{{ elapsedDisplay }}</p>
                 </div>

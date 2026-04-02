@@ -7,7 +7,8 @@ defineProps<{
 </script>
 
 <template>
-    <UCard :ui="{ header: 'bg-muted/50' }" class="w-full lg:min-w-md rounded-2xl shadow-sm" variant="subtle">
+    <UCard :ui="{ header: 'bg-muted/50', body: 'overflow-y-auto max-h-[calc(100vh-180px)]' }"
+        class="w-full lg:min-w-md rounded-2xl shadow-sm" variant="subtle">
         <template #header>
             <div class="flex items-center justify-between gap-4">
                 <div class="flex items-center gap-3">

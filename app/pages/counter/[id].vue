@@ -7,16 +7,38 @@ definePageMeta({
 
 const route = useRoute()
 const { counters } = useCounters()
-const { tickets, updateTicketStatus } = useTickets()
+const { tickets, updateTicketStatus, startTicket, skipTicket, holdTicket } = useTickets()
 const { users, updateUser } = useUsers()
 
 const counter = computed(() => counters.value.find(c => c.id === route.params.id))
 const counterName = computed(() => counter.value?.name ?? '')
+const appToast = useAppToast()
+
+import { LazyCounterTicketReasonModal } from '#components'
+import type { ReasonActionType } from '~/components/counter/TicketReasonModal.vue'
+import type { Ticket } from '~/types/queue'
+const overlay = useOverlay()
+
+const openReasonModal = async (actionType: ReasonActionType, ticket: Ticket) => {
+    return new Promise<string | false>((resolve) => {
+        const slideover = overlay.create(LazyCounterTicketReasonModal)
+        slideover.open({
+            actionType,
+            ticket,
+            onClose: (reason: string | false) => {
+                slideover.close()
+                resolve(reason)
+            }
+        })
+    })
+}
 
 // Resolve agent assigned to this counter from the users store
 const agentRecord = computed(() =>
     users.value.find(u => u.role === 'Agent' && u.counter === counterName.value) ?? null
 )
+
+const isAccessDenied = computed(() => !agentRecord.value || agentRecord.value.agentStatus === 'Offline')
 
 // Computed property to sync counter online status with agent status
 const isOnline = computed({
@@ -48,11 +70,19 @@ const servingTicket = computed(() =>
     tickets.value.find(t => t.status === 'serving' && t.counter === counterName.value)
 )
 
-// Recently completed/missed tickets for this counter
+// Recently completed tickets for this counter
 const recentlyCompleted = computed(() =>
     tickets.value
-        .filter(t => (t.status === 'completed' || t.status === 'missed') && t.counter === counterName.value)
-        .sort((a, b) => new Date(b.servedAt || '').getTime() - new Date(a.servedAt || '').getTime())
+        .filter(t => t.status === 'completed' && t.counter === counterName.value)
+        .sort((a, b) => new Date(b.completedAt || '').getTime() - new Date(a.completedAt || '').getTime())
+        .slice(0, 5)
+)
+
+// Recently missed tickets for this counter
+const missedTickets = computed(() =>
+    tickets.value
+        .filter(t => t.status === 'missed' && t.counter === counterName.value)
+        .sort((a, b) => new Date(b.calledAt || '').getTime() - new Date(a.calledAt || '').getTime())
         .slice(0, 5)
 )
 
@@ -66,38 +96,87 @@ const missedCount = computed(() =>
     tickets.value.filter(t => t.status === 'missed' && t.counter === counterName.value).length
 )
 
+// Held/Skipped tickets for this counter
+const heldTickets = computed(() =>
+    tickets.value.filter(t => (t.status === 'held' || t.status === 'skipped') && t.counter === counterName.value)
+)
+
 // Actions
 const callNextTicket = () => {
     if (counterQueue.value.length === 0) return
     const next = counterQueue.value[0]!
     updateTicketStatus(next.id, 'serving', counterName.value)
+    appToast.success('Ticket Called', `Ticket ${next.ticket} is now serving.`)
 }
 
 const completeTicket = () => {
     if (!servingTicket.value) return
+    const ticketNum = servingTicket.value.ticket
     updateTicketStatus(servingTicket.value.id, 'completed', counterName.value)
+    appToast.success('Ticket Completed', `Ticket ${ticketNum} has been completed.`)
 }
 
-const missTicket = () => {
+const missTicket = async () => {
     if (!servingTicket.value) return
-    updateTicketStatus(servingTicket.value.id, 'missed', counterName.value)
+    const ticketNum = servingTicket.value.ticket
+    const reason = await openReasonModal('Missed', servingTicket.value)
+    if (reason !== false) {
+        updateTicketStatus(servingTicket.value.id, 'missed', counterName.value, reason)
+        appToast.error('Marked as No Show', `Ticket ${ticketNum} was marked as missed.`)
+    }
+}
+
+const startTicketAction = () => {
+    if (!servingTicket.value) return
+    startTicket(servingTicket.value.id)
+    appToast.success('Service Started', `Timer has begun for Ticket ${servingTicket.value.ticket}.`)
+}
+
+const skipTicketAction = async () => {
+    if (!servingTicket.value) return
+    const ticketNum = servingTicket.value.ticket
+    const reason = await openReasonModal('Skipped', servingTicket.value)
+    if (reason !== false) {
+        skipTicket(servingTicket.value.id, reason)
+        appToast.warning('Ticket Skipped', `Ticket ${ticketNum} was skipped.`)
+    }
+}
+
+const holdTicketAction = async () => {
+    if (!servingTicket.value) return
+    const ticketNum = servingTicket.value.ticket
+    const reason = await openReasonModal('Held', servingTicket.value)
+    if (reason !== false) {
+        holdTicket(servingTicket.value.id, reason)
+        appToast.warning('Ticket On Hold', `Ticket ${ticketNum} was placed on hold.`)
+    }
+}
+
+const recallTicketAction = (id: string, ticketNum: string) => {
+    updateTicketStatus(id, 'serving', counterName.value)
+    appToast.info('Ticket Recalled', `Ticket ${ticketNum} is now serving again.`)
 }
 
 const reannounceTicket = () => {
     if (!servingTicket.value) return
     updateTicketStatus(servingTicket.value.id, 'serving', counterName.value)
-    // toast
-    useToast().add({
-        title: 'Ticket re-announced',
-        description: `Ticket ${servingTicket.value.ticket} has been re-announced.`,
-        color: 'success',
-    })
+    
+    appToast.success('Ticket Re-announced', `Ticket ${servingTicket.value.ticket} has been called again.`)
 }
+
+// Redirect if session ended or counter not found
+watchEffect(() => {
+    if (!counter.value) {
+        navigateTo('/counter/ended?type=not-found')
+    } else if (isAccessDenied.value) {
+        navigateTo(`/counter/ended?type=ended&name=${encodeURIComponent(counterName.value)}`)
+    }
+})
 </script>
 
 <template>
     <UContainer class="p-4 sm:p-6">
-        <div v-if="counter" class="flex items-start justify-center gap-8">
+        <div v-if="counter && !isAccessDenied" class="flex items-start justify-center gap-8">
             <main class="flex-1">
                 <!-- combine the class -->
                 <UCard :ui="{ header: 'bg-muted/50' }"
@@ -114,8 +193,15 @@ const reannounceTicket = () => {
                             :is-online="isOnline" />
 
                         <CounterWorkspace :serving-ticket="servingTicket" :queue-length="counterQueue.length"
-                            :is-online="isOnline" @call-next="callNextTicket" @complete="completeTicket"
-                            @miss="missTicket" @reannounce="reannounceTicket" />
+                            :is-online="isOnline" @call-next="callNextTicket" @start="startTicketAction"
+                            @complete="completeTicket" @miss="missTicket" @skip="skipTicketAction"
+                            @hold="holdTicketAction" @reannounce="reannounceTicket" />
+
+                        <USeparator />
+
+                        <!-- Skipped/On Hold Tickets -->
+                        <CounterHeldList :tickets="heldTickets" :disabled="!isOnline || !!servingTicket"
+                            @recall="(id) => recallTicketAction(id, heldTickets.find(t => t.id === id)?.ticket || '')" />
 
                         <USeparator />
 
@@ -124,8 +210,12 @@ const reannounceTicket = () => {
 
                         <USeparator />
 
+                        <!-- MISSED Tickets -->
+                        <CounterMissedList :tickets="missedTickets" :disabled="!isOnline || !!servingTicket"
+                            @recall="(id) => recallTicketAction(id, missedTickets.find(t => t.id === id)?.ticket || '')" />
+
                         <CounterStats v-model:isOnline="isOnline" :served-today="servedToday"
-                            :missed-count="missedCount" :waiting-count="counterQueue.length"
+                            :missed-count="missedCount" :held-count="heldTickets.length"
                             :is-busy="!!servingTicket" />
                     </div>
                 </UCard>
@@ -145,14 +235,5 @@ const reannounceTicket = () => {
             </aside>
         </div>
 
-        <!-- 404 fallback if counter ID not found -->
-        <div v-else class="min-h-screen flex items-center justify-center bg-muted/30">
-            <div class="text-center space-y-4">
-                <UIcon name="i-lucide-monitor-x" class="size-16 text-muted mx-auto" />
-                <h2 class="text-2xl font-bold">Counter Not Found</h2>
-                <p class="text-muted">The counter you're looking for doesn't exist.</p>
-                <UButton label="Back to Counters" icon="i-lucide-arrow-left" to="/counter" />
-            </div>
-        </div>
     </UContainer>
 </template>
