@@ -13,7 +13,7 @@
             </template>
 
             <template #right>
-                <UColorModeButton />
+                <!-- <UColorModeButton /> -->
                 <!-- for simulation only -->
                 <AgentMenu />
             </template>

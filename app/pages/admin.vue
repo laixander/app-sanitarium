@@ -48,7 +48,7 @@ const toolbarLinks = computed(() => {
                     <UDashboardSidebarCollapse />
                 </template>
                 <template #right>
-                    <UColorModeButton />
+                    <!-- <UColorModeButton /> -->
                     <UserMenu />
                 </template>
             </UDashboardNavbar>

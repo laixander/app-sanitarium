@@ -164,13 +164,18 @@ const reannounceTicket = () => {
     appToast.success('Ticket Re-announced', `Ticket ${servingTicket.value.ticket} has been called again.`)
 }
 
-// Redirect if session ended or counter not found
-watchEffect(() => {
-    if (!counter.value) {
-        navigateTo('/counter/ended?type=not-found')
-    } else if (isAccessDenied.value) {
-        navigateTo(`/counter/ended?type=ended&name=${encodeURIComponent(counterName.value)}`)
-    }
+// Redirect if session ended or counter not found (Client-side only)
+onMounted(() => {
+    // Wait for the stores to hydrate from localStorage
+    setTimeout(() => {
+        watchEffect(() => {
+            if (!counter.value) {
+                navigateTo('/counter/ended?type=not-found')
+            } else if (isAccessDenied.value) {
+                navigateTo(`/counter/ended?type=ended&name=${encodeURIComponent(counterName.value)}`)
+            }
+        })
+    }, 50)
 })
 </script>
 
