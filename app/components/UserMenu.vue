@@ -45,7 +45,7 @@ const user = computed(() => ({
     name: currentUser.value?.name ?? 'Peter Parker',
     description: currentUser.value?.role ?? 'Software Engineer',
     avatar: {
-        src: currentUser.value ? `https://i.pravatar.cc/128?u=${currentUser.value.id}` : 'img/avatar.png',
+        src: currentUser.value ? `https://i.pravatar.cc/128?u=${currentUser.value.id}` : '/img/avatar.png',
         alt: currentUser.value?.name,
         class: 'bg-primary/10 text-primary font-bold',
         loading: 'lazy',

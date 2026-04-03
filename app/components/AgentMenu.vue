@@ -49,7 +49,7 @@ const user = computed(() => ({
     name: agentRecord.value?.name ?? 'Unknown Agent',
     description: agentRecord.value?.role ?? 'Agent',
     avatar: {
-        src: agentRecord.value ? `https://i.pravatar.cc/128?u=${agentRecord.value.id}` : 'img/avatar.png',
+        src: agentRecord.value ? `https://i.pravatar.cc/128?u=${agentRecord.value.id}` : '/img/avatar.png',
         alt: agentRecord.value?.name,
         class: 'bg-primary/10 text-primary font-bold',
         loading: 'lazy',
