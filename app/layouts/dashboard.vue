@@ -237,6 +237,11 @@ const items = computed<NavigationMenuItem[][]>(() => [
                 to: '/docs'
             },
             {
+                label: 'User Manual',
+                icon: 'i-lucide-book-open-text',
+                to: '/manual'
+            },
+            {
                 label: 'Landing Page',
                 icon: 'i-lucide-globe',
                 to: '/'
