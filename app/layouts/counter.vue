@@ -35,8 +35,7 @@
             </template>
 
             <template #right>
-                <UButton to="https://github.com/laixander" target="_blank" icon="i-simple-icons-github"
-                    aria-label="GitHub" color="neutral" variant="ghost" />
+                <UButton to="https://github.com/laixander/app-sanitarium" target="_blank" icon="i-simple-icons-github" aria-label="GitHub" color="neutral" variant="ghost" />
             </template>
         </UFooter>
     </UApp>
